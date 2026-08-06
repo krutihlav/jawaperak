@@ -1,0 +1,51 @@
+---
+// Tahle stránka potřebuje SSR (data se mění, jak přibývají schválené stroje).
+// Než se zapojí @astrojs/vercel adaptér a output: 'hybrid' v astro.config.mjs,
+// export const prerender = false níže nebude mít efekt a stránka se
+// vybuildí staticky s daty z buildu.
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import { supabase } from '../../lib/supabase';
+
+const stavLabel: Record<string, string> = {
+  puvodni: 'Původní stav',
+  renovovano: 'Renovováno',
+  v_renovaci: 'V renovaci',
+  vrak: 'Vrak',
+  na_dily: 'Na díly',
+};
+
+const { data: stroje, error } = await supabase
+  .from('stroje_verejne')
+  .select('*')
+  .order('vytvoreno_at', { ascending: false });
+---
+<Layout title="Registr strojů | jawaperak.cz" description="Databáze dochovaných motocyklů Jawa Pérák.">
+<section class="sec">
+  <div class="wrap">
+    <h2>Registr strojů</h2>
+    <p class="lead">Kolik Péráků se dochovalo, neví nikdo. Zkoušíme to spočítat.</p>
+
+    {error && <p class="lead">Registr se teď nepodařilo načíst. Zkuste to prosím znovu později.</p>}
+
+    <div class="reg">
+      {stroje?.map((s) => (
+        <a class="rec" href={`/registr/stroj/${s.id}/`}>
+          <span>
+            <span class="rt">Typ {s.typ} · {s.rok_vyroby ?? '?'}</span>
+            <div class="rm">
+              {[s.region, s.zeme].filter(Boolean).join(' · ')}
+              {s.cislo_ramu_masked && ` · rám ${s.cislo_ramu_masked}`}
+            </div>
+          </span>
+          <span class={`st ${s.stav === 'puvodni' ? 'a' : ''}`}>{stavLabel[s.stav] ?? s.stav}</span>
+        </a>
+      ))}
+      {stroje?.length === 0 && <p class="lead">Registr je zatím prázdný — první stroje přidáme ručně (fáze 2).</p>}
+    </div>
+
+    <p class="act"><a href="/registr/pridat-stroj/">Přidat stroj</a></p>
+  </div>
+</section>
+</Layout>

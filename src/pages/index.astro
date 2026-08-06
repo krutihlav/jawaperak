@@ -1,0 +1,97 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Pérák — typy, výrobní čísla, technika | jawaperak.cz">
+
+<section class="hero">
+  <div class="wrap">
+    <div class="plate-wrap">
+      <img class="plate-img" src="/stitek-perak.webp" width="660" height="1416"
+           alt="Výrobní štítek Jawa, tovární číslo 11-12862, rok výroby 1947, Zbrojovka Ing. F. Janeček, Praha-Nusle II.">
+      <p class="plate-cap"><b>Tovární čís. 11-12862</b>Zbrojovka Ing. F. Janeček — Praha-Nusle II.<br>rok výroby 1947</p>
+    </div>
+
+    <div>
+      <h1>Pérák</h1>
+      <p class="sub">Typová řada, výrobní čísla, technika a díly. <b>Sepsané z originálních katalogů, knížek obsluhy a strojů, které nám prošly rukama.</b></p>
+
+      <div class="ident">
+        <span class="ident-lb">Co mám za stroj</span>
+        <div class="ident-row">
+          <label for="tp" style="position:absolute;left:-9999px">Typ</label>
+          <select id="tp"><option>11</option><option>12</option><option>18</option></select>
+          <label for="vc" style="position:absolute;left:-9999px">Tovární číslo</label>
+          <input id="vc" type="text" inputmode="numeric" placeholder="12862" maxlength="6">
+          <button type="button">Určit</button>
+        </div>
+        <p class="ident-note">Opište tovární číslo ze štítku nebo z rámu. Řekneme vám rok výroby, provedení a na co si u něj dát pozor.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="typy">
+  <div class="wrap">
+    <h2>Typová řada</h2>
+    <p class="lead">Dvě kubatury, tři typová označení. Motory ani díly nejsou zaměnitelné.</p>
+    <table class="tbl">
+      <thead><tr><th>Typ</th><th>Stroj</th><th>Výroba</th><th>Poznámka</th></tr></thead>
+      <tbody>
+        <tr><td class="k"><a href="/perak/typ-11/">11</a></td><td class="k" style="font-weight:400">Jawa 250</td><td class="k" style="font-weight:400">1946—1954</td><td class="d">Jednoválec 248,5 cm³. Od roku 1950 vyšší výkon a upravené žebrování.</td></tr>
+        <tr><td class="k"><a href="/perak/typ-12/">12</a></td><td class="k" style="font-weight:400">Jawa 350</td><td class="k" style="font-weight:400">1948—1950</td><td class="d">Dvouválec. Sdílí podvozek, ne pohon.</td></tr>
+        <tr><td class="k"><a href="/perak/typ-18/">18</a></td><td class="k" style="font-weight:400">Jawa 350</td><td class="k" style="font-weight:400">1950—1954</td><td class="d">Nástupce typu 12, souběžně s typem 11.</td></tr>
+      </tbody>
+    </table>
+    <p class="act"><a href="/perak/identifikace/">Určení podle výrobního čísla</a><a href="/perak/typova-rada/">Rozdíly Janeček / Zbrojovka</a></p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <h2>Obsluha a údržba</h2>
+    <p class="lead">Podle původní knížky obsluhy, přefocené a doplněné o to, co se za osmdesát let ukázalo.</p>
+    <div class="plates">
+      <div class="pl"><figure><div class="img"><span>fotografie</span></div><figcaption>Zavírání vzduchového filtru karburátoru</figcaption></figure></div>
+      <div class="pl"><figure><div class="img"><span>fotografie</span></div><figcaption>Seřizování sklonu paraboly reflektoru</figcaption></figure></div>
+      <div class="pl"><figure><div class="img"><span>fotografie</span></div><figcaption>Kontrola oleje v převodové skříni</figcaption></figure></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="registr">
+  <div class="wrap">
+    <h2>Registr strojů</h2>
+    <p class="lead">Kolik Péráků se dochovalo, neví nikdo. Zkoušíme to spočítat.</p>
+    <div class="reg">
+      <a class="rec" href="#"><span><span class="rt">Typ 11 · 1952</span><div class="rm">Olomoucký kraj · rám 11-24×××</div></span><span class="st a">Původní stav</span></a>
+      <a class="rec" href="#"><span><span class="rt">Typ 18 · 1951</span><div class="rm">Jihomoravský kraj · rám 18-08×××</div></span><span class="st">Renovováno</span></a>
+      <a class="rec" href="#"><span><span class="rt">Typ 11 · 1947</span><div class="rm">Praha · Zbrojovka Ing. F. Janeček</div></span><span class="st">V renovaci</span></a>
+      <a class="rec" href="#"><span><span class="rt">Typ 12 · 1949</span><div class="rm">Rakousko · rám 12-31×××</div></span><span class="st">Na díly</span></a>
+    </div>
+    <p class="act"><a href="/registr/pridat-stroj/">Přidat stroj</a><a href="/registr/">Celý registr</a></p>
+  </div>
+</section>
+
+<section class="sec" id="dilna">
+  <div class="wrap two">
+    <div>
+      <h2>Z naší dílny</h2>
+      <p class="lead">Historie stroje patří k jeho hodnotě. Kde to jde, patinu zachováváme a konzervujeme — místo aby zmizela pod novým lakem.</p>
+      <p class="act"><a href="/renovace/">Renovační deníky</a></p>
+    </div>
+    <div class="pl">
+      <figure><div class="img" style="aspect-ratio:4/3"><span>fotografie zakázky</span></div>
+      <figcaption>Typ 11 (1951), stav při převzetí</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="navody">
+  <div class="wrap">
+    <div class="note">
+      <p><b>Hledáte novou Jawu Perak?</b> Bobber, který od roku 2019 vyrábí indický koncern Classic Legends. Jméno si vypůjčil od stroje z roku 1946. <a href="/perak-vs-perak/">Rozdíly vedle sebe</a></p>
+    </div>
+  </div>
+</section>
+
+</Layout>
