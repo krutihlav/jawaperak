@@ -1,0 +1,164 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+// POZNÁMKA PRO ÚPRAVU: Neměl jsem přístup k vašemu GitHub repu, takže neznám
+// přesné props rozhraní Layout.astro. Props níže (title, description) jsou
+// standardní odhad - uprav podle skutečné signatury komponenty.
+
+const title = 'Jawa 250 Pérák: typ 10 a typ 11 — jeden stroj, dvě jména';
+const description = 'Proč se první poválečná Jawa 250 jmenovala nejdřív typ 10 a od roku 1948 typ 11, a co se s ní tehdy skutečně změnilo. Ověřeno podle Procházka: Jawa 250/350 Pérák, Grada 2009.';
+---
+
+<Layout title={title} description={description}>
+  <article class="perak-article">
+    <header>
+      <p class="kicker">Identifikace a typová řada</p>
+      <h1>Typ 10 a typ 11: jeden stroj, dvě jména</h1>
+      <p class="lead">
+        Na fórech a v bazarových inzerátech se dnes prakticky každý pérák 250 ccm
+        vyrobený mezi lety 1946 a 1954 nazývá „typ 11". Je to praktické zjednodušení,
+        ale ne tak úplně přesné — a stojí za to vědět proč.
+      </p>
+    </header>
+
+    <section>
+      <h2>Co se skutečně stalo</h2>
+      <p>
+        Když v roce 1946 sjely z pankrácké linky první stroje Jawa 250 Pérák,
+        nesly oficiální typové označení <strong>typ 10</strong>. Byl to nový,
+        za okupace tajně vyvíjený motocykl — kolébkový rám ze čtyřhranných trubek,
+        teleskopická přední vidlice, odpružené zadní kolo, motor zakrytý
+        patentovaným krytem karburátoru. Do konce roku 1946 se jich vyrobilo
+        1 360 kusů, v roce 1947 už 17 162.
+      </p>
+      <p>
+        V roce 1948 prošel stroj sérií drobných, ale prakticky užitečných úprav:
+        kónicky zesílená chladicí žebra válce pro lepší chlazení, zesílené dno
+        pístu kvůli rovnoměrnějšímu rozvodu tepla, přechod ze čtyřpólového na
+        šestipólové dynamo a rekonstrukce přední vidlice spolu se svařencem rámu
+        pod hlavou řízení. Tahle poslední úprava nebyla kosmetická — reagovala na
+        praskání vidlic a rámů, které se projevilo při terénní jízdě, mimo jiné na
+        první poválečné Šestidenní ve Zlíně v roce 1947.
+      </p>
+      <p>
+        Po zavedení těchto úprav bylo <strong>oficiálně zrušeno rozlišování mezi
+        typem 10 a typem 11</strong> — všechny další série se od roku 1948
+        posuzovaly jednotně jako typ 11, protože nové díly byly s původními
+        vesměs vzájemně zaměnitelné. Jinými slovy: nejde o dva různé motocykly,
+        ale o jeden model, který v půlce své výroby dostal upravené jméno.
+      </p>
+    </section>
+
+    <section>
+      <h2>Proč se dnes běžně mluví jen o „typu 11"</h2>
+      <p>
+        Právě proto, že bylo rozlišení oficiálně zrušeno a díly zůstaly
+        zaměnitelné, nemá dnešní zvyk označovat souhrnně celou produkci od 1946
+        jako „typ 11" nic společného s nepřesností — je to jen zpětné použití
+        pozdějšího, sjednoceného označení. Výrobní čísla rámů nesou prefix
+        „11-" od samého počátku výroby bez ohledu na to, jaké typové označení
+        stroj v danou chvíli oficiálně nesl.
+      </p>
+      <p>
+        Kdo tedy dnes hledá informace o „Jawě 250 typ 10", hledá ve skutečnosti
+        raný, před rokem 1948 vyrobený exemplář typu 11 — ne samostatný, jinak
+        konstruovaný model.
+      </p>
+    </section>
+
+    <section>
+      <h2>Souběžný příběh u třistapadesátky</h2>
+      <p>
+        Stejný vzorec — start pod jedním označením, přeznačení po technických
+        úpravách — se o dva roky později opakoval i u silnějšího sourozence.
+        Dvouválcová 350 ccm verze šla do výroby v roce 1948 jako
+        <strong>Ogar, typ 12</strong> (vyráběna v bývalé strašnické továrně
+        Autfit, ve světle šedé barvě se zlatými linkami). Po zavedení
+        zdokonaleného klikového ústrojí a přepracovaného žebrování válců pro
+        rovnoměrnější chlazení byl v roce <strong>1950</strong> typ 12
+        přečíslován na <strong>typ 18</strong>, název změněn na Jawa 350
+        a barva na obvyklou jawáckou červenou.
+      </p>
+      <p>
+        Víc o technických rozdílech mezi typem 12 a 18 najdete na stránce
+        věnované motoru 350.
+      </p>
+    </section>
+
+    <section class="callout">
+      <h2>Jak poznat, jestli máte raný kus (před 1948)</h2>
+      <ul>
+        <li>Čtyřpólové dynamo (u strojů s v. č. 11-01 až 7000 a 11-8001 až 9600)</li>
+        <li>Rovné, nezesílené žebrování válce</li>
+        <li>Starší provedení přední vidlice s jedinou dlouhou vinutou pružinou (bez progresivního dvoudílného odpružení zavedeného od podzimu 1947)</li>
+      </ul>
+      <p class="note">
+        Tahle kritéria se týkají technických úprav z let 1947–1948, ne přesně
+        a výhradně přechodu typ 10 → typ 11 jako takového — díly se dobově
+        kombinovaly podle toho, co bylo zrovna na skladě, takže naprosto čistý
+        „typ 10" bez jediného pozdějšího dílu je dnes spíš vzácnost než pravidlo.
+      </p>
+    </section>
+
+    <footer class="sources">
+      <h2>Zdroje</h2>
+      <p>
+        Procházka, Hubert: <em>Jawa 250/350 Pérák: historie, vývoj, technika, sport.</em>
+        Grada, 2009, str. 47–54.
+      </p>
+    </footer>
+  </article>
+</Layout>
+
+<style>
+  .perak-article {
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+  }
+  .kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+  }
+  h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+  .lead {
+    font-size: 1.15rem;
+    opacity: 0.85;
+    margin-bottom: 2rem;
+  }
+  section {
+    margin-bottom: 2rem;
+  }
+  h2 {
+    font-size: 1.4rem;
+    margin-bottom: 0.75rem;
+  }
+  p {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  .callout {
+    background: rgba(0, 0, 0, 0.03);
+    border-left: 3px solid currentColor;
+    padding: 1.25rem 1.5rem;
+    border-radius: 0.25rem;
+  }
+  .note {
+    font-size: 0.9rem;
+    opacity: 0.75;
+    font-style: italic;
+  }
+  .sources {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding-top: 1rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+</style>
