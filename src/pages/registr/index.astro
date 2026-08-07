@@ -1,51 +1,248 @@
 ---
-// Tahle stránka potřebuje SSR (data se mění, jak přibývají schválené stroje).
-// Než se zapojí @astrojs/vercel adaptér a output: 'hybrid' v astro.config.mjs,
-// export const prerender = false níže nebude mít efekt a stránka se
-// vybuildí staticky s daty z buildu.
-export const prerender = false;
-
 import Layout from '../../layouts/Layout.astro';
-import { supabase } from '../../lib/supabase';
 
-const stavLabel: Record<string, string> = {
-  puvodni: 'Původní stav',
-  renovovano: 'Renovováno',
-  v_renovaci: 'V renovaci',
-  vrak: 'Vrak',
-  na_dily: 'Na díly',
-};
-
-const { data: stroje, error } = await supabase
-  .from('stroje_verejne')
-  .select('*')
-  .order('vytvoreno_at', { ascending: false });
+const SUPABASE_URL = 'https://hcszrmqtwnkzlbrecrey.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
 ---
-<Layout title="Registr strojů | jawaperak.cz" description="Databáze dochovaných motocyklů Jawa Pérák.">
-<section class="sec">
+
+<Layout
+  title="Registr dochovaných Péráků | jawaperak.cz"
+  description="Veřejná databáze dochovaných motocyklů Jawa 250 a 350 Pérák. Přidejte svůj stroj a pomozte zmapovat, kolik jich přežilo."
+>
   <div class="wrap">
-    <h2>Registr strojů</h2>
-    <p class="lead">Kolik Péráků se dochovalo, neví nikdo. Zkoušíme to spočítat.</p>
+    <article class="art art--wide">
 
-    {error && <p class="lead">Registr se teď nepodařilo načíst. Zkuste to prosím znovu později.</p>}
+      <p class="kicker">Registr</p>
+      <h1>Kolik Péráků přežilo?</h1>
+      <p class="lead">
+        Nikdo to neví. Vyráběly se desítky tisíc kusů, dochovala se
+        neznámá část — roztroušená po garážích, stodolách a sbírkách.
+        Tenhle registr to zkouší zmapovat.
+      </p>
 
-    <div class="reg">
-      {stroje?.map((s) => (
-        <a class="rec" href={`/registr/stroj/${s.id}/`}>
-          <span>
-            <span class="rt">Typ {s.typ} · {s.rok_vyroby ?? '?'}</span>
-            <div class="rm">
-              {[s.region, s.zeme].filter(Boolean).join(' · ')}
-              {s.cislo_ramu_masked && ` · rám ${s.cislo_ramu_masked}`}
-            </div>
-          </span>
-          <span class={`st ${s.stav === 'puvodni' ? 'a' : ''}`}>{stavLabel[s.stav] ?? s.stav}</span>
-        </a>
-      ))}
-      {stroje?.length === 0 && <p class="lead">Registr je zatím prázdný — první stroje přidáme ručně (fáze 2).</p>}
-    </div>
+      <div class="stats" id="stats" aria-live="polite">
+        <div class="stat"><span class="stat__n" data-stat="celkem">–</span><span class="stat__l">strojů</span></div>
+        <div class="stat"><span class="stat__n" data-stat="pocet_250">–</span><span class="stat__l">250 ccm</span></div>
+        <div class="stat"><span class="stat__n" data-stat="pocet_350">–</span><span class="stat__l">350 ccm</span></div>
+        <div class="stat"><span class="stat__n" data-stat="pocet_zemi">–</span><span class="stat__l">zemí</span></div>
+      </div>
 
-    <p class="act"><a href="/registr/pridat-stroj/">Přidat stroj</a></p>
+      <div class="cta-add">
+        <div>
+          <b>Máte Péráka?</b>
+          <span>I nekompletní nebo rozebraný stroj do registru patří.</span>
+        </div>
+        <a class="btn" href="/registr/pridat-stroj/">Přidat stroj</a>
+      </div>
+
+      <section id="vypis">
+        <h2>Dochované stroje</h2>
+
+        <div class="filters" role="group" aria-label="Filtry">
+          <select id="f-typ" aria-label="Typ">
+            <option value="">Všechny typy</option>
+            <option value="10">Typ 10 (250)</option>
+            <option value="11">Typ 11 (250)</option>
+            <option value="12">Typ 12 (350)</option>
+            <option value="18">Typ 18 (350)</option>
+          </select>
+          <select id="f-stav" aria-label="Stav">
+            <option value="">Všechny stavy</option>
+            <option value="puvodni">Originál</option>
+            <option value="renovovano">Renovováno</option>
+            <option value="v_renovaci">V renovaci</option>
+            <option value="vrak">Vrak</option>
+            <option value="na_dily">Díly</option>
+          </select>
+          <select id="f-faze" aria-label="Výrobní fáze">
+            <option value="">Všechny fáze</option>
+            <option value="fj">FJ (Janeček)</option>
+            <option value="zbrojovka">Zbrojovka</option>
+            <option value="statni">Státní výroba</option>
+          </select>
+          <label class="chk"><input type="checkbox" id="f-prodej"> Jen na prodej</label>
+        </div>
+
+        <div id="vysledky" class="grid-stroje" aria-live="polite">
+          <p class="loading">Načítám registr…</p>
+        </div>
+      </section>
+
+      <section id="jak">
+        <h2>Jak registr funguje</h2>
+
+        <table class="spec">
+          <caption>Co je veřejné a co ne</caption>
+          <thead>
+            <tr><th>Údaj</th><th>Viditelnost</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="rl">Typ, rok, stav, barva</td><td>Veřejné</td></tr>
+            <tr><td class="rl">Výrobní čísla</td><td>Veřejně jen částečně — poslední tři znaky zakryté</td></tr>
+            <tr><td class="rl">Kraj / země</td><td>Veřejné (ne přesná adresa)</td></tr>
+            <tr><td class="rl">Jméno a kontakt majitele</td><td>Nikdy veřejné, jen přes formulář a se souhlasem</td></tr>
+            <tr><td class="rl">Fotky a příběh stroje</td><td>Veřejné</td></tr>
+          </tbody>
+        </table>
+
+        <div class="warn">
+          <span class="lb">Proč zakrýváme část čísel</span>
+          <p>
+            Kompletní výrobní číslo se dá zneužít ke klonování identity —
+            přeražení čísla na jiný, například kradený stroj. Zakrytá část
+            zůstává v databázi a při ověřování se s ní pracuje, jen není
+            veřejně čitelná.
+          </p>
+        </div>
+
+        <p>
+          Každý záznam před zveřejněním ručně procházíme. Není to kvůli
+          přísnosti — jen se tím udrží kvalita dat. Neúplný záznam ale vítáme,
+          doplnit se dá kdykoli.
+        </p>
+      </section>
+
+    </article>
   </div>
-</section>
 </Layout>
+
+<script define:vars={{ SUPABASE_URL, SUPABASE_KEY }}>
+  const H = { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY };
+  const box = document.getElementById('vysledky');
+
+  const STAV = {
+    puvodni: 'Původní', renovovano: 'Renovováno', v_renovaci: 'V renovaci',
+    vrak: 'Vrak', na_dily: 'Díly'
+  };
+  const FAZE = { fj: 'FJ', zbrojovka: 'Zbrojovka', statni: 'Státní výroba' };
+  const esc = (s) => String(s ?? '').replace(/[<>&"]/g, (c) =>
+    ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+
+  async function nactiStatistiky() {
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/registr_statistiky?select=*`, { headers: H });
+      const [s] = await r.json();
+      if (!s) return;
+      document.querySelectorAll('[data-stat]').forEach((el) => {
+        el.textContent = s[el.dataset.stat] ?? 0;
+      });
+    } catch (e) {
+      console.error('Statistiky se nepodařilo načíst', e);
+    }
+  }
+
+  function karta(s) {
+    const cislo = s.cislo_ramu_maskovane ? `<span class="k__cislo">${esc(s.cislo_ramu_maskovane)}</span>` : '';
+    const misto = [s.region, s.zeme].filter(Boolean).map(esc).join(', ');
+    const faze = s.vyrobni_faze && FAZE[s.vyrobni_faze] ? `<span class="tagx">${FAZE[s.vyrobni_faze]}</span>` : '';
+    const prodej = s.na_prodej ? '<span class="tagx tagx--red">Na prodej</span>' : '';
+    return `
+      <article class="k">
+        <div class="k__ph"><span>Bez fotky</span></div>
+        <div class="k__body">
+          <div class="k__top">
+            <h3>Typ ${esc(s.typ)}${s.rok_vyroby ? ' · ' + esc(s.rok_vyroby) : ''}</h3>
+            ${cislo}
+          </div>
+          <p class="k__meta">
+            ${s.stav ? `<span class="tagx">${STAV[s.stav] || esc(s.stav)}</span>` : ''}
+            ${faze}${prodej}
+          </p>
+          ${misto ? `<p class="k__misto">${misto}</p>` : ''}
+          ${s.pribeh ? `<p class="k__pribeh">${esc(s.pribeh).slice(0, 140)}${s.pribeh.length > 140 ? '…' : ''}</p>` : ''}
+        </div>
+      </article>`;
+  }
+
+  async function nactiStroje() {
+    const typ = document.getElementById('f-typ').value;
+    const stav = document.getElementById('f-stav').value;
+    const faze = document.getElementById('f-faze').value;
+    const prodej = document.getElementById('f-prodej').checked;
+
+    let q = `${SUPABASE_URL}/rest/v1/stroje_verejne?select=*&order=schvaleno_at.desc&limit=60`;
+    if (typ) q += `&typ=eq.${typ}`;
+    if (stav) q += `&stav=eq.${stav}`;
+    if (faze) q += `&vyrobni_faze=eq.${faze}`;
+    if (prodej) q += `&na_prodej=is.true`;
+
+    box.innerHTML = '<p class="loading">Načítám…</p>';
+    try {
+      const r = await fetch(q, { headers: H });
+      const data = await r.json();
+      if (!Array.isArray(data) || data.length === 0) {
+        box.innerHTML = `<div class="prazdno">
+          <p><b>Zatím tu nic není.</b></p>
+          <p>Registr se teprve plní. Když přidáte svůj stroj, budete mezi prvními.</p>
+          <a class="btn" href="/registr/pridat-stroj/">Přidat stroj</a>
+        </div>`;
+        return;
+      }
+      box.innerHTML = data.map(karta).join('');
+    } catch (e) {
+      box.innerHTML = '<p class="loading">Registr se nepodařilo načíst. Zkuste to prosím později.</p>';
+      console.error(e);
+    }
+  }
+
+  ['f-typ', 'f-stav', 'f-faze', 'f-prodej'].forEach((id) =>
+    document.getElementById(id).addEventListener('change', nactiStroje));
+
+  nactiStatistiky();
+  nactiStroje();
+</script>
+
+<style>
+  .art--wide{max-width:940px}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);
+    border:1px solid var(--rule);margin:26px 0}
+  .stat{background:var(--paper-2);padding:16px 12px;text-align:center}
+  .stat__n{display:block;font-family:var(--disp);font-weight:600;font-size:30px;
+    line-height:1;color:var(--red);font-variant-numeric:tabular-nums}
+  .stat__l{display:block;margin-top:5px;font-family:var(--disp);font-size:11px;
+    letter-spacing:.13em;text-transform:uppercase;color:var(--mute)}
+
+  .cta-add{display:flex;align-items:center;justify-content:space-between;gap:16px;
+    flex-wrap:wrap;border:2px solid var(--ink);padding:16px 20px;margin:22px 0}
+  .cta-add b{display:block;font-family:var(--disp);font-size:16px;letter-spacing:.03em}
+  .cta-add span{font-size:15px;color:var(--mute)}
+  .btn{display:inline-block;background:var(--red);color:var(--paper);text-decoration:none;
+    font-family:var(--disp);font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+    padding:11px 20px;border:2px solid var(--ink)}
+  .btn:hover{background:var(--ink)}
+
+  .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0 22px}
+  .filters select{font-family:var(--disp);font-size:13px;letter-spacing:.06em;
+    background:var(--paper-2);border:1px solid var(--ink);color:var(--ink);padding:8px 10px}
+  .chk{font-family:var(--disp);font-size:13px;letter-spacing:.06em;display:flex;
+    align-items:center;gap:6px;cursor:pointer}
+
+  .grid-stroje{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+  .k{border:1px solid var(--rule);background:var(--paper-2)}
+  .k__ph{aspect-ratio:4/3;background:repeating-linear-gradient(45deg,#DFD2B4 0 14px,#D8CAAA 14px 28px);
+    display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--rule)}
+  .k__ph span{font-family:var(--disp);font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:#7A6A50}
+  .k__body{padding:14px 16px}
+  .k__top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .k__top h3{margin:0;font-size:16px}
+  .k__cislo{font-family:var(--disp);font-size:12.5px;letter-spacing:.05em;color:var(--mute);
+    font-variant-numeric:tabular-nums;white-space:nowrap}
+  .k__meta{margin:9px 0 0;display:flex;gap:6px;flex-wrap:wrap}
+  .tagx{font-family:var(--disp);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    border:1px solid var(--rule);padding:2px 7px;color:var(--mute)}
+  .tagx--red{border-color:var(--red);color:var(--red)}
+  .k__misto{margin:8px 0 0;font-size:14px;color:var(--mute)}
+  .k__pribeh{margin:8px 0 0;font-size:14.5px}
+
+  .loading{color:var(--mute);font-size:15px}
+  .prazdno{grid-column:1/-1;border:1px dashed var(--rule);padding:30px 24px;text-align:center}
+  .prazdno p{margin:0 0 8px}
+  .prazdno .btn{margin-top:12px}
+
+  @media (max-width:880px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .filters select,.filters .chk{flex:1 1 45%}
+  }
+</style>

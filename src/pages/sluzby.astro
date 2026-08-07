@@ -1,0 +1,211 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Sazby vycházejí z cenového modelu PureBikes (hodinová sazba 750 Kč),
+// kategorie "Poválečné legendy". Při změně sazeb v kalkulačce aktualizovat i tady.
+const sluzby = [
+  {
+    id: 'servis',
+    nazev: 'Servis a oživení',
+    popis: 'Zprovoznění po odstávce, seřízení, příprava na technickou. Stroj zůstává jaký je — jen zase jezdí.',
+    od: 6000, do: 17000,
+    hodiny: '5–12 h',
+    kdy: 'Stroj stál, ale je kompletní a nerozebraný.'
+  },
+  {
+    id: 'go-motor',
+    nazev: 'Generální oprava motoru',
+    popis: 'Ložiska, těsnění, výbrus, klikové ústrojí, převodovka. U třistapadesátek včetně kontroly provedení středního čela podle výrobního čísla.',
+    od: 30000, do: 61000,
+    hodiny: '16–28 h',
+    kdy: 'Motor klepe, kouří, ztrácí kompresi nebo netěsní.'
+  },
+  {
+    id: 'castecna',
+    nazev: 'Částečná renovace',
+    popis: 'Renovace vybraných uzlů, ne stroj od šroubku. Typicky motor, elektro a povrchy tam, kde to je nutné — se zachováním toho, co zachovat jde.',
+    od: 48000, do: 143000,
+    hodiny: '30–70 h',
+    kdy: 'Stroj má hodnotu v původnosti, ale některé uzly jsou u konce.'
+  },
+  {
+    id: 'komplet-250',
+    nazev: 'Kompletní renovace — 250',
+    popis: 'Stavba na klíč do posledního šroubku. Pérák 250, typ 10/11.',
+    od: 123000, do: 240000,
+    hodiny: '70–120 h',
+    kdy: 'Vrak nebo stroj, u kterého už není co zachraňovat po částech.'
+  },
+  {
+    id: 'komplet-350',
+    nazev: 'Kompletní renovace — 350',
+    popis: 'Totéž pro Pérák 350 (typ 12/18) a Ogar. Dvouválec znamená víc práce na motoru a hůř dostupné díly.',
+    od: 139000, do: 258000,
+    hodiny: '78–130 h',
+    kdy: 'Viz výše, u třistapadesátky počítejte s delší čekací dobou na díly.'
+  }
+];
+
+const dilci = [
+  { nazev: 'Lakování — plné',            od: 25000, do: 40000 },
+  { nazev: 'Lakování — zachování patiny', od: 10000, do: 22000 },
+  { nazev: 'Klempířské práce',            od: 10000, do: 25000 },
+  { nazev: 'Ruční linkování',             od: 3000,  do: 6000  },
+  { nazev: 'Chromování',                  od: 12000, do: 28000 },
+  { nazev: 'Chemické leštění hliníku',    od: 3000,  do: 7000  },
+  { nazev: 'Kaučukování nádrže',          od: 2700,  do: 3500  },
+  { nazev: 'Bezkontaktní zapalování VAPE', od: 7900, do: 9800  }
+];
+
+const kc = (n) => n.toLocaleString('cs-CZ').replace(/\s/g, '\u00A0') + '\u00A0Kč';
+---
+
+<Layout
+  title="Služby a ceník — renovace Jawa Pérák | jawaperak.cz"
+  description="Poctivá cenová rozpětí za servis, generální opravu motoru, částečnou i kompletní renovaci motocyklu Jawa Pérák 250 a 350. Provozuje dílna PureBikes."
+>
+  <div class="wrap">
+    <article class="art">
+
+      <p class="kicker">Služby</p>
+      <h1>Co děláme a co to stojí</h1>
+      <p class="lead">
+        Rozpětí níže jsou skutečná — ne „od" čísla, která se v praxi nikdy
+        netrefí. Spodní hranice platí pro kompletní stroj v rozumném stavu,
+        horní pro to, co obvykle vyleze po otryskání.
+      </p>
+
+      <div class="tldr">
+        <h2>Než začnete číst ceny</h2>
+        <ul>
+          <li>Rozsah práce se u veterána spolehlivě určí až po rozebrání</li>
+          <li>Kapacita dílny je omezená — zakázky bereme podle toho, co dává smysl</li>
+          <li>Když si nejste jistí, jestli stroj vůbec stojí za renovaci, ozvěte se předem</li>
+        </ul>
+      </div>
+
+      <section id="rozsahy">
+        <h2>Hlavní služby</h2>
+
+        {sluzby.map((s) => (
+          <div class="svc">
+            <div class="svc__head">
+              <h3>{s.nazev}</h3>
+              <span class="svc__price">{kc(s.od)} – {kc(s.do)}</span>
+            </div>
+            <p class="svc__desc">{s.popis}</p>
+            <p class="svc__meta">
+              <span><b>Práce:</b> {s.hodiny}</span>
+              <span><b>Kdy to dává smysl:</b> {s.kdy}</span>
+            </p>
+          </div>
+        ))}
+
+        <div class="fact">
+          <span class="lb">Jak rozpětí vzniká</span>
+          <p>
+            Cena se skládá z odpracovaných hodin (sazba 750 Kč/h) a z dílů.
+            U Péráku jsou díly dražší položka než u pozdějších modelů — část se
+            nedá koupit a musí se vyrobit.
+          </p>
+        </div>
+      </section>
+
+      <section id="dilci">
+        <h2>Dílčí práce</h2>
+
+        <p>
+          Tyhle položky jsou obvykle součástí renovace, ale zadat je jde
+          i samostatně.
+        </p>
+
+        <table class="spec">
+          <caption>Ceny jednotlivých úkonů</caption>
+          <thead>
+            <tr><th>Úkon</th><th>Rozpětí</th></tr>
+          </thead>
+          <tbody>
+            {dilci.map((d) => (
+              <tr>
+                <td class="rl">{d.nazev}</td>
+                <td class="num">{kc(d.od)} – {kc(d.do)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      <section id="prohlidka">
+        <h2>Prohlídka před koupí</h2>
+
+        <p>
+          Nejlevnější věc, kterou u Péráku můžete udělat, je nekoupit špatný kus.
+          Přeražená čísla, poskládaný stroj z dílů napříč obdobími nebo vrak
+          schovaný pod čerstvým lakem stojí víc než posudek.
+        </p>
+
+        <div class="warn">
+          <span class="lb">Ozvěte se dřív, než koupíte</span>
+          <p>
+            Základní rada po telefonu nic nestojí. Když si nejste jistí, co se
+            na fotkách v inzerátu díváte, napište — na spoustu věcí se dá
+            odpovědět bez toho, aby kdokoli někam jel.
+          </p>
+        </div>
+
+        <p class="doplnit">
+          <b>Doplnit:</b> cena posudku na místě a rozsah (kontrola čísel,
+          odhad rozsahu práce, písemný výstup).
+        </p>
+      </section>
+
+      <section id="filozofie">
+        <h2>Jak přistupujeme k patině</h2>
+
+        <p>
+          Většina dílen dělá kompletní přelakování do stavu lepšího než z výroby.
+          U stroje, který má původní lak, původní čísla a sedmdesát let historie,
+          to je nevratná ztráta — a nedá se to vzít zpět.
+        </p>
+
+        <p>
+          Neznamená to nedělat nic. Znamená to rozhodovat podle skutečného stavu:
+          co je patina, co už je koroze, co jde konzervovat a kde se dolakuje tak,
+          aby to nekřičelo. U některých strojů je plná renovace jediná rozumná
+          cesta. U jiných je to škoda.
+        </p>
+      </section>
+
+      <footer class="src">
+        <h2>Poznámka k cenám</h2>
+        <ol>
+          <li>
+            Uvedená rozpětí jsou orientační a platí pro motocykly Jawa 250/350
+            Pérák a Ogar. Konečná cena se stanoví po prohlídce stroje.
+          </li>
+          <li>
+            Práce provádí dílna PureBikes (Drahanovice u Olomouce).
+          </li>
+        </ol>
+      </footer>
+
+    </article>
+  </div>
+</Layout>
+
+<style>
+  .svc{border:1px solid var(--rule);background:var(--paper-2);padding:18px 20px;margin:16px 0}
+  .svc__head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .svc__head h3{margin:0;font-size:17px}
+  .svc__price{font-family:var(--disp);font-weight:600;font-size:17px;letter-spacing:.02em;
+    color:var(--red);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .svc__desc{margin:10px 0 0;font-size:16px}
+  .svc__meta{margin:10px 0 0;display:flex;flex-direction:column;gap:3px;
+    font-size:14.5px;color:var(--mute)}
+  .svc__meta b{font-family:var(--disp);font-weight:500;font-size:11.5px;letter-spacing:.1em;
+    text-transform:uppercase}
+  .doplnit{border:1px dashed var(--rule);padding:12px 16px;font-size:15px;color:var(--mute)}
+  @media (max-width:880px){
+    .svc__head{flex-direction:column;gap:4px}
+  }
+</style>
