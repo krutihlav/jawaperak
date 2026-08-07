@@ -137,9 +137,21 @@ import Layout from '../../layouts/Layout.astro';
       const { data, error } = await supabase.from('stroje_fotky').select('*').eq('stroj_id', id).order('poradi');
       if (error || !data || data.length === 0) {
         cil.innerHTML = '<p class="mute">Žádné fotky.</p>';
-      } else {
-        cil.innerHTML = data.map((f) => `<img src="${f.url}" loading="lazy" alt="${escapujHtml(f.popisek)}">`).join('');
+        btn.remove();
+        return;
       }
+      // Bucket je soukromý — url ve stroje_fotky je jen cesta v Storage,
+      // pro zobrazení potřeba podepsaná URL (funguje díky admin_cteni_fotek_storage policy).
+      const podepsane = await Promise.all(data.map(async (f) => {
+        const { data: sign, error: errSign } = await supabase.storage
+          .from('stroje-fotky')
+          .createSignedUrl(f.url, 300);
+        return { ...f, signedUrl: errSign ? null : sign.signedUrl };
+      }));
+      cil.innerHTML = podepsane.map((f) => f.signedUrl
+        ? `<img src="${f.signedUrl}" loading="lazy" alt="${escapujHtml(f.popisek)}">`
+        : '<p class="mute">Fotku se nepodařilo načíst.</p>'
+      ).join('');
       btn.remove();
       return;
     }

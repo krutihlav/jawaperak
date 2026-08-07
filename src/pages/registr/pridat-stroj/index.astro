@@ -96,6 +96,20 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
         </fieldset>
 
         <fieldset>
+          <legend data-i18n="fsFoto">Fotografie</legend>
+          <p class="fs-note" data-i18n="fotoHint">
+            Aspoň jedna fotka výrazně pomůže s ověřením záznamu. JPG, PNG nebo WebP,
+            max. 8&nbsp;MB na fotku, max. 6 fotek.
+          </p>
+          <label class="full">
+            <span data-i18n="lFoto">Fotky stroje</span>
+            <input type="file" id="input-fotky" name="fotky" accept="image/jpeg,image/png,image/webp" multiple>
+          </label>
+          <div class="foto-nahled" id="foto-nahled"></div>
+          <p class="msg" id="foto-msg" role="status"></p>
+        </fieldset>
+
+        <fieldset>
           <legend data-i18n="fsKde">Kde stroj je</legend>
           <div class="row">
             <label>
@@ -153,11 +167,6 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
         </div>
       </form>
 
-      <p class="foto-note" data-i18n="fotoNote">
-        <b>Fotky:</b> nahrávání fotek zatím není hotové. Po odeslání záznamu se
-        vám ozveme a fotky doplníme ručně.
-      </p>
-
     </article>
   </div>
 </Layout>
@@ -176,6 +185,13 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
       lRam: 'Frame number', hRam: 'Displayed as 11-102•••',
       lMotor: 'Engine number', lFaze: 'Production phase', lStav: 'Condition *',
       lBarva: 'Colour', lSpz: 'Historic registration',
+      fsFoto: 'Photos',
+      fotoHint: 'At least one photo helps a lot with verifying the record. JPG, PNG or WebP, max. 8\u00a0MB per photo, max. 6 photos.',
+      lFoto: 'Machine photos',
+      fotoPocet: 'Maximum 6 photos.',
+      fotoTyp: 'Only JPG, PNG or WebP files are allowed.',
+      fotoVelikost: 'Each photo must be under 8\u00a0MB.',
+      fotoUploadErr: 'The record was submitted, but some photos failed to upload. We will contact you.',
       fsKde: 'Location', lZeme: 'Country', lRegion: 'Region',
       hRegion: 'Do not enter a street address',
       fsPribeh: "Machine's story",
@@ -186,7 +202,6 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
       lEmail: 'E-mail *', lTel: 'Phone', lProdej: 'This machine is for sale',
       lSouhlas: 'I agree to be contacted through the form (my details stay hidden)',
       btnSend: 'Submit for review',
-      fotoNote: 'Photos: upload is not ready yet. We will contact you and add photos manually.',
       okMsg: 'Thank you. The record has been submitted for review.',
       errMsg: 'Something went wrong. Please try again or write to us.',
       reqMsg: 'Please fill in the required fields.'
@@ -197,6 +212,10 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
   CS.okMsg = 'Děkujeme. Záznam jsme odeslali ke schválení.';
   CS.errMsg = 'Něco se pokazilo. Zkuste to prosím znovu, nebo nám napište.';
   CS.reqMsg = 'Vyplňte prosím povinná pole.';
+  CS.fotoPocet = 'Nejvýše 6 fotek.';
+  CS.fotoTyp = 'Povolené jsou jen soubory JPG, PNG nebo WebP.';
+  CS.fotoVelikost = 'Každá fotka musí být do 8 MB.';
+  CS.fotoUploadErr = 'Záznam jsme odeslali, ale některé fotky se nepodařilo nahrát. Ozveme se vám.';
 
   let lang = 'cs';
   function prepni(l) {
@@ -256,6 +275,81 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
   const form = document.getElementById('form-stroj');
   const msg = document.getElementById('msg');
 
+  // --- Fotky: preview + validace ---
+  const inputFotky = document.getElementById('input-fotky');
+  const fotoNahled = document.getElementById('foto-nahled');
+  const fotoMsg = document.getElementById('foto-msg');
+
+  const MAX_FOTEK = 6;
+  const MAX_VELIKOST = 8 * 1024 * 1024; // 8 MB, musí odpovídat file_size_limit bucketu v Supabase
+  const POVOLENE_TYPY = ['image/jpeg', 'image/png', 'image/webp'];
+  const PRIPONA_PODLE_TYPU = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
+
+  inputFotky.addEventListener('change', () => {
+    const d = lang === 'en' ? T.en : CS;
+    const soubory = Array.from(inputFotky.files || []);
+    fotoNahled.innerHTML = '';
+    fotoMsg.textContent = '';
+    fotoMsg.className = 'msg';
+
+    if (soubory.length > MAX_FOTEK) {
+      fotoMsg.textContent = d.fotoPocet;
+      fotoMsg.className = 'msg msg--err';
+      inputFotky.value = '';
+      return;
+    }
+    for (const s of soubory) {
+      if (!POVOLENE_TYPY.includes(s.type)) {
+        fotoMsg.textContent = d.fotoTyp;
+        fotoMsg.className = 'msg msg--err';
+        inputFotky.value = '';
+        return;
+      }
+      if (s.size > MAX_VELIKOST) {
+        fotoMsg.textContent = d.fotoVelikost;
+        fotoMsg.className = 'msg msg--err';
+        inputFotky.value = '';
+        return;
+      }
+    }
+    for (const s of soubory) {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(s);
+      fotoNahled.appendChild(img);
+    }
+  });
+
+  // Nahraje jeden soubor do Storage (bucket je soukromý, cesta = {strojId}/{náhodné jméno})
+  // a zapíše záznam do stroje_fotky. RLS na obojím vyžaduje, aby stroj strojId
+  // v tu chvíli měl stav_moderace = 'ceka' — proto se volá až PO úspěšném vložení stroje.
+  async function nahrajFotku(strojId, soubor, poradi) {
+    const pripona = PRIPONA_PODLE_TYPU[soubor.type];
+    const cesta = `${strojId}/${crypto.randomUUID()}.${pripona}`;
+
+    const rUpload = await fetch(`${SUPABASE_URL}/storage/v1/object/stroje-fotky/${cesta}`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': soubor.type
+      },
+      body: soubor
+    });
+    if (!rUpload.ok) throw new Error(await rUpload.text());
+
+    const rZaznam = await fetch(`${SUPABASE_URL}/rest/v1/stroje_fotky`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal'
+      },
+      body: JSON.stringify({ stroj_id: strojId, url: cesta, poradi })
+    });
+    if (!rZaznam.ok) throw new Error(await rZaznam.text());
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const d = lang === 'en' ? T.en : CS;
@@ -267,7 +361,13 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
       return;
     }
 
+    // UUID generujeme na klientovi předem — potřebujeme ho hned pro cestu k fotkám
+    // ve Storage, a anon role nemá SELECT na tabulku stroje, takže by se id
+    // po insertu nedalo přečíst zpátky (return=representation by selhal na RLS).
+    const strojId = crypto.randomUUID();
+
     const payload = {
+      id: strojId,
       typ: fd.get('typ'),
       stav: fd.get('stav'),
       rok_vyroby: fd.get('rok_vyroby') ? Number(fd.get('rok_vyroby')) : null,
@@ -303,9 +403,22 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
         body: JSON.stringify(payload)
       });
       if (!r.ok) throw new Error(await r.text());
+
+      const soubory = Array.from(inputFotky.files || []);
+      let chybaFotek = false;
+      for (let i = 0; i < soubory.length; i++) {
+        try {
+          await nahrajFotku(strojId, soubory[i], i);
+        } catch (chybaNahravani) {
+          console.error('Nahrání fotky selhalo', chybaNahravani);
+          chybaFotek = true;
+        }
+      }
+
       form.reset();
-      msg.textContent = d.okMsg;
-      msg.className = 'msg msg--ok';
+      fotoNahled.innerHTML = '';
+      msg.textContent = chybaFotek ? d.fotoUploadErr : d.okMsg;
+      msg.className = chybaFotek ? 'msg msg--err' : 'msg msg--ok';
     } catch (err) {
       console.error(err);
       msg.textContent = d.errMsg;
@@ -354,8 +467,12 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
   .msg--ok{color:#2E6B32;font-weight:600}
   .msg--err{color:var(--red);font-weight:600}
 
-  .foto-note{margin-top:24px;border:1px dashed var(--rule);padding:12px 16px;
-    font-size:15px;color:var(--mute)}
+  .foto-nahled{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+    gap:8px;margin:12px 0 0}
+  .foto-nahled img{width:100%;height:90px;object-fit:cover;border:1px solid var(--ink)}
+
+  input[type=file]{font-family:var(--body);font-size:14.5px;background:var(--paper);
+    border:1px solid var(--ink);color:var(--ink);padding:9px 11px;width:100%;box-sizing:border-box}
 
   @media (max-width:880px){
     .row{grid-template-columns:1fr}

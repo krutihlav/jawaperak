@@ -5,6 +5,10 @@ import Layout from '../../../layouts/Layout.astro';
 
 const SUPABASE_URL = 'https://hcszrmqtwnkzlbrecrey.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
+// Server-only, nikdy neposílat do prohlížeče. Musí být nastavený jako env
+// proměnná ve Vercelu (SUPABASE_SERVICE_ROLE_KEY) — bez ní se prostě fotky
+// nezobrazí (viz podepsatFotky níže), stránka jinak funguje normálně.
+const SERVICE_ROLE_KEY = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
 const H = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
 
 const { slug } = Astro.params;
@@ -12,6 +16,30 @@ const { slug } = Astro.params;
 async function nacti(cesta) {
   const r = await fetch(`${SUPABASE_URL}/rest/v1/${cesta}`, { headers: H });
   return r.ok ? r.json() : [];
+}
+
+// Bucket stroje-fotky je soukromý — stroje_fotky.url obsahuje jen cestu
+// v Storage, ne veřejnou URL. Podpis probíhá service_role klíčem přímo
+// na serveru (SSR), takže RLS na storage.objects se vůbec neuplatní
+// a klientovi se posílá jen krátkodobě platný podepsaný odkaz.
+async function podepsatFotky(cesty) {
+  if (!SERVICE_ROLE_KEY || cesty.length === 0) return {};
+  const r = await fetch(`${SUPABASE_URL}/storage/v1/object/sign/stroje-fotky`, {
+    method: 'POST',
+    headers: {
+      apikey: SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ paths: cesty, expiresIn: 3600 })
+  });
+  if (!r.ok) return {};
+  const vysledek = await r.json();
+  const mapa = {};
+  for (const polozka of vysledek) {
+    if (polozka.signedURL) mapa[polozka.path] = `${SUPABASE_URL}/storage/v1${polozka.signedURL}`;
+  }
+  return mapa;
 }
 
 const [strojeRadky, ciselnikTyp, ciselnikStav, ciselnikFaze] = await Promise.all([
@@ -27,6 +55,11 @@ if (!stroj) Astro.response.status = 404;
 const fotky = stroj
   ? await nacti(`stroje_fotky?stroj_id=eq.${stroj.id}&select=*&order=poradi`)
   : [];
+
+const mapaSignedUrl = await podepsatFotky(fotky.map((f) => f.url));
+const fotkySPodpisem = fotky
+  .map((f) => ({ ...f, zobrazitUrl: mapaSignedUrl[f.url] || null }))
+  .filter((f) => f.zobrazitUrl);
 
 const radekTyp = stroj ? ciselnikTyp.find((t) => t.hodnota === stroj.typ) : null;
 
@@ -212,11 +245,11 @@ const jePribehEn = !!stroj?.pribeh_en;
             konkrétního stroje. Výrobní čísla jsou záměrně zkrácená.
           </p>
 
-          {fotky.length > 0 && (
+          {fotkySPodpisem.length > 0 && (
             <div class="galerie">
-              {fotky.map((f) => (
+              {fotkySPodpisem.map((f) => (
                 <figure>
-                  <img src={f.url} loading="lazy" alt={f.popisek || titulek} />
+                  <img src={f.zobrazitUrl} loading="lazy" alt={f.popisek || titulek} />
                   {(f.popisek || f.zdroj) && (
                     <figcaption>{f.popisek}{f.zdroj && ` — zdroj: ${f.zdroj}`}</figcaption>
                   )}
