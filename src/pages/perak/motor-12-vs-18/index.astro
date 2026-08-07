@@ -1,215 +1,245 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
-
-// POZNÁMKA PRO ÚPRAVU: stejně jako u předchozí stránky - neznám přesnou signaturu
-// Layout.astro, uprav props podle skutečné komponenty.
-
-const title = 'Jawa 350 Pérák: motor typu 12 a typu 18 — jak je rozeznat';
-const description = 'Přesný technický rozdíl mezi motorem Ogaru 350 (typ 12) a Jawy 350 typ 18, včetně vývoje klikového ústrojí po jednotlivých výrobních číslech. Ověřeno podle Procházka: Jawa 250/350 Pérák, Grada 2009.';
 ---
 
-<Layout title={title} description={description}>
-  <article class="perak-article">
-    <header>
+<Layout
+  title="Jawa 350 Pérák: motor typ 12 a typ 18 — jak je rozeznat | jawaperak.cz"
+  description="Technický rozdíl mezi motorem Ogaru 350 (typ 12) a Jawy 350 typ 18, včetně vývoje klikového ústrojí po výrobních číslech. Podle Procházka: Jawa 250/350 Pérák, Grada 2009."
+>
+  <div class="wrap">
+    <article class="art">
+
       <p class="kicker">Identifikace a technika</p>
       <h1>Motor Jawa 350 Pérák: typ 12 a typ 18</h1>
       <p class="lead">
-        Na první pohled skoro nerozeznatelné dva dvouválce, na druhý pohled dvě
-        různé generace motoru s jasně čitelnými rozdíly — pokud víte, kam se dívat.
+        Na první pohled skoro nerozeznatelné dvouválce, na druhý dvě různé
+        generace motoru s jasně čitelnými rozdíly — pokud víte, kam se dívat.
         Tohle je nejspolehlivější identifikační znak celé třistapadesátkové řady.
       </p>
-    </header>
 
-    <section>
-      <h2>Kontext: proč vlastně dva typy</h2>
-      <p>
-        Dvouválcová 350 ccm verze péráku šla do výroby v roce 1948 pod označením
-        <strong>Ogar, typ 12</strong> — vyráběla ji bývalá strašnická továrna
-        Autfit, kterou po znárodnění připojili k Jawě. Motor konstruktérům dělal
-        starosti déle, než čekali: byl to jediný dvouválec, se kterým měla Jawa
-        v tu dobu zkušenost, a životnost prvního řešení byla kratší, než se
-        předpokládalo. Po sérii úprav klikového ústrojí (viz níže) a přepracování
-        žebrování válců pro rovnoměrnější chlazení byl motor v roce
-        <strong>1950</strong> uznán za natolik odlišný, že dostal nové typové
-        označení — <strong>typ 18</strong> — a stroj byl přejmenován na Jawu 350.
-      </p>
-    </section>
-
-    <section>
-      <h2>Jak je rozeznat na první pohled</h2>
-      <div class="compare-grid">
-        <div class="compare-col">
-          <h3>Typ 12 (Ogar)</h3>
-          <ul>
-            <li><strong>Hlava válce:</strong> tři vodorovná žebra</li>
-            <li><strong>Válec:</strong> osm vodorovných žeber</li>
-            <li><strong>Koleno výfuku:</strong> výrazně delší šroubení, protože vývod z válce je delší</li>
-            <li><strong>Karter:</strong> hranatý výřez vložky mezi válci, oddělené sací kanály</li>
-            <li><strong>Barva stroje:</strong> světle šedá se zlatými linkami</li>
-          </ul>
-        </div>
-        <div class="compare-col">
-          <h3>Typ 18 (Jawa 350)</h3>
-          <ul>
-            <li><strong>Hlava válce:</strong> dvě vodorovná žebra</li>
-            <li><strong>Válec:</strong> sedm vodorovných žeber</li>
-            <li><strong>Koleno výfuku:</strong> kratší vyústění šroubení</li>
-            <li><strong>Karter:</strong> obloukový výřez vložky, "useknutý" roh dosedací plochy k válci</li>
-            <li><strong>Barva stroje:</strong> obvyklá jawácká červená</li>
-          </ul>
-        </div>
+      <div class="tldr">
+        <h2>Co se tu dozvíte</h2>
+        <ul>
+          <li>Že spočítat žebra na hlavě a válci stačí k rozlišení i z fotky v inzerátu</li>
+          <li>Proč motor dostal v roce 1950 nové typové označení</li>
+          <li>Přesná výrobní čísla, u kterých se měnilo klikové ústrojí</li>
+          <li>Které klepání v motoru si lidé pletou s vytlučeným ojničním ložiskem</li>
+        </ul>
       </div>
-      <p class="note">
-        Počet žeber na hlavě a válci je nejrychlejší a nejspolehlivější způsob
-        rozlišení na fotce z inzerátu — tenhle detail se shoduje mezi nezávislými
-        prameny, takže s ním můžete počítat i bez rozebrání motoru.
-      </p>
-    </section>
 
-    <section>
-      <h2>Vývoj klikového ústrojí: pět kroků k finálnímu řešení</h2>
-      <p>
-        Tohle je nejpodrobnější a nejpřesněji doložená část celé produkce péráků
-        vůbec — Procházkova kniha uvádí přesná výrobní čísla, u kterých se motor
-        typu 12 postupně měnil, jak konstruktéři hledali spolehlivé těsnění mezi
-        oběma kartery. Špatné těsnění se projevovalo axiální vůlí, jejíž klepání
-        snadno zaměníte za opotřebené ojniční ložisko.
-      </p>
-      <table class="serial-table">
-        <thead>
-          <tr>
-            <th>Výrobní čísla motoru</th>
-            <th>Ojnice</th>
-            <th>Těsnění středního čela</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>12-01 až 12-3700</td><td>dlouhé</td><td>labyrint nalisovaný v čele</td></tr>
-          <tr><td>12-3701 až 12-4000</td><td>krátké</td><td>labyrint s rozpěrným kroužkem</td></tr>
-          <tr><td>12-4001 až 12-4777</td><td>krátké</td><td>nový labyrint bez rozpěrného kroužku</td></tr>
-          <tr><td>12-4778 až 12-5128</td><td>krátké</td><td>návrat k labyrintu s rozpěrným kroužkem</td></tr>
-          <tr><td>12-5129 až 12-5844</td><td>krátké</td><td>nové dvoudílné čelo, labyrint bez kroužku</td></tr>
-          <tr><td>od 12-5845 a všechny typ 18</td><td>krátké</td><td>definitivní: dvoudílné čelo s labyrintem a rozpěrným kroužkem, jištěné šroubkem M6×15</td></tr>
-        </tbody>
-      </table>
-      <p class="note">
-        Prakticky důležité: pokud při opravě potřebujete vyměnit celé klikové
-        ústrojí nebo jen dlouhé ojnice u raného motoru, sežene se dnes už jen
-        krátká verze — dlouhé ojnice se přestaly vyrábět souběžně se zavedením
-        krátkých. Ke krátkým ojnicím patří i odlišný typ pístu.
-      </p>
-    </section>
+      <nav class="toc" aria-label="Obsah stránky">
+        <ol>
+          <li><a href="#rychle">Rychlé rozlišení</a></li>
+          <li><a href="#kontext">Proč vlastně dva typy</a></li>
+          <li><a href="#klikovka">Vývoj klikového ústrojí</a></li>
+          <li><a href="#chyby">Časté chyby</a></li>
+        </ol>
+      </nav>
 
-    <section class="callout">
-      <h2>Shrnutí pro rychlou orientaci</h2>
-      <p>
-        Vidíte na fotce dvouválec se třemi žebry na hlavě a osmi na válci? Typ 12,
-        vyrobeno 1948–1950. Dvě žebra na hlavě, sedm na válci? Typ 18, od roku
-        1950. Barva stroje (šedá vs. červená) je dobrý doplňkový vodítko, ale
-        pozor — po sedmdesáti letech a nejedné přestříkané renovaci na ni
-        spoléhejte až jako na poslední.
-      </p>
-    </section>
+      <section id="rychle">
+        <h2>Rychlé rozlišení</h2>
 
-    <footer class="sources">
-      <h2>Zdroje</h2>
-      <p>
-        Procházka, Hubert: <em>Jawa 250/350 Pérák: historie, vývoj, technika, sport.</em>
-        Grada, 2009, str. 51–52, 56–58.
-      </p>
-    </footer>
-  </article>
+        <table class="spec">
+          <caption>Typ 12 vs typ 18 — vizuální znaky</caption>
+          <thead>
+            <tr><th>Znak</th><th>Typ 12 (Ogar)</th><th>Typ 18 (Jawa 350)</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rl">Žebra na hlavě</td>
+              <td class="num"><strong>3</strong> vodorovná</td>
+              <td class="num"><strong>2</strong> vodorovná</td>
+            </tr>
+            <tr>
+              <td class="rl">Žebra na válci</td>
+              <td class="num"><strong>8</strong> vodorovných</td>
+              <td class="num"><strong>7</strong> vodorovných</td>
+            </tr>
+            <tr>
+              <td class="rl">Koleno výfuku</td>
+              <td>Výrazně delší šroubení (delší vývod z válce)</td>
+              <td>Kratší vyústění šroubení</td>
+            </tr>
+            <tr>
+              <td class="rl">Karter</td>
+              <td>Hranatý výřez vložky mezi válci, oddělené sací kanály</td>
+              <td>Obloukový výřez vložky, „useknutý" roh dosedací plochy</td>
+            </tr>
+            <tr>
+              <td class="rl">Barva stroje</td>
+              <td>Světle šedá se zlatými linkami</td>
+              <td>Jawácká červená</td>
+            </tr>
+            <tr>
+              <td class="rl">Vyráběn</td>
+              <td class="num">1948–1950</td>
+              <td class="num">od 1950</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="fact">
+          <span class="lb">Nejrychlejší postup</span>
+          <p>
+            Spočítejte žebra. Tři na hlavě a osm na válci znamená typ 12,
+            dvě na hlavě a sedm na válci typ 18. Tenhle detail se shoduje mezi
+            nezávislými prameny, takže na něj můžete spoléhat i bez rozebrání
+            motoru — a rozeznáte ho i z fotky v inzerátu.
+          </p>
+        </div>
+      </section>
+
+      <section id="kontext">
+        <h2>Proč vlastně dva typy</h2>
+
+        <p>
+          Dvouválcová 350 ccm verze péráku šla do výroby v roce 1948 pod
+          označením <strong>Ogar, typ 12</strong>. Vyráběla ji bývalá strašnická
+          továrna Autfit, kterou po znárodnění připojili k Jawě.
+        </p>
+
+        <p>
+          Motor dělal konstruktérům starosti déle, než čekali. Byl to jediný
+          dvouválec, se kterým měla Jawa v tu dobu zkušenost, a životnost prvního
+          řešení byla kratší, než se předpokládalo. Po sérii úprav klikového
+          ústrojí a přepracování žebrování válců pro rovnoměrnější chlazení byl
+          motor v roce <strong>1950</strong> uznán za natolik odlišný, že dostal
+          nové typové označení <strong>typ 18</strong> — a stroj byl přejmenován
+          na Jawu 350.
+        </p>
+
+        <p>
+          Souvislost s přejmenováním u dvěstěpadesátky rozebírá stránka
+          <a href="/perak/typ-10-a-typ-11/">typ 10 a typ 11</a>.
+        </p>
+      </section>
+
+      <section id="klikovka">
+        <h2>Vývoj klikového ústrojí</h2>
+
+        <p>
+          Tohle je nejpřesněji doložená část celé produkce péráků. Procházkova
+          kniha uvádí konkrétní výrobní čísla, u kterých se motor typu 12
+          postupně měnil, jak konstruktéři hledali spolehlivé těsnění mezi oběma
+          kartery.
+        </p>
+
+        <table class="spec">
+          <caption>Pět kroků k finálnímu řešení</caption>
+          <thead>
+            <tr><th>Výrobní čísla motoru</th><th>Ojnice</th><th>Těsnění středního čela</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rl num">12-01 – 12-3700</td>
+              <td>dlouhé</td>
+              <td>Labyrint nalisovaný v čele</td>
+            </tr>
+            <tr>
+              <td class="rl num">12-3701 – 12-4000</td>
+              <td>krátké</td>
+              <td>Labyrint s rozpěrným kroužkem</td>
+            </tr>
+            <tr>
+              <td class="rl num">12-4001 – 12-4777</td>
+              <td>krátké</td>
+              <td>Nový labyrint bez rozpěrného kroužku</td>
+            </tr>
+            <tr>
+              <td class="rl num">12-4778 – 12-5128</td>
+              <td>krátké</td>
+              <td>Návrat k labyrintu s rozpěrným kroužkem</td>
+            </tr>
+            <tr>
+              <td class="rl num">12-5129 – 12-5844</td>
+              <td>krátké</td>
+              <td>Nové dvoudílné čelo, labyrint bez kroužku</td>
+            </tr>
+            <tr>
+              <td class="rl num">od 12-5845<br>a všechny typ 18</td>
+              <td>krátké</td>
+              <td>Definitivní: dvoudílné čelo s labyrintem a rozpěrným kroužkem, jištěné šroubkem M6×15</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <figure class="fig">
+          <div class="ph"><span>Místo pro perokresbu řezu klikovým ústrojím s vyznačeným labyrintem</span></div>
+          <figcaption>
+            <b>Těsnění středního čela.</b> Doplnit schéma z katalogu náhradních dílů.
+            <span class="cred">Zdroj: doplnit</span>
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="chyby">
+        <h2>Časté chyby</h2>
+
+        <div class="warn">
+          <span class="lb">Chyba 1 — záměna axiální vůle za vytlučené ložisko</span>
+          <p>
+            Špatné těsnění mezi kartery se projevuje axiální vůlí, jejíž klepání
+            se snadno zamění za opotřebené ojniční ložisko. Než se pustíte do
+            výměny ložiska, ověřte si, o kterou závadu jde — u raných motorů
+            typu 12 je těsnění pravděpodobnější příčinou.
+          </p>
+        </div>
+
+        <div class="warn">
+          <span class="lb">Chyba 2 — spoléhání na dlouhé ojnice</span>
+          <p>
+            Pokud u raného motoru potřebujete vyměnit klikové ústrojí nebo jen
+            ojnice, dnes se sežene výhradně krátká verze. Dlouhé ojnice se
+            přestaly vyrábět souběžně se zavedením krátkých. Ke krátkým ojnicím
+            navíc patří odlišný typ pístu — počítejte s výměnou obojího.
+          </p>
+        </div>
+
+        <div class="warn">
+          <span class="lb">Chyba 3 — určování typu podle barvy</span>
+          <p>
+            Šedá versus červená je dobré doplňkové vodítko, ale po sedmdesáti
+            letech a nejedné přestříkané renovaci na ni spoléhejte až jako na
+            poslední. Žebra nelžou, lak ano.
+          </p>
+        </div>
+
+        <div class="fact">
+          <span class="lb">Doplnit</span>
+          <p>
+            Sem patří zkušenosti z vlastní dílny — zejména konkrétní případy,
+            kdy výrobní číslo motoru neodpovídalo provedení klikového ústrojí.
+          </p>
+        </div>
+      </section>
+
+      <footer class="src">
+        <h2>Zdroje</h2>
+        <ol>
+          <li>
+            Procházka, Hubert: <cite>Jawa 250/350 Pérák: historie, vývoj, technika, sport</cite>.
+            Grada, 2009, str. 51–52, 56–58.
+            <span class="tag ov">ověřeno</span>
+          </li>
+          <li>
+            Počet žeber jako identifikační znak — potvrzeno dvěma nezávislými
+            prameny nad rámec knihy.
+            <span class="tag ov">ověřeno</span>
+          </li>
+        </ol>
+      </footer>
+
+      <nav class="next" aria-label="Další stránky">
+        <a href="/perak/typ-10-a-typ-11/">
+          <span class="lb">Encyklopedie</span>
+          <span class="tt">Typ 10 a typ 11</span>
+        </a>
+        <a href="/historie/">
+          <span class="lb">Příběh</span>
+          <span class="tt">Tajný vývoj za okupace</span>
+        </a>
+      </nav>
+
+    </article>
+  </div>
 </Layout>
-
-<style>
-  .perak-article {
-    max-width: 42rem;
-    margin: 0 auto;
-    padding: 2rem 1rem 4rem;
-  }
-  .kicker {
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.85rem;
-    opacity: 0.7;
-    margin-bottom: 0.5rem;
-  }
-  h1 {
-    font-size: 2rem;
-    line-height: 1.2;
-    margin-bottom: 1rem;
-  }
-  .lead {
-    font-size: 1.15rem;
-    opacity: 0.85;
-    margin-bottom: 2rem;
-  }
-  section {
-    margin-bottom: 2rem;
-  }
-  h2 {
-    font-size: 1.4rem;
-    margin-bottom: 0.75rem;
-  }
-  h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-  }
-  p {
-    line-height: 1.6;
-    margin-bottom: 1rem;
-  }
-  .compare-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  @media (max-width: 40rem) {
-    .compare-grid { grid-template-columns: 1fr; }
-  }
-  .compare-col {
-    background: rgba(0, 0, 0, 0.03);
-    padding: 1rem 1.25rem;
-    border-radius: 0.25rem;
-  }
-  .compare-col ul {
-    margin: 0;
-    padding-left: 1.1rem;
-  }
-  .compare-col li {
-    margin-bottom: 0.5rem;
-    line-height: 1.4;
-  }
-  .serial-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1rem;
-    font-size: 0.95rem;
-  }
-  .serial-table th, .serial-table td {
-    text-align: left;
-    padding: 0.5rem 0.75rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  }
-  .serial-table th {
-    font-weight: 600;
-  }
-  .note {
-    font-size: 0.9rem;
-    opacity: 0.75;
-    font-style: italic;
-  }
-  .callout {
-    background: rgba(0, 0, 0, 0.03);
-    border-left: 3px solid currentColor;
-    padding: 1.25rem 1.5rem;
-    border-radius: 0.25rem;
-  }
-  .sources {
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    padding-top: 1rem;
-    font-size: 0.9rem;
-    opacity: 0.8;
-  }
-</style>

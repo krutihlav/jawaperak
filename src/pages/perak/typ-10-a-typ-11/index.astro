@@ -1,164 +1,288 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
-
-// POZNÁMKA PRO ÚPRAVU: Neměl jsem přístup k vašemu GitHub repu, takže neznám
-// přesné props rozhraní Layout.astro. Props níže (title, description) jsou
-// standardní odhad - uprav podle skutečné signatury komponenty.
-
-const title = 'Jawa 250 Pérák: typ 10 a typ 11 — jeden stroj, dvě jména';
-const description = 'Proč se první poválečná Jawa 250 jmenovala nejdřív typ 10 a od roku 1948 typ 11, a co se s ní tehdy skutečně změnilo. Ověřeno podle Procházka: Jawa 250/350 Pérák, Grada 2009.';
 ---
 
-<Layout title={title} description={description}>
-  <article class="perak-article">
-    <header>
+<Layout
+  title="Jawa 250 Pérák: typ 10 a typ 11 — jeden stroj, dvě jména | jawaperak.cz"
+  description="Proč se první poválečná Jawa 250 jmenovala nejdřív typ 10 a od roku 1948 typ 11, co se tehdy skutečně změnilo a jak poznat raný kus. Podle Procházka: Jawa 250/350 Pérák, Grada 2009."
+>
+  <div class="wrap">
+    <article class="art">
+
       <p class="kicker">Identifikace a typová řada</p>
       <h1>Typ 10 a typ 11: jeden stroj, dvě jména</h1>
       <p class="lead">
-        Na fórech a v bazarových inzerátech se dnes prakticky každý pérák 250 ccm
-        vyrobený mezi lety 1946 a 1954 nazývá „typ 11". Je to praktické zjednodušení,
-        ale ne tak úplně přesné — a stojí za to vědět proč.
+        Na fórech a v inzerátech se dnes prakticky každý pérák 250 z let 1946–1954
+        nazývá „typ 11". Je to praktické zjednodušení — a věcně vzato v pořádku.
+        Stojí ale za to vědět proč.
       </p>
-    </header>
 
-    <section>
-      <h2>Co se skutečně stalo</h2>
-      <p>
-        Když v roce 1946 sjely z pankrácké linky první stroje Jawa 250 Pérák,
-        nesly oficiální typové označení <strong>typ 10</strong>. Byl to nový,
-        za okupace tajně vyvíjený motocykl — kolébkový rám ze čtyřhranných trubek,
-        teleskopická přední vidlice, odpružené zadní kolo, motor zakrytý
-        patentovaným krytem karburátoru. Do konce roku 1946 se jich vyrobilo
-        1 360 kusů, v roce 1947 už 17 162.
-      </p>
-      <p>
-        V roce 1948 prošel stroj sérií drobných, ale prakticky užitečných úprav:
-        kónicky zesílená chladicí žebra válce pro lepší chlazení, zesílené dno
-        pístu kvůli rovnoměrnějšímu rozvodu tepla, přechod ze čtyřpólového na
-        šestipólové dynamo a rekonstrukce přední vidlice spolu se svařencem rámu
-        pod hlavou řízení. Tahle poslední úprava nebyla kosmetická — reagovala na
-        praskání vidlic a rámů, které se projevilo při terénní jízdě, mimo jiné na
-        první poválečné Šestidenní ve Zlíně v roce 1947.
-      </p>
-      <p>
-        Po zavedení těchto úprav bylo <strong>oficiálně zrušeno rozlišování mezi
-        typem 10 a typem 11</strong> — všechny další série se od roku 1948
-        posuzovaly jednotně jako typ 11, protože nové díly byly s původními
-        vesměs vzájemně zaměnitelné. Jinými slovy: nejde o dva různé motocykly,
-        ale o jeden model, který v půlce své výroby dostal upravené jméno.
-      </p>
-    </section>
+      <div class="tldr">
+        <h2>Co se tu dozvíte</h2>
+        <ul>
+          <li>Že typ 10 a typ 11 nejsou dva modely, ale jeden stroj přejmenovaný v roce 1948</li>
+          <li>Jaké technické úpravy přejmenování doprovázely</li>
+          <li>Podle čeho poznáte raný kus vyrobený před rokem 1948</li>
+          <li>Proč čistý „typ 10" bez pozdějších dílů dnes téměř neexistuje</li>
+        </ul>
+      </div>
 
-    <section>
-      <h2>Proč se dnes běžně mluví jen o „typu 11"</h2>
-      <p>
-        Právě proto, že bylo rozlišení oficiálně zrušeno a díly zůstaly
-        zaměnitelné, nemá dnešní zvyk označovat souhrnně celou produkci od 1946
-        jako „typ 11" nic společného s nepřesností — je to jen zpětné použití
-        pozdějšího, sjednoceného označení. Výrobní čísla rámů nesou prefix
-        „11-" od samého počátku výroby bez ohledu na to, jaké typové označení
-        stroj v danou chvíli oficiálně nesl.
-      </p>
-      <p>
-        Kdo tedy dnes hledá informace o „Jawě 250 typ 10", hledá ve skutečnosti
-        raný, před rokem 1948 vyrobený exemplář typu 11 — ne samostatný, jinak
-        konstruovaný model.
-      </p>
-    </section>
+      <nav class="toc" aria-label="Obsah stránky">
+        <ol>
+          <li><a href="#co-se-stalo">Co se skutečně stalo</a></li>
+          <li><a href="#proc-typ-11">Proč se dnes mluví jen o typu 11</a></li>
+          <li><a href="#jak-poznat">Jak poznat raný kus</a></li>
+          <li><a href="#chyby">Časté chyby a omyly</a></li>
+          <li><a href="#350">Souběžný příběh u třistapadesátky</a></li>
+        </ol>
+      </nav>
 
-    <section>
-      <h2>Souběžný příběh u třistapadesátky</h2>
-      <p>
-        Stejný vzorec — start pod jedním označením, přeznačení po technických
-        úpravách — se o dva roky později opakoval i u silnějšího sourozence.
-        Dvouválcová 350 ccm verze šla do výroby v roce 1948 jako
-        <strong>Ogar, typ 12</strong> (vyráběna v bývalé strašnické továrně
-        Autfit, ve světle šedé barvě se zlatými linkami). Po zavedení
-        zdokonaleného klikového ústrojí a přepracovaného žebrování válců pro
-        rovnoměrnější chlazení byl v roce <strong>1950</strong> typ 12
-        přečíslován na <strong>typ 18</strong>, název změněn na Jawa 350
-        a barva na obvyklou jawáckou červenou.
-      </p>
-      <p>
-        Víc o technických rozdílech mezi typem 12 a 18 najdete na stránce
-        věnované motoru 350.
-      </p>
-    </section>
+      <section id="co-se-stalo">
+        <h2>Co se skutečně stalo</h2>
 
-    <section class="callout">
-      <h2>Jak poznat, jestli máte raný kus (před 1948)</h2>
-      <ul>
-        <li>Čtyřpólové dynamo (u strojů s v. č. 11-01 až 7000 a 11-8001 až 9600)</li>
-        <li>Rovné, nezesílené žebrování válce</li>
-        <li>Starší provedení přední vidlice s jedinou dlouhou vinutou pružinou (bez progresivního dvoudílného odpružení zavedeného od podzimu 1947)</li>
-      </ul>
-      <p class="note">
-        Tahle kritéria se týkají technických úprav z let 1947–1948, ne přesně
-        a výhradně přechodu typ 10 → typ 11 jako takového — díly se dobově
-        kombinovaly podle toho, co bylo zrovna na skladě, takže naprosto čistý
-        „typ 10" bez jediného pozdějšího dílu je dnes spíš vzácnost než pravidlo.
-      </p>
-    </section>
+        <p>
+          Když v roce 1946 sjely z pankrácké linky první stroje Jawa 250 Pérák,
+          nesly oficiální typové označení <strong>typ 10</strong>. Šlo o nový,
+          za okupace tajně vyvíjený motocykl — kolébkový rám ze čtyřhranných
+          trubek, teleskopická přední vidlice, odpružené zadní kolo, patentovaný
+          kryt karburátoru.
+        </p>
 
-    <footer class="sources">
-      <h2>Zdroje</h2>
-      <p>
-        Procházka, Hubert: <em>Jawa 250/350 Pérák: historie, vývoj, technika, sport.</em>
-        Grada, 2009, str. 47–54.
-      </p>
-    </footer>
-  </article>
+        <table class="spec">
+          <caption>Výroba v prvních letech</caption>
+          <thead>
+            <tr><th>Rok</th><th>Vyrobeno kusů</th><th>Označení</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="rl num">1946</td><td class="num">1 360</td><td>typ 10</td></tr>
+            <tr><td class="rl num">1947</td><td class="num">17 162</td><td>typ 10</td></tr>
+            <tr><td class="rl num">1948 a dále</td><td>—</td><td>typ 11</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Úpravy roku 1948</h3>
+
+        <p>
+          V roce 1948 prošel stroj sérií drobných, ale prakticky užitečných úprav.
+          Nešlo o kosmetiku — poslední z nich reagovala na praskání vidlic a rámů,
+          které se projevilo při terénní jízdě, mimo jiné na první poválečné
+          Šestidenní ve Zlíně 1947.
+        </p>
+
+        <table class="spec">
+          <caption>Co se v roce 1948 změnilo</caption>
+          <thead>
+            <tr><th>Uzel</th><th>Změna</th><th>Důvod</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rl">Válec</td>
+              <td>Kónicky zesílená chladicí žebra</td>
+              <td>Lepší chlazení</td>
+            </tr>
+            <tr>
+              <td class="rl">Píst</td>
+              <td>Zesílené dno</td>
+              <td>Rovnoměrnější rozvod tepla</td>
+            </tr>
+            <tr>
+              <td class="rl">Dynamo</td>
+              <td>Čtyřpólové → šestipólové</td>
+              <td>Vyšší výkon elektroinstalace</td>
+            </tr>
+            <tr>
+              <td class="rl">Vidlice a rám</td>
+              <td>Rekonstrukce svařence pod hlavou řízení</td>
+              <td>Praskání při terénní jízdě</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="fact">
+          <span class="lb">Klíčový fakt</span>
+          <p>
+            Po zavedení těchto úprav bylo <strong>oficiálně zrušeno rozlišování
+            mezi typem 10 a typem 11</strong>. Nové díly byly s původními vesměs
+            vzájemně zaměnitelné, takže se všechny série od roku 1948 posuzovaly
+            jednotně jako typ 11.
+          </p>
+        </div>
+      </section>
+
+      <section id="proc-typ-11">
+        <h2>Proč se dnes mluví jen o typu 11</h2>
+
+        <p>
+          Právě proto, že rozlišení bylo zrušeno a díly zůstaly zaměnitelné,
+          není dnešní zvyk označovat celou produkci od roku 1946 jako „typ 11"
+          nepřesností. Je to jen zpětné použití pozdějšího, sjednoceného označení.
+        </p>
+
+        <p>
+          Výrobní čísla rámů navíc nesou prefix <strong>„11-"</strong> od samého
+          počátku výroby, bez ohledu na to, jaké typové označení stroj v danou
+          chvíli oficiálně nesl. Kdo tedy hledá informace o „Jawě 250 typ 10",
+          hledá raný exemplář typu 11 — ne samostatný, jinak konstruovaný model.
+        </p>
+      </section>
+
+      <section id="jak-poznat">
+        <h2>Jak poznat raný kus (před 1948)</h2>
+
+        <table class="spec">
+          <caption>Znaky raného provedení</caption>
+          <thead>
+            <tr><th>Znak</th><th>Rané provedení</th><th>Pozdější</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rl">Dynamo</td>
+              <td>Čtyřpólové<br><span class="num">v. č. 11-01 až 7000<br>a 11-8001 až 9600</span></td>
+              <td>Šestipólové</td>
+            </tr>
+            <tr>
+              <td class="rl">Žebrování válce</td>
+              <td>Rovné, nezesílené</td>
+              <td>Kónicky zesílené</td>
+            </tr>
+            <tr>
+              <td class="rl">Pružiny vidlice</td>
+              <td>Jednodílná, cca 47 cm</td>
+              <td>Dvoudílná, cca 42 + 14,2 cm<br>(od podzimu 1947)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="warn">
+          <span class="lb">Pozor na výklad</span>
+          <p>
+            Tahle kritéria se týkají technických úprav z let 1947–1948, ne přesně
+            a výhradně přechodu typ 10 → typ 11. Díly se dobově kombinovaly podle
+            toho, co bylo zrovna na skladě. Naprosto čistý „typ 10" bez jediného
+            pozdějšího dílu je dnes spíš vzácnost než pravidlo.
+          </p>
+        </div>
+      </section>
+
+      <section id="chyby">
+        <h2>Časté chyby a omyly</h2>
+
+        <p>
+          Následující body vycházejí z opakovaně popisovaných zkušeností
+          z renovátorských fór a dílen. Jsou to nejčastější místa, kde se
+          kupující i renovátoři spálí.
+        </p>
+
+        <div class="warn">
+          <span class="lb">Chyba 1 — skládání dílů napříč obdobími</span>
+          <p>
+            Pérák se vyráběl ve třech odlišných fázích: <strong>FJ</strong>
+            (František Janeček), <strong>Zbrojovka</strong> a pozdější státní
+            výroba. Díly z různých fází na sebe většinou pasují, takže vzniká
+            stroj, který nikdy takhle z výroby nevyjel. Při renovaci se vyplatí
+            skládat stroj podle období, ze kterého pochází rám.
+          </p>
+        </div>
+
+        <div class="warn">
+          <span class="lb">Chyba 2 — spoléhání na repliky dílů</span>
+          <p>
+            U levných replikových dílů (typicky tureckých) se opakovaně objevují
+            dva problémy: nepřesnost — nepasující díry a poškozené závity,
+            zejména u výfuků — a nekvalitní příprava povrchu před chromováním,
+            kdy se chrom po čase začne loupat, přestože samotná technologie
+            chromu je v pořádku.
+          </p>
+        </div>
+
+        <div class="warn">
+          <span class="lb">Chyba 3 — automatická volba plné renovace</span>
+          <p>
+            Ne každý stroj potřebuje kompletní přelakování. U zachovalého kusu
+            může být zachování patiny hodnotnější než renovace do stavu lepšího
+            než z výroby — a je nevratné to rozhodnout špatně. Rozhodovat by měl
+            skutečný stav plechů a koroze, ne výchozí předpoklad.
+          </p>
+        </div>
+
+        <div class="warn">
+          <span class="lb">Chyba 4 — nepřevzetí všech dílů zpět</span>
+          <p>
+            Při zadávání práce externě (chromování, lakování) se stává, že se
+            část dílů „ztratí". Osvědčený postup z praxe: před předáním si
+            všechny díly, u kterých to jde, označit raznicí a mít soupis
+            v objednávce.
+          </p>
+        </div>
+
+        <div class="fact">
+          <span class="lb">Doplnit</span>
+          <p>
+            Tenhle seznam je zatím sestavený z veřejných zdrojů. Chybí sem
+            zkušenosti z vlastní dílny — zejména konkrétní případy přeražených
+            výrobních čísel a nesrovnalostí v dokladech.
+          </p>
+        </div>
+      </section>
+
+      <section id="350">
+        <h2>Souběžný příběh u třistapadesátky</h2>
+
+        <p>
+          Stejný vzorec — start pod jedním označením, přeznačení po technických
+          úpravách — se o dva roky později opakoval i u silnějšího sourozence.
+        </p>
+
+        <table class="spec">
+          <caption>Typ 12 → typ 18 (350 ccm)</caption>
+          <thead>
+            <tr><th></th><th>Typ 12 (od 1948)</th><th>Typ 18 (od 1950)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="rl">Název</td><td>Ogar 350</td><td>Jawa 350</td></tr>
+            <tr><td class="rl">Barva</td><td>Světle šedá se zlatými linkami</td><td>Jawácká červená</td></tr>
+            <tr><td class="rl">Výroba</td><td>Bývalá strašnická továrna Autfit</td><td>—</td></tr>
+            <tr><td class="rl">Změna</td><td>—</td><td>Zdokonalené klikové ústrojí, přepracované žebrování válců</td></tr>
+          </tbody>
+        </table>
+
+        <p>
+          Podrobné technické rozdíly mezi motorem typu 12 a 18 rozebírá
+          <a href="/perak/motor-12-vs-18/">samostatná stránka o motoru 350</a>.
+        </p>
+      </section>
+
+      <footer class="src">
+        <h2>Zdroje</h2>
+        <ol>
+          <li>
+            Procházka, Hubert: <cite>Jawa 250/350 Pérák: historie, vývoj, technika, sport</cite>.
+            Grada, 2009, str. 47–54.
+            <span class="tag ov">ověřeno</span>
+          </li>
+          <li>
+            Rozdělení výroby na fáze FJ / Zbrojovka / státní — renovace-jawa.cz.
+            <span class="tag ov">ověřeno</span>
+          </li>
+          <li>
+            Zkušenosti s replikovými díly a délky pružin vidlice — diskuse na
+            Motorkáři.cz.
+            <span class="tag ne">neověřeno</span>
+          </li>
+        </ol>
+      </footer>
+
+      <nav class="next" aria-label="Další stránky">
+        <a href="/perak/motor-12-vs-18/">
+          <span class="lb">Encyklopedie</span>
+          <span class="tt">Motor 12 vs 18</span>
+        </a>
+        <a href="/historie/">
+          <span class="lb">Příběh</span>
+          <span class="tt">Tajný vývoj za okupace</span>
+        </a>
+      </nav>
+
+    </article>
+  </div>
 </Layout>
-
-<style>
-  .perak-article {
-    max-width: 42rem;
-    margin: 0 auto;
-    padding: 2rem 1rem 4rem;
-  }
-  .kicker {
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.85rem;
-    opacity: 0.7;
-    margin-bottom: 0.5rem;
-  }
-  h1 {
-    font-size: 2rem;
-    line-height: 1.2;
-    margin-bottom: 1rem;
-  }
-  .lead {
-    font-size: 1.15rem;
-    opacity: 0.85;
-    margin-bottom: 2rem;
-  }
-  section {
-    margin-bottom: 2rem;
-  }
-  h2 {
-    font-size: 1.4rem;
-    margin-bottom: 0.75rem;
-  }
-  p {
-    line-height: 1.6;
-    margin-bottom: 1rem;
-  }
-  .callout {
-    background: rgba(0, 0, 0, 0.03);
-    border-left: 3px solid currentColor;
-    padding: 1.25rem 1.5rem;
-    border-radius: 0.25rem;
-  }
-  .note {
-    font-size: 0.9rem;
-    opacity: 0.75;
-    font-style: italic;
-  }
-  .sources {
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    padding-top: 1rem;
-    font-size: 0.9rem;
-    opacity: 0.8;
-  }
-</style>
