@@ -58,7 +58,7 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
             <option value="">Všechny fáze</option>
             <option value="fj">FJ (Janeček)</option>
             <option value="zbrojovka">Zbrojovka</option>
-            <option value="statni">Státní výroba</option>
+            <option value="komunista">Komunista</option>
           </select>
           <label class="chk"><input type="checkbox" id="f-prodej"> Jen na prodej</label>
         </div>
@@ -114,7 +114,7 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
     puvodni: 'Původní', renovovano: 'Renovováno', v_renovaci: 'V renovaci',
     vrak: 'Vrak', na_dily: 'Díly'
   };
-  const FAZE = { fj: 'FJ', zbrojovka: 'Zbrojovka', statni: 'Státní výroba' };
+  const FAZE = { fj: 'FJ', zbrojovka: 'Zbrojovka', komunista: 'Komunista' };
   const esc = (s) => String(s ?? '').replace(/[<>&"]/g, (c) =>
     ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 
