@@ -41,24 +41,12 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
         <div class="filters" role="group" aria-label="Filtry">
           <select id="f-typ" aria-label="Typ">
             <option value="">Všechny typy</option>
-            <option value="10">Typ 10 (250)</option>
-            <option value="11">Typ 11 (250)</option>
-            <option value="12">Typ 12 (350)</option>
-            <option value="18">Typ 18 (350)</option>
           </select>
           <select id="f-stav" aria-label="Stav">
             <option value="">Všechny stavy</option>
-            <option value="puvodni">Originál</option>
-            <option value="renovovano">Renovováno</option>
-            <option value="v_renovaci">V renovaci</option>
-            <option value="vrak">Vrak</option>
-            <option value="na_dily">Díly</option>
           </select>
           <select id="f-faze" aria-label="Výrobní fáze">
             <option value="">Všechny fáze</option>
-            <option value="fj">FJ (Janeček)</option>
-            <option value="zbrojovka">Zbrojovka</option>
-            <option value="komunista">Komunista</option>
           </select>
           <label class="chk"><input type="checkbox" id="f-prodej"> Jen na prodej</label>
         </div>
@@ -110,13 +98,44 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
   const H = { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY };
   const box = document.getElementById('vysledky');
 
-  const STAV = {
-    puvodni: 'Původní', renovovano: 'Renovováno', v_renovaci: 'V renovaci',
-    vrak: 'Vrak', na_dily: 'Díly'
-  };
-  const FAZE = { fj: 'FJ', zbrojovka: 'Zbrojovka', komunista: 'Komunista' };
+  // Popisky typu/stavu/fáze se NAČÍTAJÍ z číselníkových tabulek v Supabase,
+  // ne z kopie natvrdo psané tady — jinak se to časem rozejde (viz historie projektu).
+  let TYP = {};
+  let STAV = {};
+  let FAZE = {};
+
   const esc = (s) => String(s ?? '').replace(/[<>&"]/g, (c) =>
     ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+
+  function naplnSelect(selectEl, radky) {
+    for (const r of radky) {
+      const opt = document.createElement('option');
+      opt.value = r.hodnota;
+      opt.textContent = r.popis_cs;
+      selectEl.appendChild(opt);
+    }
+  }
+
+  async function nactiCiselniky() {
+    try {
+      const [rTyp, rStav, rFaze] = await Promise.all([
+        fetch(`${SUPABASE_URL}/rest/v1/ciselnik_typ?select=*&order=poradi`, { headers: H }),
+        fetch(`${SUPABASE_URL}/rest/v1/ciselnik_stav?select=*&order=poradi`, { headers: H }),
+        fetch(`${SUPABASE_URL}/rest/v1/ciselnik_faze?select=*&order=poradi`, { headers: H }),
+      ]);
+      const [typy, stavy, faze] = await Promise.all([rTyp.json(), rStav.json(), rFaze.json()]);
+
+      TYP = Object.fromEntries(typy.map((r) => [r.hodnota, r.popis_cs]));
+      STAV = Object.fromEntries(stavy.map((r) => [r.hodnota, r.popis_cs]));
+      FAZE = Object.fromEntries(faze.map((r) => [r.hodnota, r.popis_cs]));
+
+      naplnSelect(document.getElementById('f-typ'), typy);
+      naplnSelect(document.getElementById('f-stav'), stavy);
+      naplnSelect(document.getElementById('f-faze'), faze);
+    } catch (e) {
+      console.error('Číselníky se nepodařilo načíst', e);
+    }
+  }
 
   async function nactiStatistiky() {
     try {
@@ -141,7 +160,7 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
         <div class="k__ph"><span>Bez fotky</span></div>
         <div class="k__body">
           <div class="k__top">
-            <h3>Typ ${esc(s.typ)}${s.rok_vyroby ? ' · ' + esc(s.rok_vyroby) : ''}</h3>
+            <h3>${esc(TYP[s.typ] || ('Typ ' + s.typ))}${s.rok_vyroby ? ' · ' + esc(s.rok_vyroby) : ''}</h3>
             ${cislo}
           </div>
           <p class="k__meta">
@@ -188,8 +207,11 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
   ['f-typ', 'f-stav', 'f-faze', 'f-prodej'].forEach((id) =>
     document.getElementById(id).addEventListener('change', nactiStroje));
 
-  nactiStatistiky();
-  nactiStroje();
+  (async () => {
+    await nactiCiselniky();
+    nactiStatistiky();
+    nactiStroje();
+  })();
 </script>
 
 <style>
