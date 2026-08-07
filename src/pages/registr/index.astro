@@ -150,28 +150,28 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
     }
   }
 
-  function karta(s) {
-    const cislo = s.cislo_ramu_maskovane ? `<span class="k__cislo">${esc(s.cislo_ramu_maskovane)}</span>` : '';
-    const misto = [s.region, s.zeme].filter(Boolean).map(esc).join(', ');
-    const faze = s.vyrobni_faze && FAZE[s.vyrobni_faze] ? `<span class="tagx">${FAZE[s.vyrobni_faze]}</span>` : '';
-    const prodej = s.na_prodej ? '<span class="tagx tagx--red">Na prodej</span>' : '';
-    return `
-      <article class="k">
-        <div class="k__ph"><span>Bez fotky</span></div>
-        <div class="k__body">
-          <div class="k__top">
-            <h3>${esc(TYP[s.typ] || ('Typ ' + s.typ))}${s.rok_vyroby ? ' · ' + esc(s.rok_vyroby) : ''}</h3>
-            ${cislo}
-          </div>
-          <p class="k__meta">
-            ${s.stav ? `<span class="tagx">${STAV[s.stav] || esc(s.stav)}</span>` : ''}
-            ${faze}${prodej}
-          </p>
-          ${misto ? `<p class="k__misto">${misto}</p>` : ''}
-          ${s.pribeh ? `<p class="k__pribeh">${esc(s.pribeh).slice(0, 140)}${s.pribeh.length > 140 ? '…' : ''}</p>` : ''}
+function karta(s) {
+  const cislo = s.cislo_ramu_maskovane ? `<span class="k__cislo">${esc(s.cislo_ramu_maskovane)}</span>` : '';
+  const misto = [s.region, s.zeme].filter(Boolean).map(esc).join(', ');
+  const faze = s.vyrobni_faze && FAZE[s.vyrobni_faze] ? `<span class="tagx">${FAZE[s.vyrobni_faze]}</span>` : '';
+  const prodej = s.na_prodej ? '<span class="tagx tagx--red">Na prodej</span>' : '';
+  return `
+    <a class="k" href="/registr/stroj/${esc(s.slug)}/">
+      <div class="k__ph"><span>Bez fotky</span></div>
+      <div class="k__body">
+        <div class="k__top">
+          <h3>${esc(TYP[s.typ] || ('Typ ' + s.typ))}${s.rok_vyroby ? ' · ' + esc(s.rok_vyroby) : ''}</h3>
+          ${cislo}
         </div>
-      </article>`;
-  }
+        <p class="k__meta">
+          ${s.stav ? `<span class="tagx">${STAV[s.stav] || esc(s.stav)}</span>` : ''}
+          ${faze}${prodej}
+        </p>
+        ${misto ? `<p class="k__misto">${misto}</p>` : ''}
+        ${s.pribeh ? `<p class="k__pribeh">${esc(s.pribeh).slice(0, 140)}${s.pribeh.length > 140 ? '…' : ''}</p>` : ''}
+      </div>
+    </a>`;
+}
 
   async function nactiStroje() {
     const typ = document.getElementById('f-typ').value;
@@ -241,7 +241,9 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
     align-items:center;gap:6px;cursor:pointer}
 
   .grid-stroje{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
-  .k{border:1px solid var(--rule);background:var(--paper-2)}
+  .k{display:block;color:inherit;text-decoration:none;border:1px solid var(--rule);
+  background:var(--paper-2);transition:border-color .15s}
+.k:hover{border-color:var(--ink)}
   .k__ph{aspect-ratio:4/3;background:repeating-linear-gradient(45deg,#DFD2B4 0 14px,#D8CAAA 14px 28px);
     display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--rule)}
   .k__ph span{font-family:var(--disp);font-size:11px;letter-spacing:.12em;
