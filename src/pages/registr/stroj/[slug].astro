@@ -1,0 +1,188 @@
+---
+export const prerender = false;
+
+import Layout from '../../../layouts/Layout.astro';
+
+const SUPABASE_URL = 'https://hcszrmqtwnkzlbrecrey.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
+const H = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
+
+const { slug } = Astro.params;
+
+async function nacti(cesta) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${cesta}`, { headers: H });
+  return r.ok ? r.json() : [];
+}
+
+const [strojeRadky, ciselnikTyp, ciselnikStav, ciselnikFaze] = await Promise.all([
+  nacti(`stroje_verejne?slug=eq.${encodeURIComponent(slug)}&select=*&limit=1`),
+  nacti('ciselnik_typ?select=*'),
+  nacti('ciselnik_stav?select=*'),
+  nacti('ciselnik_faze?select=*'),
+]);
+
+const stroj = strojeRadky[0] ?? null;
+
+if (!stroj) {
+  Astro.response.status = 404;
+}
+
+const fotky = stroj
+  ? await nacti(`stroje_fotky?stroj_id=eq.${stroj.id}&select=*&order=poradi`)
+  : [];
+
+function popis(seznam, hodnota) {
+  const r = seznam.find((x) => x.hodnota === hodnota);
+  return r ? r.popis_cs : (hodnota ?? '—');
+}
+
+const titulek = stroj
+  ? `Jawa Pérák ${popis(ciselnikTyp, stroj.typ)}${stroj.rok_vyroby ? ' (' + stroj.rok_vyroby + ')' : ''} — registr | jawaperak.cz`
+  : 'Stroj nenalezen | jawaperak.cz';
+
+const popisStranky = stroj
+  ? (stroj.pribeh ? stroj.pribeh.slice(0, 160) : `Záznam v registru dochovaných strojů Jawa Pérák, typ ${popis(ciselnikTyp, stroj.typ)}.`)
+  : 'Tento záznam v registru jsme nenašli.';
+
+const jePribehEn = !!stroj?.pribeh_en;
+---
+
+<Layout title={titulek} description={popisStranky}>
+  <div class="wrap">
+    <article class="art">
+
+      {!stroj && (
+        <>
+          <p class="kicker">Registr</p>
+          <h1>Stroj nenalezen</h1>
+          <p class="lead">Záznam s tímto odkazem neexistuje, nebo ještě čeká na schválení.</p>
+          <p class="zpet"><a href="/registr/">← Zpět do registru</a></p>
+        </>
+      )}
+
+      {stroj && (
+        <>
+          <p class="kicker">Registr</p>
+          <h1>{`Jawa Pérák ${popis(ciselnikTyp, stroj.typ)}`}</h1>
+
+          <div class="langbar">
+            <button type="button" class="lb-btn is-on" data-lang="cs">Česky</button>
+            <button type="button" class="lb-btn" data-lang="en">English</button>
+          </div>
+
+          {stroj.na_prodej && <p class="badge" data-i18n="prodej">Na prodej</p>}
+
+          <table class="tabulka">
+            <tbody>
+              <tr><th data-i18n="tTyp">Typ</th><td>{popis(ciselnikTyp, stroj.typ)}</td></tr>
+              {stroj.rok_vyroby && <tr><th data-i18n="tRok">Rok výroby</th><td>{stroj.rok_vyroby}</td></tr>}
+              {stroj.vyrobni_faze && <tr><th data-i18n="tFaze">Výrobní fáze</th><td>{popis(ciselnikFaze, stroj.vyrobni_faze)}</td></tr>}
+              <tr><th data-i18n="tStav">Stav</th><td>{popis(ciselnikStav, stroj.stav)}</td></tr>
+              {stroj.barva && <tr><th data-i18n="tBarva">Barva</th><td>{stroj.barva}</td></tr>}
+              {stroj.cislo_ramu_maskovane && <tr><th data-i18n="tRam">Číslo rámu</th><td>{stroj.cislo_ramu_maskovane}</td></tr>}
+              {stroj.cislo_motoru_maskovane && <tr><th data-i18n="tMotor">Číslo motoru</th><td>{stroj.cislo_motoru_maskovane}</td></tr>}
+              {(stroj.zeme || stroj.region) && <tr><th data-i18n="tKde">Kde</th><td>{[stroj.region, stroj.zeme].filter(Boolean).join(', ')}</td></tr>}
+              {stroj.renovoval && (
+                <tr>
+                  <th data-i18n="tRenovoval">Renovoval</th>
+                  <td>{stroj.renovoval_odkaz ? <a href={stroj.renovoval_odkaz}>{stroj.renovoval}</a> : stroj.renovoval}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          {fotky.length > 0 && (
+            <div class="galerie">
+              {fotky.map((f) => (
+                <figure>
+                  <img src={f.url} loading="lazy" alt={f.popisek || titulek} />
+                  {(f.popisek || f.zdroj) && (
+                    <figcaption>{f.popisek}{f.zdroj && ` — zdroj: ${f.zdroj}`}</figcaption>
+                  )}
+                </figure>
+              ))}
+            </div>
+          )}
+
+          {(stroj.pribeh || stroj.pribeh_en) && (
+            <div class="pribeh">
+              <h2 data-i18n="tPribeh">Příběh stroje</h2>
+              {stroj.pribeh && <p class="pribeh-cs" set:html={stroj.pribeh.replace(/\n/g, '<br>')} />}
+              {stroj.pribeh_en && <p class="pribeh-en" hidden set:html={stroj.pribeh_en.replace(/\n/g, '<br>')} />}
+            </div>
+          )}
+
+          {stroj.lze_kontaktovat && (
+            <div class="kontakt-cta">
+              <p data-i18n="ctaText">Máte zájem o tento stroj nebo znáte jeho historii? Napište nám a spojíme vás s majitelem.</p>
+              <a class="btn" href={`/kontakt/?stroj=${stroj.slug}`} data-i18n="ctaBtn">Kontaktovat přes formulář</a>
+            </div>
+          )}
+
+          <p class="zpet"><a href="/registr/" data-i18n="zpet">← Zpět do registru</a></p>
+        </>
+      )}
+
+    </article>
+  </div>
+</Layout>
+
+<script define:vars={{ jePribehEn }}>
+  const T = {
+    en: {
+      prodej: 'For sale', tTyp: 'Type', tRok: 'Year of manufacture', tFaze: 'Production phase',
+      tStav: 'Condition', tBarva: 'Colour', tRam: 'Frame number', tMotor: 'Engine number',
+      tKde: 'Location', tRenovoval: 'Restored by', tPribeh: "Machine's story",
+      ctaText: 'Interested in this machine, or do you know its history? Write to us and we will put you in touch with the owner.',
+      ctaBtn: 'Contact via form', zpet: '← Back to the registry'
+    }
+  };
+  const CS = {};
+  document.querySelectorAll('[data-i18n]').forEach((el) => { CS[el.dataset.i18n] = el.innerHTML; });
+
+  function prepni(l) {
+    const d = l === 'en' ? T.en : CS;
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      if (d[el.dataset.i18n]) el.innerHTML = d[el.dataset.i18n];
+    });
+    document.querySelectorAll('.lb-btn').forEach((b) => b.classList.toggle('is-on', b.dataset.lang === l));
+    if (jePribehEn) {
+      document.querySelector('.pribeh-cs')?.toggleAttribute('hidden', l === 'en');
+      document.querySelector('.pribeh-en')?.toggleAttribute('hidden', l !== 'en');
+    }
+  }
+  document.querySelectorAll('.lb-btn').forEach((b) => b.addEventListener('click', () => prepni(b.dataset.lang)));
+</script>
+
+<style>
+  .langbar{display:flex;gap:0;margin:18px 0 20px}
+  .lb-btn{font-family:var(--disp);font-size:12px;letter-spacing:.11em;text-transform:uppercase;
+    background:var(--paper-2);border:1px solid var(--ink);color:var(--mute);padding:7px 14px;cursor:pointer}
+  .lb-btn+.lb-btn{border-left:0}
+  .lb-btn.is-on{background:var(--ink);color:var(--paper)}
+
+  .badge{display:inline-block;font-family:var(--disp);font-size:11.5px;letter-spacing:.1em;
+    text-transform:uppercase;background:var(--red);color:var(--paper);padding:5px 12px;margin-bottom:16px}
+
+  .tabulka{width:100%;border-collapse:collapse;margin:0 0 26px}
+  .tabulka th,.tabulka td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule);font-size:15.5px}
+  .tabulka th{width:200px;font-family:var(--disp);font-size:11.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--mute);font-weight:500}
+
+  .galerie{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:28px}
+  .galerie figure{margin:0}
+  .galerie img{width:100%;height:auto;display:block;border:1px solid var(--ink)}
+  .galerie figcaption{font-size:12.5px;color:var(--mute);margin-top:5px}
+
+  .pribeh{margin-bottom:28px}
+  .pribeh h2{font-family:var(--disp);font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--red)}
+  .pribeh p{font-size:16px;line-height:1.6}
+
+  .kontakt-cta{border:1px solid var(--rule);background:var(--paper-2);padding:18px 20px;margin-bottom:24px}
+  .kontakt-cta p{margin:0 0 12px;font-size:15px}
+  .kontakt-cta .btn{display:inline-block;background:var(--red);color:var(--paper);border:2px solid var(--ink);
+    font-family:var(--disp);font-size:13px;letter-spacing:.12em;text-transform:uppercase;padding:10px 20px;text-decoration:none}
+  .kontakt-cta .btn:hover{background:var(--ink)}
+
+  .zpet a{font-family:var(--disp);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+</style>

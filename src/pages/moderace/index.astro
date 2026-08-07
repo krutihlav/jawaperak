@@ -1,0 +1,246 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="Moderace registru | jawaperak.cz"
+  description="Neveřejné rozhraní pro schvalování záznamů v registru."
+>
+  <div class="wrap">
+    <article class="art">
+      <p class="kicker">Registr</p>
+      <h1>Moderace</h1>
+
+      <div id="prihlaseni">
+        <form id="form-login">
+          <label>
+            <span>E-mail</span>
+            <input type="email" name="email" required autocomplete="username">
+          </label>
+          <label>
+            <span>Heslo</span>
+            <input type="password" name="password" required autocomplete="current-password">
+          </label>
+          <button type="submit" class="btn">Přihlásit</button>
+          <p class="msg" id="login-msg" role="status"></p>
+        </form>
+      </div>
+
+      <div id="panel" hidden>
+        <div class="panel-header">
+          <p id="kdo-jsem"></p>
+          <button type="button" id="btn-odhlasit" class="btn-sec">Odhlásit</button>
+        </div>
+        <p class="msg" id="panel-msg" role="status"></p>
+        <div id="seznam"></div>
+      </div>
+    </article>
+  </div>
+</Layout>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  const SUPABASE_URL = 'https://hcszrmqtwnkzlbrecrey.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const elPrihlaseni = document.getElementById('prihlaseni');
+  const elPanel = document.getElementById('panel');
+  const elSeznam = document.getElementById('seznam');
+  const elKdoJsem = document.getElementById('kdo-jsem');
+  const elPanelMsg = document.getElementById('panel-msg');
+  const elLoginMsg = document.getElementById('login-msg');
+
+  function formatDatum(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('cs-CZ', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  function escapujHtml(s) {
+    return (s ?? '').replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
+
+  function radekHtml(s) {
+    return `
+      <div class="karta" data-id="${s.id}">
+        <div class="karta-hlavicka">
+          <strong>Typ ${escapujHtml(s.typ) || '—'}${s.rok_vyroby ? ' · ' + s.rok_vyroby : ''}</strong>
+          <span class="datum">přidáno ${formatDatum(s.vytvoreno_at)}</span>
+        </div>
+        <table class="detail-tabulka">
+          <tbody>
+            <tr><th>Stav</th><td>${escapujHtml(s.stav) || '—'}</td></tr>
+            <tr><th>Výrobní fáze</th><td>${escapujHtml(s.vyrobni_faze) || '—'}</td></tr>
+            <tr><th>Číslo rámu</th><td>${escapujHtml(s.cislo_ramu) || '—'}</td></tr>
+            <tr><th>Číslo motoru</th><td>${escapujHtml(s.cislo_motoru) || '—'}</td></tr>
+            <tr><th>Barva</th><td>${escapujHtml(s.barva) || '—'}</td></tr>
+            <tr><th>Historická SPZ</th><td>${escapujHtml(s.spz_historicka) || '—'}</td></tr>
+            <tr><th>Kde</th><td>${escapujHtml([s.region, s.zeme].filter(Boolean).join(', ')) || '—'}</td></tr>
+            <tr><th>Kontakt e-mail</th><td>${escapujHtml(s.kontakt_email) || '—'}</td></tr>
+            <tr><th>Kontakt telefon</th><td>${escapujHtml(s.kontakt_telefon) || '—'}</td></tr>
+            <tr><th>Na prodej</th><td>${s.na_prodej ? 'ano' : 'ne'}</td></tr>
+            <tr><th>Souhlas s kontaktem</th><td>${s.souhlas_kontakt ? 'ano' : 'ne'}</td></tr>
+          </tbody>
+        </table>
+        ${s.pribeh ? `<p class="pribeh"><b>Příběh:</b> ${escapujHtml(s.pribeh)}</p>` : ''}
+        <div class="fotky" id="fotky-${s.id}"></div>
+        <button type="button" class="btn-sec btn-fotky" data-id="${s.id}">Zobrazit fotky</button>
+        <label class="full">
+          <span>Poznámka moderátora (nepovinné, uloží se u zamítnutí)</span>
+          <textarea class="poznamka" rows="2"></textarea>
+        </label>
+        <div class="akce">
+          <button type="button" class="btn btn-schvalit" data-id="${s.id}">Schválit</button>
+          <button type="button" class="btn btn-zamitnout" data-id="${s.id}">Zamítnout</button>
+        </div>
+      </div>
+    `;
+  }
+
+  async function nactiCekajici() {
+    elPanelMsg.textContent = 'Načítám…';
+    elPanelMsg.className = 'msg';
+    const { data, error } = await supabase
+      .from('stroje')
+      .select('*')
+      .eq('stav_moderace', 'ceka')
+      .order('vytvoreno_at', { ascending: true });
+
+    if (error) {
+      elPanelMsg.textContent = 'Chyba při načítání: ' + error.message;
+      elPanelMsg.className = 'msg msg--err';
+      return;
+    }
+    if (!data || data.length === 0) {
+      elSeznam.innerHTML = '';
+      elPanelMsg.textContent = 'Žádné čekající záznamy.';
+      elPanelMsg.className = 'msg';
+      return;
+    }
+    elPanelMsg.textContent = `Čeká na schválení: ${data.length}`;
+    elPanelMsg.className = 'msg';
+    elSeznam.innerHTML = data.map(radekHtml).join('');
+  }
+
+  elSeznam.addEventListener('click', async (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    if (!id) return;
+
+    if (btn.classList.contains('btn-fotky')) {
+      const cil = document.getElementById(`fotky-${id}`);
+      btn.disabled = true;
+      const { data, error } = await supabase.from('stroje_fotky').select('*').eq('stroj_id', id).order('poradi');
+      if (error || !data || data.length === 0) {
+        cil.innerHTML = '<p class="mute">Žádné fotky.</p>';
+      } else {
+        cil.innerHTML = data.map((f) => `<img src="${f.url}" loading="lazy" alt="${escapujHtml(f.popisek)}">`).join('');
+      }
+      btn.remove();
+      return;
+    }
+
+    if (btn.classList.contains('btn-schvalit')) {
+      if (!confirm('Schválit tento záznam? Zveřejní se v registru.')) return;
+      btn.disabled = true;
+      const { error } = await supabase
+        .from('stroje')
+        .update({ stav_moderace: 'schvaleno', schvaleno_at: new Date().toISOString() })
+        .eq('id', id);
+      if (error) { alert('Chyba: ' + error.message); btn.disabled = false; return; }
+      nactiCekajici();
+    }
+
+    if (btn.classList.contains('btn-zamitnout')) {
+      const karta = btn.closest('.karta');
+      const poznamka = karta.querySelector('.poznamka')?.value || null;
+      if (!confirm('Zamítnout tento záznam?')) return;
+      btn.disabled = true;
+      const { error } = await supabase
+        .from('stroje')
+        .update({ stav_moderace: 'zamitnuto', poznamka_moderatora: poznamka })
+        .eq('id', id);
+      if (error) { alert('Chyba: ' + error.message); btn.disabled = false; return; }
+      nactiCekajici();
+    }
+  });
+
+  async function ukazPanel(session) {
+    elPrihlaseni.hidden = true;
+    elPanel.hidden = false;
+    elKdoJsem.textContent = `Přihlášen jako ${session.user.email}`;
+    nactiCekajici();
+  }
+
+  document.getElementById('btn-odhlasit').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    location.reload();
+  });
+
+  document.getElementById('form-login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    elLoginMsg.textContent = 'Přihlašuji…';
+    elLoginMsg.className = 'msg';
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: fd.get('email'),
+      password: fd.get('password')
+    });
+    if (error) {
+      elLoginMsg.textContent = 'Nesprávný e-mail nebo heslo.';
+      elLoginMsg.className = 'msg msg--err';
+      return;
+    }
+    ukazPanel(data.session);
+  });
+
+  supabase.auth.getSession().then(({ data }) => {
+    if (data.session) ukazPanel(data.session);
+  });
+</script>
+
+<style>
+  #form-login{max-width:360px;display:flex;flex-direction:column;gap:14px;margin-top:20px}
+  #form-login label{display:flex;flex-direction:column;gap:5px}
+  #form-login span{font-family:var(--disp);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+  #form-login input{font-family:var(--body);font-size:16px;background:var(--paper);border:1px solid var(--ink);
+    color:var(--ink);padding:9px 11px}
+
+  .btn{background:var(--red);color:var(--paper);border:2px solid var(--ink);font-family:var(--disp);
+    font-size:13px;letter-spacing:.1em;text-transform:uppercase;padding:10px 18px;cursor:pointer}
+  .btn:hover{background:var(--ink)}
+  .btn-sec{background:var(--paper-2);color:var(--ink);border:1px solid var(--ink);font-family:var(--disp);
+    font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:7px 14px;cursor:pointer}
+
+  .panel-header{display:flex;justify-content:space-between;align-items:center;margin:20px 0;gap:12px;flex-wrap:wrap}
+  .msg{font-size:14.5px;margin:10px 0}
+  .msg--err{color:var(--red);font-weight:600}
+
+  .karta{border:1px solid var(--rule);background:var(--paper-2);padding:18px 20px;margin-bottom:20px}
+  .karta-hlavicka{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+  .karta-hlavicka strong{font-family:var(--disp);font-size:16px}
+  .datum{font-size:12.5px;color:var(--mute)}
+
+  .detail-tabulka{width:100%;border-collapse:collapse;margin-bottom:12px}
+  .detail-tabulka th,.detail-tabulka td{text-align:left;padding:5px 10px;border-bottom:1px solid var(--rule);font-size:14.5px}
+  .detail-tabulka th{width:170px;color:var(--mute);font-weight:500}
+
+  .pribeh{font-size:14.5px;margin:0 0 12px;white-space:pre-wrap}
+  .mute{color:var(--mute);font-size:13.5px}
+
+  .fotky{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:10px}
+  .fotky img{width:100%;height:auto;border:1px solid var(--ink)}
+
+  label.full{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+  label.full span{font-family:var(--disp);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+  textarea.poznamka{font-family:var(--body);font-size:15px;background:var(--paper);border:1px solid var(--ink);
+    padding:8px;width:100%;box-sizing:border-box;resize:vertical}
+
+  .akce{display:flex;gap:10px}
+  .btn-zamitnout{background:var(--paper);color:var(--ink)}
+  .btn-zamitnout:hover{background:var(--rule)}
+</style>

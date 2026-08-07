@@ -1,12 +1,14 @@
 import { defineConfig } from 'astro/config';
+import vercel from '@astrojs/vercel/serverless';
 
-// Zatím čistě statický výstup — encyklopedie, návody, historie.
-// Než se nasadí registr (fáze 2), je potřeba doplnit @astrojs/vercel
-// adaptér a output: 'hybrid', aby stránky /registr/* mohly číst
-// ze Supabase za běhu (viz poznámka v src/pages/registr/index.astro).
+// output: 'hybrid' — vše zůstává staticky předgenerované (encyklopedie,
+// návody, historie), kromě stránek, které si samy řeknou
+// `export const prerender = false` (detail stroje v registru, moderace
+// nepotřebuje SSR, jede čistě klientsky).
 export default defineConfig({
   site: 'https://jawaperak.cz',
-  output: 'static',
+  output: 'hybrid',
+  adapter: vercel(),
   i18n: {
     defaultLocale: 'cs',
     locales: ['cs', 'en'],
