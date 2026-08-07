@@ -52,44 +52,65 @@ const jePribehEn = !!stroj?.pribeh_en;
     <article class="art">
 
       {!stroj && (
-        <>
+        <div class="dosier dosier--prazdny">
           <p class="kicker">Registr</p>
           <h1>Stroj nenalezen</h1>
           <p class="lead">Záznam s tímto odkazem neexistuje, nebo ještě čeká na schválení.</p>
           <p class="zpet"><a href="/registr/">← Zpět do registru</a></p>
-        </>
+        </div>
       )}
 
       {stroj && (
-        <>
-          <p class="kicker">Registr</p>
-          <h1>{`Jawa Pérák ${popis(ciselnikTyp, stroj.typ)}`}</h1>
-
-          <div class="langbar">
-            <button type="button" class="lb-btn is-on" data-lang="cs">Česky</button>
-            <button type="button" class="lb-btn" data-lang="en">English</button>
+        <div class="dosier">
+          <div class="dosier__top">
+            <p class="kicker">Registr</p>
+            <div class="langbar">
+              <button type="button" class="lb-btn is-on" data-lang="cs">Česky</button>
+              <button type="button" class="lb-btn" data-lang="en">English</button>
+            </div>
           </div>
 
-          {stroj.na_prodej && <p class="badge" data-i18n="prodej">Na prodej</p>}
+          <div class="plate">
+            <div class="plate__main">
+              <h1>{`Jawa Pérák ${popis(ciselnikTyp, stroj.typ)}`}</h1>
+              <p class="plate__sub">
+                <span data-i18n="zaznamC">Záznam č.</span> <span class="mono">{stroj.slug}</span>
+                {stroj.rok_vyroby ? <> · {stroj.rok_vyroby}</> : null}
+              </p>
+            </div>
+            {stroj.na_prodej && <p class="stamp" data-i18n="prodej">Na prodej</p>}
+          </div>
 
-          <table class="tabulka">
-            <tbody>
-              <tr><th data-i18n="tTyp">Typ</th><td>{popis(ciselnikTyp, stroj.typ)}</td></tr>
-              {stroj.rok_vyroby && <tr><th data-i18n="tRok">Rok výroby</th><td>{stroj.rok_vyroby}</td></tr>}
-              {stroj.vyrobni_faze && <tr><th data-i18n="tFaze">Výrobní fáze</th><td>{popis(ciselnikFaze, stroj.vyrobni_faze)}</td></tr>}
-              <tr><th data-i18n="tStav">Stav</th><td>{popis(ciselnikStav, stroj.stav)}</td></tr>
-              {stroj.barva && <tr><th data-i18n="tBarva">Barva</th><td>{stroj.barva}</td></tr>}
-              {stroj.cislo_ramu_maskovane && <tr><th data-i18n="tRam">Číslo rámu</th><td>{stroj.cislo_ramu_maskovane}</td></tr>}
-              {stroj.cislo_motoru_maskovane && <tr><th data-i18n="tMotor">Číslo motoru</th><td>{stroj.cislo_motoru_maskovane}</td></tr>}
-              {(stroj.zeme || stroj.region) && <tr><th data-i18n="tKde">Kde</th><td>{[stroj.region, stroj.zeme].filter(Boolean).join(', ')}</td></tr>}
-              {stroj.renovoval && (
-                <tr>
-                  <th data-i18n="tRenovoval">Renovoval</th>
-                  <td>{stroj.renovoval_odkaz ? <a href={stroj.renovoval_odkaz}>{stroj.renovoval}</a> : stroj.renovoval}</td>
-                </tr>
+          <dl class="spec">
+            <dt data-i18n="tTyp">Typ</dt><dd>{popis(ciselnikTyp, stroj.typ)}</dd>
+            {stroj.vyrobni_faze && <><dt data-i18n="tFaze">Výrobní fáze</dt><dd>{popis(ciselnikFaze, stroj.vyrobni_faze)}</dd></>}
+            <dt data-i18n="tStav">Stav</dt><dd>{popis(ciselnikStav, stroj.stav)}</dd>
+            {stroj.barva && <><dt data-i18n="tBarva">Barva</dt><dd>{stroj.barva}</dd></>}
+            {(stroj.zeme || stroj.region) && <><dt data-i18n="tKde">Kde</dt><dd>{[stroj.region, stroj.zeme].filter(Boolean).join(', ')}</dd></>}
+            {stroj.renovoval && (
+              <>
+                <dt data-i18n="tRenovoval">Renovoval</dt>
+                <dd>{stroj.renovoval_odkaz ? <a href={stroj.renovoval_odkaz}>{stroj.renovoval}</a> : stroj.renovoval}</dd>
+              </>
+            )}
+          </dl>
+
+          {(stroj.cislo_ramu_maskovane || stroj.cislo_motoru_maskovane) && (
+            <div class="serial-plate">
+              {stroj.cislo_ramu_maskovane && (
+                <div class="serial">
+                  <span class="serial__label" data-i18n="tRam">Číslo rámu</span>
+                  <span class="serial__val">{stroj.cislo_ramu_maskovane}</span>
+                </div>
               )}
-            </tbody>
-          </table>
+              {stroj.cislo_motoru_maskovane && (
+                <div class="serial">
+                  <span class="serial__label" data-i18n="tMotor">Číslo motoru</span>
+                  <span class="serial__val">{stroj.cislo_motoru_maskovane}</span>
+                </div>
+              )}
+            </div>
+          )}
 
           {fotky.length > 0 && (
             <div class="galerie">
@@ -120,7 +141,7 @@ const jePribehEn = !!stroj?.pribeh_en;
           )}
 
           <p class="zpet"><a href="/registr/" data-i18n="zpet">← Zpět do registru</a></p>
-        </>
+        </div>
       )}
 
     </article>
@@ -130,7 +151,7 @@ const jePribehEn = !!stroj?.pribeh_en;
 <script define:vars={{ jePribehEn }}>
   const T = {
     en: {
-      prodej: 'For sale', tTyp: 'Type', tRok: 'Year of manufacture', tFaze: 'Production phase',
+      zaznamC: 'Record no.', prodej: 'For sale', tTyp: 'Type', tRok: 'Year of manufacture', tFaze: 'Production phase',
       tStav: 'Condition', tBarva: 'Colour', tRam: 'Frame number', tMotor: 'Engine number',
       tKde: 'Location', tRenovoval: 'Restored by', tPribeh: "Machine's story",
       ctaText: 'Interested in this machine, or do you know its history? Write to us and we will put you in touch with the owner.',
@@ -155,28 +176,55 @@ const jePribehEn = !!stroj?.pribeh_en;
 </script>
 
 <style>
-  .langbar{display:flex;gap:0;margin:18px 0 20px}
+  .mono{font-family:'SF Mono','Courier New',monospace}
+
+  .dosier{border:1px solid var(--rule);border-top:3px double var(--ink);
+    background:var(--paper);padding:28px 32px 32px;margin:20px 0 40px}
+  .dosier--prazdny{border-top:1px solid var(--rule);padding:28px 32px}
+
+  .dosier__top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .dosier__top .kicker{margin:0}
+
+  .langbar{display:flex;gap:0}
   .lb-btn{font-family:var(--disp);font-size:12px;letter-spacing:.11em;text-transform:uppercase;
     background:var(--paper-2);border:1px solid var(--ink);color:var(--mute);padding:7px 14px;cursor:pointer}
   .lb-btn+.lb-btn{border-left:0}
   .lb-btn.is-on{background:var(--ink);color:var(--paper)}
 
-  .badge{display:inline-block;font-family:var(--disp);font-size:11.5px;letter-spacing:.1em;
-    text-transform:uppercase;background:var(--red);color:var(--paper);padding:5px 12px;margin-bottom:16px}
+  .plate{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;
+    margin:14px 0 28px;padding-bottom:22px;border-bottom:1px solid var(--rule)}
+  .plate h1{margin:0}
+  .plate__sub{margin:8px 0 0;font-size:14.5px;color:var(--mute)}
 
-  .tabulka{width:100%;border-collapse:collapse;margin:0 0 26px}
-  .tabulka th,.tabulka td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule);font-size:15.5px}
-  .tabulka th{width:200px;font-family:var(--disp);font-size:11.5px;letter-spacing:.1em;
-    text-transform:uppercase;color:var(--mute);font-weight:500}
+  .stamp{display:inline-block;flex:0 0 auto;font-family:var(--disp);font-size:12px;letter-spacing:.15em;
+    text-transform:uppercase;color:var(--red);border:2.5px solid var(--red);border-radius:4px;
+    padding:7px 16px;margin:2px 4px 0 0;transform:rotate(-4deg);white-space:nowrap}
 
-  .galerie{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:28px}
-  .galerie figure{margin:0}
-  .galerie img{width:100%;height:auto;display:block;border:1px solid var(--ink)}
-  .galerie figcaption{font-size:12.5px;color:var(--mute);margin-top:5px}
+  .spec{display:grid;grid-template-columns:200px 1fr;margin:0 0 24px}
+  .spec dt{font-family:var(--disp);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--mute);font-weight:500;padding:10px 12px 10px 0;border-bottom:1px solid var(--rule)}
+  .spec dd{margin:0;font-size:15.5px;padding:10px 0;border-bottom:1px solid var(--rule)}
 
-  .pribeh{margin-bottom:28px}
-  .pribeh h2{font-family:var(--disp);font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--red)}
-  .pribeh p{font-size:16px;line-height:1.6}
+  .serial-plate{display:flex;gap:2px;flex-wrap:wrap;margin:0 0 28px}
+  .serial{background:var(--ink);color:var(--paper);padding:12px 18px;min-width:190px}
+  .serial__label{display:block;font-family:var(--disp);font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;color:rgba(255,255,255,.55)}
+  .serial__val{display:block;margin-top:5px;font-family:'SF Mono','Courier New',monospace;
+    font-size:17px;letter-spacing:.09em}
+
+  .galerie{counter-reset:frame;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+    gap:2px;background:var(--ink);border:1px solid var(--ink);margin:0 0 28px}
+  .galerie figure{counter-increment:frame;margin:0;background:var(--paper);position:relative}
+  .galerie figure::before{content:'#' counter(frame,decimal-leading-zero);position:absolute;top:8px;left:8px;
+    background:var(--ink);color:var(--paper);font-family:'SF Mono','Courier New',monospace;
+    font-size:10px;letter-spacing:.05em;padding:2px 6px}
+  .galerie img{width:100%;height:200px;object-fit:cover;display:block}
+  .galerie figcaption{padding:8px 10px;font-size:12px;color:var(--mute);border-top:1px solid var(--rule)}
+
+  .pribeh{border-left:3px solid var(--red);padding:2px 0 2px 20px;margin:0 0 28px}
+  .pribeh h2{margin:0 0 10px;font-family:var(--disp);font-size:11.5px;letter-spacing:.15em;
+    text-transform:uppercase;color:var(--red)}
+  .pribeh p{margin:0;font-size:16px;line-height:1.65}
 
   .kontakt-cta{border:1px solid var(--rule);background:var(--paper-2);padding:18px 20px;margin-bottom:24px}
   .kontakt-cta p{margin:0 0 12px;font-size:15px}
@@ -184,5 +232,15 @@ const jePribehEn = !!stroj?.pribeh_en;
     font-family:var(--disp);font-size:13px;letter-spacing:.12em;text-transform:uppercase;padding:10px 20px;text-decoration:none}
   .kontakt-cta .btn:hover{background:var(--ink)}
 
+  .zpet{margin:0}
   .zpet a{font-family:var(--disp);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+
+  @media (max-width:640px){
+    .dosier{padding:22px 18px 26px}
+    .plate{flex-direction:column}
+    .spec{grid-template-columns:1fr}
+    .spec dt{padding:14px 0 2px;border-bottom:0}
+    .spec dd{padding:0 0 12px}
+    .serial{flex:1 1 100%}
+  }
 </style>
