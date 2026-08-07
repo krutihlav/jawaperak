@@ -22,26 +22,42 @@ const [strojeRadky, ciselnikTyp, ciselnikStav, ciselnikFaze] = await Promise.all
 ]);
 
 const stroj = strojeRadky[0] ?? null;
-
-if (!stroj) {
-  Astro.response.status = 404;
-}
+if (!stroj) Astro.response.status = 404;
 
 const fotky = stroj
   ? await nacti(`stroje_fotky?stroj_id=eq.${stroj.id}&select=*&order=poradi`)
   : [];
+
+const radekTyp = stroj ? ciselnikTyp.find((t) => t.hodnota === stroj.typ) : null;
 
 function popis(seznam, hodnota) {
   const r = seznam.find((x) => x.hodnota === hodnota);
   return r ? r.popis_cs : (hodnota ?? '—');
 }
 
+// "Jiné záznamy" — volný dodatek jako na dobovém TP
+const jineZaznamy = stroj
+  ? [
+      stroj.vyrobni_faze ? popis(ciselnikFaze, stroj.vyrobni_faze) : null,
+      popis(ciselnikStav, stroj.stav),
+      stroj.na_prodej ? 'nabízen k prodeji' : null,
+    ].filter(Boolean).join(' · ')
+  : '';
+
+const znackaTyp = stroj
+  ? `Jawa ${radekTyp?.objem_ccm && radekTyp.objem_ccm > 300 ? '350' : '250'}, typ ${stroj.typ}`
+  : '';
+
+const datumZapisu = stroj?.schvaleno_at
+  ? new Date(stroj.schvaleno_at).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })
+  : '—';
+
 const titulek = stroj
-  ? `Jawa Pérák ${popis(ciselnikTyp, stroj.typ)}${stroj.rok_vyroby ? ' (' + stroj.rok_vyroby + ')' : ''} — registr | jawaperak.cz`
+  ? `${znackaTyp}${stroj.rok_vyroby ? ' (' + stroj.rok_vyroby + ')' : ''} — registr Péráků | jawaperak.cz`
   : 'Stroj nenalezen | jawaperak.cz';
 
 const popisStranky = stroj
-  ? (stroj.pribeh ? stroj.pribeh.slice(0, 160) : `Záznam v registru dochovaných strojů Jawa Pérák, typ ${popis(ciselnikTyp, stroj.typ)}.`)
+  ? (stroj.pribeh ? stroj.pribeh.slice(0, 160) : `Záznam v registru dochovaných strojů Jawa Pérák, ${znackaTyp}.`)
   : 'Tento záznam v registru jsme nenašli.';
 
 const jePribehEn = !!stroj?.pribeh_en;
@@ -52,65 +68,149 @@ const jePribehEn = !!stroj?.pribeh_en;
     <article class="art">
 
       {!stroj && (
-        <div class="dosier dosier--prazdny">
+        <>
           <p class="kicker">Registr</p>
           <h1>Stroj nenalezen</h1>
           <p class="lead">Záznam s tímto odkazem neexistuje, nebo ještě čeká na schválení.</p>
           <p class="zpet"><a href="/registr/">← Zpět do registru</a></p>
-        </div>
+        </>
       )}
 
       {stroj && (
-        <div class="dosier">
-          <div class="dosier__top">
-            <p class="kicker">Registr</p>
+        <>
+          <div class="hlava">
+            <div>
+              <p class="kicker">Registr</p>
+              <h1>{znackaTyp}{stroj.rok_vyroby ? <> <span class="rok">{stroj.rok_vyroby}</span></> : null}</h1>
+            </div>
             <div class="langbar">
               <button type="button" class="lb-btn is-on" data-lang="cs">Česky</button>
               <button type="button" class="lb-btn" data-lang="en">English</button>
             </div>
           </div>
 
-          <div class="plate">
-            <div class="plate__main">
-              <h1>{`Jawa Pérák ${popis(ciselnikTyp, stroj.typ)}`}</h1>
-              <p class="plate__sub">
-                <span data-i18n="zaznamC">Záznam č.</span> <span class="mono">{stroj.slug}</span>
-                {stroj.rok_vyroby ? <> · {stroj.rok_vyroby}</> : null}
-              </p>
+          <div class="tp" role="img" aria-label={`Záznam stroje ${znackaTyp} ve stylu dobového technického průkazu`}>
+            <div class="tp__str tp__str--l">
+              <p class="tp__nadpis" data-i18n="tuNadpis">Technické údaje</p>
+              <table class="tpt">
+                <tbody>
+                  <tr>
+                    <td class="lb"><span data-i18n="lDruh">Druh<br>vozidla</span></td>
+                    <td colspan="2" class="c"><span class="ruka">motocykl</span></td>
+                    <td colspan="2" class="c">
+                      <span class="ruka">{stroj.rok_vyroby ?? '—'}</span>
+                      <i data-i18n="lRok">rok výroby</i>
+                    </td>
+                    <td colspan="2" class="c">
+                      <span class="ruka">{stroj.barva ?? '—'}</span>
+                      <i data-i18n="lBarva">barva</i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="lb"><span data-i18n="lTovarni">Tovární <b>(F)</b><br>zn. a typ</span></td>
+                    <td colspan="6" class="v"><span class="ruka ruka--vel">{znackaTyp}</span></td>
+                  </tr>
+                  <tr>
+                    <td class="lb"><span data-i18n="lVyrC">Výrobní <b>(G)</b><br>číslo</span></td>
+                    <td colspan="3" class="c">
+                      <span class="ruka">{stroj.cislo_ramu_maskovane ?? '—'}</span>
+                      <i data-i18n="lPodvozku">podvozku</i>
+                    </td>
+                    <td colspan="3" class="c">
+                      <span class="ruka">{stroj.cislo_motoru_maskovane ?? '—'}</span>
+                      <i data-i18n="lMotoru">motoru</i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="lb"><span data-i18n="lHmot">Hmotnost</span></td>
+                    <td colspan="3" class="c">
+                      <span class="ruka">{radekTyp?.hmotnost_kg ?? '—'}</span>
+                      <i data-i18n="lSucha">suchá, kg</i>
+                    </td>
+                    <td colspan="3" class="c">
+                      <span class="ruka">{radekTyp?.objem_ccm ?? '—'}</span>
+                      <i data-i18n="lObjem">objem, ccm</i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="lb"><span data-i18n="lMist">Počet<br>míst</span></td>
+                    <td colspan="2" class="c">
+                      <span class="ruka">{radekTyp?.pocet_mist ?? '—'}</span>
+                      <i data-i18n="lSezeni">k sezení</i>
+                    </td>
+                    <td colspan="2" class="c"><span class="ruka">—</span><i data-i18n="lStani">k stání</i></td>
+                    <td colspan="2" class="c"><span class="ruka">—</span><i data-i18n="lLuzek">lůžek</i></td>
+                  </tr>
+                  <tr>
+                    <td class="lb lb--t"><span data-i18n="lJine">Jiné záznamy:</span></td>
+                    <td colspan="6" class="v v--t"><span class="ruka ruka--mal">{jineZaznamy}</span></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            {stroj.na_prodej && <p class="stamp" data-i18n="prodej">Na prodej</p>}
+
+            <div class="tp__str tp__str--r">
+              <div class="spz">
+                <span class="spz__lb">SPZ <b>(A)</b></span>
+                <div class="spz__pole">
+                  <span class="ruka spz__val">{stroj.spz_historicka ?? ''}</span>
+                </div>
+              </div>
+
+              <table class="tpt tpt--r">
+                <tbody>
+                  <tr>
+                    <td rowspan="2" class="lb lb--m"><span data-i18n="lDrzitel">Držitel</span></td>
+                    <td class="kod kod--b0"><b>(C)</b></td>
+                    <td class="v v--b0 v--p"><span class="skryto" data-i18n="lSkryto">skryto</span> <i data-i18n="lPrijmeni">příjmení</i></td>
+                  </tr>
+                  <tr>
+                    <td class="kod kod--t0"><b>(D)</b></td>
+                    <td class="v v--t0 v--p"><span class="skryto" data-i18n="lSkryto2">skryto</span> <i data-i18n="lJmeno">jméno</i></td>
+                  </tr>
+                  <tr>
+                    <td class="lb"><span data-i18n="lBydliste">Bydliště</span></td>
+                    <td class="kod"><b>(E)</b></td>
+                    <td class="v"><span class="ruka ruka--mal">{[stroj.region, stroj.zeme].filter(Boolean).join(', ') || '—'}</span></td>
+                  </tr>
+                  <tr>
+                    <td class="lb"><span data-i18n="lDatum">Datum</span></td>
+                    <td class="kod"><b>(B)</b></td>
+                    <td class="v"><span class="ruka ruka--mal">{datumZapisu}</span></td>
+                  </tr>
+                  <tr>
+                    <td class="lb"><span data-i18n="lZapis">Zápis</span></td>
+                    <td colspan="2" class="v v--razitko">
+                      <span class="ruka ruka--mal">{stroj.renovoval ?? 'registr jawaperak.cz'}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <svg class="razitko" viewBox="0 0 120 120" aria-hidden="true">
+                <defs>
+                  <filter id="inkr"><feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="5" seed="21"/><feDisplacementMap in="SourceGraphic" scale="3"/></filter>
+                  <path id="rt" d="M 21,60 A 39,39 0 0 1 99,60" fill="none"/>
+                  <path id="rb" d="M 101,63 A 41,41 0 0 1 19,63" fill="none"/>
+                </defs>
+                <g filter="url(#inkr)" opacity=".72">
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="#B3272C" stroke-width="3" stroke-dasharray="90 2 160 3 60 2"/>
+                  <circle cx="60" cy="60" r="44" fill="none" stroke="#B3272C" stroke-width="1"/>
+                  <text font-size="8.5" fill="#B3272C" font-family="Georgia,serif" font-weight="700" letter-spacing="1.9"><textPath href="#rt" startOffset="50%" text-anchor="middle">REGISTR DOCHOVANÝCH</textPath></text>
+                  <text font-size="7.5" fill="#B3272C" font-family="Georgia,serif" letter-spacing="1.7"><textPath href="#rb" startOffset="50%" text-anchor="middle">JAWAPERAK.CZ</textPath></text>
+                  <line x1="30" y1="52" x2="90" y2="52" stroke="#B3272C" stroke-width="1"/>
+                  <text x="60" y="66" font-size="15" fill="#B3272C" font-family="Georgia,serif" font-weight="700" text-anchor="middle" letter-spacing="1">PÉRÁK</text>
+                  <line x1="30" y1="72" x2="90" y2="72" stroke="#B3272C" stroke-width="1"/>
+                  <text x="60" y="82" font-size="8" fill="#B3272C" font-family="Georgia,serif" text-anchor="middle">{stroj.schvaleno_at ? new Date(stroj.schvaleno_at).getFullYear() : ''}</text>
+                </g>
+              </svg>
+            </div>
           </div>
 
-          <dl class="spec">
-            <dt data-i18n="tTyp">Typ</dt><dd>{popis(ciselnikTyp, stroj.typ)}</dd>
-            {stroj.vyrobni_faze && <><dt data-i18n="tFaze">Výrobní fáze</dt><dd>{popis(ciselnikFaze, stroj.vyrobni_faze)}</dd></>}
-            <dt data-i18n="tStav">Stav</dt><dd>{popis(ciselnikStav, stroj.stav)}</dd>
-            {stroj.barva && <><dt data-i18n="tBarva">Barva</dt><dd>{stroj.barva}</dd></>}
-            {(stroj.zeme || stroj.region) && <><dt data-i18n="tKde">Kde</dt><dd>{[stroj.region, stroj.zeme].filter(Boolean).join(', ')}</dd></>}
-            {stroj.renovoval && (
-              <>
-                <dt data-i18n="tRenovoval">Renovoval</dt>
-                <dd>{stroj.renovoval_odkaz ? <a href={stroj.renovoval_odkaz}>{stroj.renovoval}</a> : stroj.renovoval}</dd>
-              </>
-            )}
-          </dl>
-
-          {(stroj.cislo_ramu_maskovane || stroj.cislo_motoru_maskovane) && (
-            <div class="serial-plate">
-              {stroj.cislo_ramu_maskovane && (
-                <div class="serial">
-                  <span class="serial__label" data-i18n="tRam">Číslo rámu</span>
-                  <span class="serial__val">{stroj.cislo_ramu_maskovane}</span>
-                </div>
-              )}
-              {stroj.cislo_motoru_maskovane && (
-                <div class="serial">
-                  <span class="serial__label" data-i18n="tMotor">Číslo motoru</span>
-                  <span class="serial__val">{stroj.cislo_motoru_maskovane}</span>
-                </div>
-              )}
-            </div>
-          )}
+          <p class="tp__pozn" data-i18n="poznZdroj">
+            Hmotnost a objem jsou typové údaje z veřejných pramenů, ne měření
+            konkrétního stroje. Výrobní čísla jsou záměrně zkrácená.
+          </p>
 
           {fotky.length > 0 && (
             <div class="galerie">
@@ -141,7 +241,7 @@ const jePribehEn = !!stroj?.pribeh_en;
           )}
 
           <p class="zpet"><a href="/registr/" data-i18n="zpet">← Zpět do registru</a></p>
-        </div>
+        </>
       )}
 
     </article>
@@ -151,9 +251,13 @@ const jePribehEn = !!stroj?.pribeh_en;
 <script define:vars={{ jePribehEn }}>
   const T = {
     en: {
-      zaznamC: 'Record no.', prodej: 'For sale', tTyp: 'Type', tRok: 'Year of manufacture', tFaze: 'Production phase',
-      tStav: 'Condition', tBarva: 'Colour', tRam: 'Frame number', tMotor: 'Engine number',
-      tKde: 'Location', tRenovoval: 'Restored by', tPribeh: "Machine's story",
+      tuNadpis: 'Technical data', lDruh: 'Vehicle<br>type', lRok: 'year of manufacture', lBarva: 'colour',
+      lTovarni: 'Make <b>(F)</b><br>and model', lVyrC: 'Serial <b>(G)</b><br>number',
+      lPodvozku: 'frame', lMotoru: 'engine', lHmot: 'Weight', lSucha: 'dry, kg', lObjem: 'capacity, cc',
+      lMist: 'Seating', lSezeni: 'seats', lStani: 'standing', lLuzek: 'berths', lJine: 'Other records:',
+      lDrzitel: 'Keeper', lSkryto: 'hidden', lSkryto2: 'hidden', lPrijmeni: 'surname', lJmeno: 'first name',
+      lBydliste: 'Address', lDatum: 'Date', lZapis: 'Entry', tPribeh: "Machine's story",
+      poznZdroj: 'Weight and capacity are model figures from public sources, not measurements of this machine. Serial numbers are deliberately shortened.',
       ctaText: 'Interested in this machine, or do you know its history? Write to us and we will put you in touch with the owner.',
       ctaBtn: 'Contact via form', zpet: '← Back to the registry'
     }
@@ -176,48 +280,67 @@ const jePribehEn = !!stroj?.pribeh_en;
 </script>
 
 <style>
-  .mono{font-family:'SF Mono','Courier New',monospace}
+  @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap');
 
-  .dosier{border:1px solid var(--rule);border-top:3px double var(--ink);
-    background:var(--paper);padding:28px 32px 32px;margin:20px 0 40px}
-  .dosier--prazdny{border-top:1px solid var(--rule);padding:28px 32px}
+  .hlava{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+  .hlava h1{margin:0}
+  .rok{color:var(--mute);font-weight:400}
 
-  .dosier__top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-  .dosier__top .kicker{margin:0}
-
-  .langbar{display:flex;gap:0}
+  .langbar{display:flex;gap:0;flex:0 0 auto;margin-top:6px}
   .lb-btn{font-family:var(--disp);font-size:12px;letter-spacing:.11em;text-transform:uppercase;
     background:var(--paper-2);border:1px solid var(--ink);color:var(--mute);padding:7px 14px;cursor:pointer}
   .lb-btn+.lb-btn{border-left:0}
   .lb-btn.is-on{background:var(--ink);color:var(--paper)}
 
-  .plate{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;
-    margin:14px 0 28px;padding-bottom:22px;border-bottom:1px solid var(--rule)}
-  .plate h1{margin:0}
-  .plate__sub{margin:8px 0 0;font-size:14.5px;color:var(--mute)}
+  .tp{display:flex;background:#C3CCD1;border:1px solid #949ba0;margin:22px 0 8px;
+    font-family:Arial,Helvetica,sans-serif;color:#16191b}
+  .tp__str{padding:14px 14px 16px}
+  .tp__str--l{flex:1.08;border-right:1px dashed #7d868b}
+  .tp__str--r{flex:1;display:flex;flex-direction:column;position:relative}
+  .tp__nadpis{text-align:center;font-size:12px;font-weight:500;letter-spacing:.22em;
+    color:#16191b;margin:0 0 9px}
 
-  .stamp{display:inline-block;flex:0 0 auto;font-family:var(--disp);font-size:12px;letter-spacing:.15em;
-    text-transform:uppercase;color:var(--red);border:2.5px solid var(--red);border-radius:4px;
-    padding:7px 16px;margin:2px 4px 0 0;transform:rotate(-4deg);white-space:nowrap}
+  .tpt{width:100%;border-collapse:collapse;table-layout:fixed}
+  .tpt--r{flex:1}
+  .tpt td{border:1.5px solid #16191b;padding:3px 5px;vertical-align:middle}
+  .tpt .lb{font-size:11px;line-height:1.25;width:31%}
+  .tpt .lb b{float:right;font-weight:400}
+  .lb--t{vertical-align:top;padding-top:8px}
+  .lb--m{vertical-align:middle}
+  .tpt .kod{width:12%;font-size:11px;vertical-align:top}
+  .tpt .c{text-align:center}
+  .tpt .v--t{vertical-align:top}
+  .tpt .v--p{text-align:right}
+  .kod--b0,.v--b0{border-bottom:0}
+  .kod--t0,.v--t0{border-top:0}
+  .tpt i{display:block;font-size:11px;font-style:normal;line-height:1;color:#16191b}
+  .v--p i{display:inline}
 
-  .spec{display:grid;grid-template-columns:200px 1fr;margin:0 0 24px}
-  .spec dt{font-family:var(--disp);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--mute);font-weight:500;padding:10px 12px 10px 0;border-bottom:1px solid var(--rule)}
-  .spec dd{margin:0;font-size:15.5px;padding:10px 0;border-bottom:1px solid var(--rule)}
+  .ruka{font-family:Caveat,'Segoe Script','Bradley Hand',cursive;font-size:20px;color:#1b2530;line-height:1.1}
+  .ruka--vel{font-size:22px}
+  .ruka--mal{font-size:18px}
+  .skryto{font-size:11px;color:#5c666c;font-style:italic}
 
-  .serial-plate{display:flex;gap:2px;flex-wrap:wrap;margin:0 0 28px}
-  .serial{background:var(--ink);color:var(--paper);padding:12px 18px;min-width:190px}
-  .serial__label{display:block;font-family:var(--disp);font-size:10px;letter-spacing:.14em;
-    text-transform:uppercase;color:rgba(255,255,255,.55)}
-  .serial__val{display:block;margin-top:5px;font-family:'SF Mono','Courier New',monospace;
-    font-size:17px;letter-spacing:.09em}
+  .spz{display:flex;align-items:center;gap:7px;margin-bottom:10px}
+  .spz__lb{font-size:12px;font-weight:500;white-space:nowrap}
+  .spz__lb b{font-weight:400;font-size:11px}
+  .spz__pole{flex:1;min-height:30px;display:flex;align-items:center;justify-content:center;
+    background:repeating-linear-gradient(to bottom,#16191b 0 1px,transparent 1px 3px)}
+  .spz__val{font-size:24px;font-weight:600;letter-spacing:.06em;
+    text-shadow:0 0 4px #C3CCD1,0 0 4px #C3CCD1,0 0 3px #C3CCD1}
+
+  .v--razitko{height:46px}
+  .razitko{position:absolute;right:6px;bottom:4px;width:88px;height:88px;
+    transform:rotate(6deg);pointer-events:none}
+
+  .tp__pozn{font-size:13px;color:var(--mute);margin:0 0 26px;line-height:1.5}
 
   .galerie{counter-reset:frame;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
     gap:2px;background:var(--ink);border:1px solid var(--ink);margin:0 0 28px}
   .galerie figure{counter-increment:frame;margin:0;background:var(--paper);position:relative}
   .galerie figure::before{content:'#' counter(frame,decimal-leading-zero);position:absolute;top:8px;left:8px;
     background:var(--ink);color:var(--paper);font-family:'SF Mono','Courier New',monospace;
-    font-size:10px;letter-spacing:.05em;padding:2px 6px}
+    font-size:10px;padding:2px 6px}
   .galerie img{width:100%;height:200px;object-fit:cover;display:block}
   .galerie figcaption{padding:8px 10px;font-size:12px;color:var(--mute);border-top:1px solid var(--rule)}
 
@@ -229,18 +352,21 @@ const jePribehEn = !!stroj?.pribeh_en;
   .kontakt-cta{border:1px solid var(--rule);background:var(--paper-2);padding:18px 20px;margin-bottom:24px}
   .kontakt-cta p{margin:0 0 12px;font-size:15px}
   .kontakt-cta .btn{display:inline-block;background:var(--red);color:var(--paper);border:2px solid var(--ink);
-    font-family:var(--disp);font-size:13px;letter-spacing:.12em;text-transform:uppercase;padding:10px 20px;text-decoration:none}
+    font-family:var(--disp);font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+    padding:10px 20px;text-decoration:none}
   .kontakt-cta .btn:hover{background:var(--ink)}
 
   .zpet{margin:0}
   .zpet a{font-family:var(--disp);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
 
-  @media (max-width:640px){
-    .dosier{padding:22px 18px 26px}
-    .plate{flex-direction:column}
-    .spec{grid-template-columns:1fr}
-    .spec dt{padding:14px 0 2px;border-bottom:0}
-    .spec dd{padding:0 0 12px}
-    .serial{flex:1 1 100%}
+  @media (max-width:760px){
+    .tp{flex-direction:column}
+    .tp__str--l{border-right:0;border-bottom:1px dashed #7d868b}
+    .razitko{width:76px;height:76px}
+  }
+  @media (max-width:420px){
+    .ruka{font-size:17px}
+    .ruka--vel{font-size:19px}
+    .tpt .lb{width:34%;font-size:10.5px}
   }
 </style>
