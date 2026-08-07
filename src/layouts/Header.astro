@@ -1,0 +1,249 @@
+---
+// ODHADNUTO: nemám přístup k současnému Header.astro, takže jde o novou
+// verzi psanou podle struktury webu z architektury (sekce 5) a dřív
+// odladěného designu (Oswald, teplý papír, Jawa červená). Zkontrolujte
+// prosím cestu importu a název souboru proti zbytku repa.
+// Podřízené odkazy u /perak/ a /navody/ počítají i se stránkami, které
+// ještě nejsou publikované (identifikace, podvozek, elektro atd.) —
+// dokud nejsou live, buď je z pole vynechte, nebo je nechte a přidávejte
+// je do repa postupně, jak vzniknou.
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href="/" class="site-header__logo">
+      jawaperak<span class="site-header__logo-dot">.cz</span>
+    </a>
+
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-hidden="true" />
+    <label for="nav-toggle" class="hamburger" aria-label="Otevřít menu">
+      <span></span><span></span><span></span>
+    </label>
+
+    <nav class="site-nav" aria-label="Hlavní navigace">
+      <ul class="site-nav__list">
+        <li class="site-nav__item site-nav__item--dropdown">
+          <a href="/perak/">Pérák</a>
+          <ul class="site-nav__dropdown">
+            <li><a href="/perak/typ-10-a-typ-11/">Typ 10 a typ 11</a></li>
+            <li><a href="/perak/motor-12-vs-18/">Motor 12 vs 18</a></li>
+            <li><a href="/perak/identifikace/">Identifikace</a></li>
+            <li><a href="/perak/podvozek/">Podvozek a odpružení</a></li>
+            <li><a href="/perak/elektro/">Elektroinstalace</a></li>
+            <li><a href="/perak/vojenske-verze/">Vojenské verze</a></li>
+            <li><a href="/perak/barvy-a-provedeni/">Barvy a provedení</a></li>
+            <li><a href="/perak/technicke-udaje/">Technické údaje</a></li>
+          </ul>
+        </li>
+
+        <li class="site-nav__item"><a href="/registr/">Registr</a></li>
+        <li class="site-nav__item"><a href="/renovace/">Renovace</a></li>
+
+        <li class="site-nav__item site-nav__item--dropdown">
+          <a href="/navody/">Návody</a>
+          <ul class="site-nav__dropdown">
+            <li><a href="/navody/jak-koupit-perak/">Jak koupit Pérák</a></li>
+            <li><a href="/navody/kolik-stoji-renovace/">Kolik stojí renovace</a></li>
+            <li><a href="/navody/registrace-historickeho-vozidla/">Registrace historického vozidla</a></li>
+          </ul>
+        </li>
+
+        <li class="site-nav__item"><a href="/historie/">Historie</a></li>
+        <li class="site-nav__item"><a href="/perak-vs-perak/">Pérák vs Perak</a></li>
+        <li class="site-nav__item"><a href="/sluzby/">Služby</a></li>
+        <li class="site-nav__item"><a href="/kontakt/">Kontakt</a></li>
+        <li class="site-nav__item site-nav__item--lang"><a href="/en/">EN</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    --color-paper: #e8dec8;
+    --color-red: #a81c21;
+    --color-ink: #221d15;
+    font-family: 'Oswald', sans-serif;
+    background: var(--color-paper);
+    border-bottom: 1px solid rgba(34, 29, 21, 0.15);
+    position: relative;
+    z-index: 100;
+  }
+
+  .site-header__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .site-header__logo {
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    color: var(--color-ink);
+    text-transform: uppercase;
+  }
+  .site-header__logo-dot {
+    color: var(--color-red);
+  }
+
+  /* checkbox hack — nemá vizuální stopu, jen řídí stav menu */
+  .nav-toggle {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* --- Hamburger (viditelný jen na mobilu) --- */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 26px;
+    height: 20px;
+    cursor: pointer;
+  }
+  .hamburger span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: var(--color-ink);
+    border-radius: 1px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  /* --- Desktop navigace --- */
+  .site-nav__list {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .site-nav__item > a {
+    text-decoration: none;
+    color: var(--color-ink);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .site-nav__item > a:hover {
+    color: var(--color-red);
+  }
+  .site-nav__item--lang > a {
+    border: 1px solid var(--color-ink);
+    padding: 0.15rem 0.5rem;
+    border-radius: 2px;
+  }
+
+  .site-nav__item--dropdown {
+    position: relative;
+  }
+  .site-nav__dropdown {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 220px;
+    background: var(--color-paper);
+    border: 1px solid rgba(34, 29, 21, 0.15);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+  }
+  .site-nav__dropdown li a {
+    display: block;
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+  .site-nav__item--dropdown:hover > .site-nav__dropdown,
+  .site-nav__item--dropdown:focus-within > .site-nav__dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  /* =========================================================
+     MOBIL — normální burger menu, žádný dropdown-on-hover
+     ========================================================= */
+  @media (max-width: 860px) {
+    .hamburger {
+      display: flex;
+    }
+
+    .site-nav {
+      position: fixed;
+      inset: 0 0 0 auto;
+      width: min(80vw, 320px);
+      height: 100vh;
+      background: var(--color-paper);
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      overflow-y: auto;
+      padding: 4.5rem 1.5rem 2rem;
+      box-shadow: -8px 0 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .site-nav__list {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    .site-nav__item {
+      width: 100%;
+      border-bottom: 1px solid rgba(34, 29, 21, 0.1);
+    }
+    .site-nav__item > a {
+      display: block;
+      padding: 0.75rem 0;
+    }
+
+    /* Na mobilu se podpoložky nezobrazují jako vyskakovací dropdown,
+       ale rovnou rozbalené pod odkazem — jednodušší na dotyk */
+    .site-nav__dropdown {
+      position: static;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      box-shadow: none;
+      border: none;
+      background: transparent;
+      padding: 0 0 0.5rem 1rem;
+    }
+    .site-nav__dropdown li a {
+      padding: 0.4rem 0;
+    }
+
+    .site-nav__item--lang {
+      margin-top: 0.5rem;
+    }
+
+    /* Otevření menu checkboxem */
+    .nav-toggle:checked ~ .site-nav {
+      transform: translateX(0);
+    }
+
+    /* Animace hamburgeru na X */
+    .nav-toggle:checked ~ .hamburger span:nth-child(1) {
+      transform: translateY(9px) rotate(45deg);
+    }
+    .nav-toggle:checked ~ .hamburger span:nth-child(2) {
+      opacity: 0;
+    }
+    .nav-toggle:checked ~ .hamburger span:nth-child(3) {
+      transform: translateY(-9px) rotate(-45deg);
+    }
+  }
+</style>
