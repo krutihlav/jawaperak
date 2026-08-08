@@ -1,0 +1,514 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import RejstrikEncyklopedie from '../../../components/RejstrikEncyklopedie.astro';
+---
+
+<Layout
+  title="Výrobní čísla Jawa Pérák — kde jsou a jak podle nich datovat | jawaperak.cz"
+  description="Kde má Jawa Pérák výrobní číslo, jak z něj odhadnout rok výroby a proč rok na štítku nemusí být rokem výroby. Tabulka ročníků odvozená z 240 fotografií původních štítků."
+>
+  <div class="wrap">
+    <div class="artgrid">
+
+      <!-- ================= boční osnova ================= -->
+      <aside class="aside">
+        <p class="aside-lb">Na této stránce</p>
+        <ol id="toc">
+          <li><a href="#kde">Kde jsou čísla</a></li>
+          <li><a href="#datovani">Datování podle čísla</a></li>
+          <li><a href="#zlom">Zlom roku 1952</a></li>
+          <li><a href="#faze">Výrobní fáze</a></li>
+          <li><a href="#pasti">Pasti při určování</a></li>
+          <li><a href="#kolik">Kolik se jich vyrobilo</a></li>
+        </ol>
+        <div class="aside-foot">
+          <p class="t">Značení jistoty</p>
+          <div class="row"><span class="stamp kn">kniha</span></div>
+          <div class="row"><span class="stamp ov">ověřeno</span></div>
+          <div class="row"><span class="stamp od">odhad</span></div>
+          <div class="row"><span class="stamp sp">sporné</span></div>
+        </div>
+      </aside>
+
+      <!-- ================= článek ================= -->
+      <article class="art">
+
+        <details class="mtoc">
+          <summary><span>Obsah stránky — <span class="cur" id="curSec">Kde jsou čísla</span></span></summary>
+          <ol>
+            <li><a href="#kde">Kde jsou čísla</a></li>
+            <li><a href="#datovani">Datování podle čísla</a></li>
+            <li><a href="#zlom">Zlom roku 1952</a></li>
+            <li><a href="#faze">Výrobní fáze</a></li>
+            <li><a href="#pasti">Pasti při určování</a></li>
+            <li><a href="#kolik">Kolik se jich vyrobilo</a></li>
+          </ol>
+        </details>
+
+        <p class="kicker"><a href="/perak/">Encyklopedie</a> — Identifikace</p>
+        <h1>Výrobní čísla a datování Péráku</h1>
+        <p class="lead">
+          Kde má Pérák výrobní číslo, co z něj lze vyčíst a proč rok na štítku
+          nemusí být rok, kdy stroj vznikl. Včetně tabulky, kterou nikde jinde
+          nenajdete — protože jsme ji dopočítali sami.
+        </p>
+
+        <div class="meta">
+          <span>Aktualizováno <b>8. 8. 2026</b></span>
+          <span>Čtení <b>9 minut</b></span>
+          <span>Podklady <b>240 štítků a monografie</b></span>
+        </div>
+
+        <div class="tldr">
+          <h2>Co si odnést</h2>
+          <ol>
+            <li><span>Číslo motoru se u Péráku <b>shodovalo</b> s výrobním číslem motocyklu — rám, motor i štítek nesly stejné.</span></li>
+            <li><span>Pro stroje z let 1952–1954 je rok <b>přímo v čísle</b> (dvojčíslí na konci). U starších se odhaduje z rozsahu.</span></li>
+            <li><span>Odhad ročníku má toleranci <b>několika tisíc kusů</b>. Není to přesný převodník a nikdo takový nemá.</span></li>
+            <li><span>Výrobce na štítku <b>neurčuje</b> fázi výroby ani logo na nádrži. Tohle je nejčastější omyl.</span></li>
+          </ol>
+        </div>
+
+        <!-- ================= nástroj ================= -->
+        <div class="tool">
+          <div class="tool-h">
+            <span class="t">Datovací nástroj</span>
+            <span class="s">Orientační &middot; 250 i 350</span>
+          </div>
+          <div class="tool-b">
+            <div class="tool-row">
+              <input id="sn" type="text" placeholder="např. 11-12862" aria-label="Výrobní číslo">
+              <button id="go" type="button">Zjistit rok</button>
+            </div>
+            <p class="tool-hint">
+              Zadejte číslo ze štítku nebo z ražby v rámu — <code>11-12862</code>,
+              <code>18-8392</code> nebo <code>11-00096-52</code>.
+            </p>
+            <div class="tool-out" id="out" aria-live="polite">
+              <p class="yr"><small id="outLb">Odhadovaný rok výroby</small><span id="outYr">—</span></p>
+              <p class="dsc" id="outDsc"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= 01 ================= -->
+        <section class="sec" id="kde">
+          <div class="sec-h">
+            <span class="sec-n">01</span>
+            <h2>Kde jsou čísla</h2>
+            <p class="sub">Tři místa. Dvě z nich se dnes běžně nenajdou v pořádku — a to samo o sobě něco říká.</p>
+          </div>
+
+          <div class="spots">
+            <div class="spot">
+              <div class="im"><b>A</b></div>
+              <h4>Krk řízení</h4>
+              <p>Nýtovaný výrobní štítek: výrobce, typ, výrobní číslo, rok výroby.</p>
+              <div class="stx"><span class="stamp ov">ověřeno</span></div>
+            </div>
+            <div class="spot">
+              <div class="im"><b>B</b></div>
+              <h4>Zadní část rámu</h4>
+              <p>Ražené výrobní číslo rámu, na jäcklu u kastlíku, levá strana.</p>
+              <div class="stx"><span class="stamp ov">ověřeno</span></div>
+            </div>
+            <div class="spot">
+              <div class="im"><b>C</b></div>
+              <h4>Přední úchyt motoru</h4>
+              <p>Číslo motoru. Doloženo zatím jedním pramenem, ověřujeme.</p>
+              <div class="stx"><span class="stamp od">odhad</span></div>
+            </div>
+          </div>
+
+          <div class="box box--fact">
+            <span class="lb">Klíčové pravidlo</span>
+            <p>
+              U Péráků se <b>číslo motoru shodovalo s výrobním číslem motocyklu</b>.
+              Rám, motor i štítek nesly stejné číslo. Pokud dnes nesedí, motor byl
+              někdy vyměněn — což samo o sobě není podvod, bylo to běžné. Musí to
+              ale sedět s doklady.
+            </p>
+          </div>
+
+          <p>
+            Ražba v rámu je průkaznější než štítek. Štítků se dnes vyrábějí repliky
+            a samotný štítek nedokazuje nic. Řada dochovaných strojů ho navíc nemá
+            vůbec — po renovaci, po výměně předního rámu, nebo prostě proto, že
+            odpadl.
+          </p>
+
+          <div class="box box--dilna">
+            <span class="lb">Z dílny</span>
+            <p>
+              <i>Doplnit konkrétní případy z praxe: zalakovaná ražba, která neprošla
+              technickou, a stroj, u kterého čísla nesedla s velkým technickým
+              průkazem.</i>
+            </p>
+          </div>
+
+          <div class="rel">
+            <span class="t">Souvisí</span>
+            <a href="/sluzby/prohlidka-pred-koupi/">Prohlídka před koupí</a>
+            <a href="/navody/registrace-historickeho-vozidla/">Registrace historického vozidla</a>
+            <a href="/registr/">Registr dochovaných strojů</a>
+          </div>
+        </section>
+
+        <!-- ================= 02 ================= -->
+        <section class="sec" id="datovani">
+          <div class="sec-h">
+            <span class="sec-n">02</span>
+            <h2>Datování podle výrobního čísla</h2>
+            <p class="sub">Tabulka není převzatá. Vznikla dopočtem ze zhruba 240 fotografií původních štítků.</p>
+          </div>
+
+          <p>
+            Zdeněk Cuma sbírá od roku 2011 fotografie originálních výrobních štítků
+            od majitelů a publikuje je jako prostý seznam ve formátu
+            <em>číslo &ndash; rok &ndash; typ štítku</em>. Sám na svých stránkách píše, že tabulku
+            „rok podle výrobního čísla“ nikde nenašel, a proto seznam vede.
+            Seznam jsou surová data; tabulky níže jsou z nich odvozené.
+          </p>
+
+          <table class="spec">
+            <caption>Typ 10 / 11 — 250 ccm <span class="stamp od">odhad</span></caption>
+            <thead>
+              <tr><th>Rok</th><th>Rozsah výrobních čísel</th><th>Nejnižší doložený</th><th>Nejvyšší doložený</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="rl num" data-l="Rok">1946</td><td class="num" data-l="Rozsah">11-1 → 11-1 500<span class="bar"><i style="left:0;width:2%"></i></span></td><td class="num q" data-l="Nejnižší">11-34</td><td class="num q" data-l="Nejvyšší">11-1473</td></tr>
+              <tr><td class="rl num" data-l="Rok">1947</td><td class="num" data-l="Rozsah">11-1 500 → 11-15 800<span class="bar"><i style="left:2%;width:17%"></i></span></td><td class="num q" data-l="Nejnižší">11-1715</td><td class="num q" data-l="Nejvyšší">11-15799</td></tr>
+              <tr><td class="rl num" data-l="Rok">1948</td><td class="num" data-l="Rozsah">11-15 800 → 11-34 900<span class="bar"><i style="left:19%;width:23%"></i></span></td><td class="num q" data-l="Nejnižší">11-15823</td><td class="num q" data-l="Nejvyšší">11-34840</td></tr>
+              <tr><td class="rl num" data-l="Rok">1949</td><td class="num" data-l="Rozsah">11-34 900 → 11-53 800<span class="bar"><i style="left:42%;width:22%"></i></span></td><td class="num q" data-l="Nejnižší">11-34961</td><td class="num q" data-l="Nejvyšší">11-53753</td></tr>
+              <tr><td class="rl num" data-l="Rok">1950</td><td class="num" data-l="Rozsah">11-53 900 → 11-73 000<span class="bar"><i style="left:64%;width:23%"></i></span></td><td class="num q" data-l="Nejnižší">11-53909</td><td class="num q" data-l="Nejvyšší">11-72997</td></tr>
+              <tr><td class="rl num" data-l="Rok">1951</td><td class="num" data-l="Rozsah">11-73 900 → 11-84 100 a výš<span class="bar"><i style="left:87%;width:13%"></i></span></td><td class="num q" data-l="Nejnižší">11-73888</td><td class="num q" data-l="Nejvyšší">11-84109</td></tr>
+              <tr><td class="rl num" data-l="Rok">1952–54</td><td data-l="Rozsah">Řada se každý rok vrací k jedničce — viz sekce 03</td><td class="q" data-l="Nejnižší">—</td><td class="q" data-l="Nejvyšší">—</td></tr>
+            </tbody>
+          </table>
+
+          <div class="box box--fact">
+            <span class="lb">Metoda funguje — a máme to čím doložit <span class="stamp kn">kniha</span></span>
+            <p>
+              Procházkova monografie uvádí, že v roce 1946 vzniklo <b>1 360 strojů</b>
+              Jawa 250 Pérák. Náš nejvyšší doložený štítek z roku 1946 je 11-1473 —
+              rozdíl je v řádu desítek kusů. Dvě na sobě zcela nezávislá data se
+              potkávají.
+            </p>
+          </div>
+
+          <h3>Kde to naopak nesedí</h3>
+
+          <p>
+            Za rok 1947 kniha uvádí 17 162 kusů. Součet s rokem 1946 dává 18 522,
+            takže konec roku 1947 by měl ležet kolem čísla 18 500. Naše nejvyšší
+            doložené číslo roku 1947 je ale 15 799 — a od 15 823 už začínají štítky
+            s rokem 1948.
+          </p>
+
+          <div class="box box--warn">
+            <span class="lb">Co z toho plyne pro vás <span class="stamp sp">sporné</span></span>
+            <p>
+              Rok na štítku nemusí být rokem, kdy vznikl rám — spíš rokem expedice
+              nebo kompletace. Hranice mezi ročníky jsou <b>rozmazané v pásmu
+              několika tisíc kusů</b>, ne ostré.
+            </p>
+            <p>
+              Kdo podle téhle tabulky datuje stroj na rok přesně, udělá chybu.
+              Berte ji jako vodítko s tolerancí. Přesnost, kterou nemáme, tady
+              předstírat nebudeme.
+            </p>
+          </div>
+
+          <table class="spec">
+            <caption>Typ 12 a typ 18 — 350 ccm <span class="stamp od">odhad</span></caption>
+            <thead>
+              <tr><th>Rok</th><th>Typ</th><th>Rozsah</th><th>Nejnižší</th><th>Nejvyšší</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="rl num" data-l="Rok">1948</td><td class="rl" data-l="Typ">12</td><td class="num" data-l="Rozsah">12-1 → 12-900</td><td class="num q" data-l="Nejnižší">12-379</td><td class="num q" data-l="Nejvyšší">12-819</td></tr>
+              <tr><td class="rl num" data-l="Rok">1949</td><td class="rl" data-l="Typ">12</td><td class="num" data-l="Rozsah">12-900 → 12-4 500</td><td class="num q" data-l="Nejnižší">12-1423</td><td class="num q" data-l="Nejvyšší">12-4437</td></tr>
+              <tr><td class="rl num" data-l="Rok">1950</td><td class="rl" data-l="Typ">12</td><td class="num" data-l="Rozsah">12-4 500 → 12-10 000 (konec řady)</td><td class="num q" data-l="Nejnižší">12-3687</td><td class="num q" data-l="Nejvyšší">12-9576</td></tr>
+              <tr><td class="rl num" data-l="Rok">1950</td><td class="rl" data-l="Typ">18</td><td class="num" data-l="Rozsah">18-01 → 18-8 000</td><td class="num q" data-l="Nejnižší">—</td><td class="num q" data-l="Nejvyšší">—</td></tr>
+              <tr><td class="rl num" data-l="Rok">1951</td><td class="rl" data-l="Typ">18</td><td class="num" data-l="Rozsah">18-8 400 → 18-14 200</td><td class="num q" data-l="Nejnižší">18-8392</td><td class="num q" data-l="Nejvyšší">18-14151</td></tr>
+              <tr><td class="rl num" data-l="Rok">1952–55</td><td class="rl" data-l="Typ">18</td><td data-l="Rozsah">Řada od jedničky, rok v čísle</td><td class="num q" data-l="Nejnižší">—</td><td class="num q" data-l="Nejvyšší">—</td></tr>
+            </tbody>
+          </table>
+
+          <div class="box box--fact">
+            <span class="lb">Křížové ověření <span class="stamp ov">ověřeno</span></span>
+            <p>
+              Kniha uvádí, že sekundární řetěz měl 110 článků do čísla 12-10000 a
+              od 18-01 už 112. Fotografie štítků nezávisle ukazují, že řada typu 12
+              skončila kolem 12-9576 a typ 18 začal novou řadou od 01.
+              <b>Dva nezávislé prameny se potkávají na stejném čísle.</b>
+            </p>
+          </div>
+        </section>
+
+        <!-- ================= 03 ================= -->
+        <section class="sec" id="zlom">
+          <div class="sec-h">
+            <span class="sec-n">03</span>
+            <h2>Zlom roku 1952</h2>
+            <p class="sub">Od Nového roku 1952 se odhadovat nemusí. Rok je přímo v čísle.</p>
+          </div>
+
+          <p>
+            Od 1. ledna 1952 se každý rok čísluje samostatně od jedničky a za
+            výrobním číslem přibývá dvojčíslí roku. Číslo tedy vypadá takto:
+          </p>
+
+          <div class="box box--fact">
+            <span class="lb">Formát od roku 1952 <span class="stamp ov">ověřeno</span></span>
+            <p style="font-family:var(--disp);font-size:26px;letter-spacing:.1em;font-weight:500">
+              11&#8209;00001&#8209;<span style="color:var(--red)">52</span>
+            </p>
+            <p>Typ &middot; pořadové číslo v daném roce &middot; rok výroby</p>
+          </div>
+
+          <p>
+            Pro stroje z let 1952–1954 (u 350 do roku 1955) je tedy datace
+            jednoznačná a žádnou tabulku k ní nepotřebujete. Pro stroje z let
+            1946–1951 je řada průběžná a tabulky výše jsou jediné vodítko.
+          </p>
+        </section>
+
+        <!-- ================= 04 ================= -->
+        <section class="sec" id="faze">
+          <div class="sec-h">
+            <span class="sec-n">04</span>
+            <h2>Výrobní fáze — a proč se prameny neshodnou</h2>
+            <p class="sub">Dělení na tři fáze je sběratelský úzus, ne tovární terminologie. Monografie ho nepoužívá vůbec.</p>
+          </div>
+
+          <p>
+            Veteránská scéna dělí Péráky na tři fáze podle loga na nádrži. Na názvech
+            panuje shoda, na letopočtech ne:
+          </p>
+
+          <table class="spec">
+            <caption>Tři prameny, tři datace <span class="stamp sp">sporné</span></caption>
+            <thead>
+              <tr><th>Pramen</th><th>Fáze 1</th><th>Fáze 2</th><th>Fáze 3</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="rl" data-l="Pramen">zc-moto</td><td data-l="Fáze 1">Janeček 1946–48</td><td data-l="Fáze 2">Zbrojovka 1948–49(50)</td><td data-l="Fáze 3">Kolečko 1950–54</td></tr>
+              <tr><td class="rl" data-l="Pramen">veteranportal</td><td data-l="Fáze 1">FJ 1946–48</td><td data-l="Fáze 2">Zbrojovka 1948–49</td><td data-l="Fáze 3">Komunista 1950–54</td></tr>
+              <tr><td class="rl" data-l="Pramen">valka.cz</td><td data-l="Fáze 1">Janeček 1946–48</td><td data-l="Fáze 2">Zbrojovka <b>1948–51</b></td><td data-l="Fáze 3">Kolečko <b>1951</b>–54</td></tr>
+            </tbody>
+          </table>
+
+          <div class="box box--fact">
+            <span class="lb">Naše doporučení</span>
+            <p>
+              Navazujte fázi na <b>výrobní číslo, ne na rok</b> — logo FJ zhruba
+              do 11-26000, pak Zbrojovka, od roku 1950 prázdné kolečko. Číslo je
+              tvrdší údaj než letopočet.
+            </p>
+          </div>
+
+          <p>
+            Za zmínku stojí, proč vůbec „Zbrojovka“ na štítku je. Nejde o politické
+            přejmenování — na výrobě Jawy 250 Pérák se <strong>skutečně podílela
+            i Zbrojovka Brno</strong>, protože kapacita Jawy nestačila. Monografie to
+            dokládá dobovým prospektem v ruštině. <span class="stamp kn">kniha</span>
+          </p>
+        </section>
+
+        <!-- ================= 05 ================= -->
+        <section class="sec" id="pasti">
+          <div class="sec-h">
+            <span class="sec-n">05</span>
+            <h2>Pasti při určování</h2>
+            <p class="sub">Tři omyly, na kterých se pravidelně chybuje — u kupujících i u renovátorů.</p>
+          </div>
+
+          <div class="box box--warn">
+            <span class="lb">Past 1 — štítek neurčuje fázi <span class="stamp ov">ověřeno</span></span>
+            <p>
+              Štítky s výrobcem <b>Zbrojovka Brno</b> se objevovaly už v době, kdy
+              na nádrži bylo ještě logo <b>FJ</b> — a používaly se dál i tehdy, kdy
+              už nádrž nesla prázdné <b>kolečko</b>.
+            </p>
+            <p>
+              Je tedy naprosto v pořádku, když má stroj z roku 1947 nádrž FJ a
+              štítek Zbrojovka. Kdo z toho usuzuje na skládanku, plete se.
+            </p>
+          </div>
+
+          <div class="box box--warn">
+            <span class="lb">Past 2 — vyšší číslo neznamená mladší stroj</span>
+            <p>
+              Typ 18 nenavazuje na typ 12, čísluje od nuly. Stroj
+              <b>18-8392</b> je z roku 1951, ale <b>12-8206</b> z roku 1950.
+              Bez znalosti typu je porovnávání čísel bezcenné.
+            </p>
+          </div>
+
+          <div class="box box--warn">
+            <span class="lb">Past 3 — samotný štítek nedokazuje nic</span>
+            <p>
+              Štítek jde vyrobit. Ražba v rámu je průkaznější, a i tu lze přerazit.
+              U stroje, kde na identitě záleží (cena, doklady, prodej), se vyplatí
+              nechat čísla zkontrolovat někým, kdo ví, jak přeražba vypadá.
+            </p>
+          </div>
+
+          <div class="box box--dilna">
+            <span class="lb">Z dílny</span>
+            <p>
+              <i>Doplnit vlastní zkušenost s přeraženými čísly: jak poznat
+              přebroušené místo, co dělá kyselina, jak se chová lak přes ražbu.</i>
+            </p>
+          </div>
+        </section>
+
+        <!-- ================= 06 ================= -->
+        <section class="sec" id="kolik">
+          <div class="sec-h">
+            <span class="sec-n">06</span>
+            <h2>Kolik Péráků se vlastně vyrobilo</h2>
+            <p class="sub">Spolehlivé číslo neexistuje. Nejcitovanější údaj je navíc pravděpodobně špatně přečtený.</p>
+          </div>
+
+          <table class="spec">
+            <caption>Údaje o produkci podle pramenů <span class="stamp sp">sporné</span></caption>
+            <thead>
+              <tr><th>Pramen</th><th>Údaj</th><th>Poznámka</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="rl" data-l="Pramen">Monografie, str. 48</td><td class="num" data-l="Údaj">1946: 1 360 ks</td><td class="q" data-l="Poznámka">Sedí s našimi daty</td></tr>
+              <tr><td class="rl" data-l="Pramen">Monografie, str. 48</td><td class="num" data-l="Údaj">1947: 17 162 ks</td><td class="q" data-l="Poznámka">Naše data dávají ~14 300</td></tr>
+              <tr><td class="rl" data-l="Pramen">Monografie, str. 48</td><td class="num" data-l="Údaj">Export přes 180 000</td><td class="q" data-l="Poznámka"><b>Export, ne výroba</b></td></tr>
+              <tr><td class="rl" data-l="Pramen">auto.cz</td><td class="num" data-l="Údaj">180 000 vyrobeno</td><td class="q" data-l="Poznámka">Pravděpodobně chybné čtení knihy</td></tr>
+              <tr><td class="rl" data-l="Pramen">Wikipedie</td><td class="num" data-l="Údaj">~160 000 vyrobeno</td><td class="q" data-l="Poznámka">Bez uvedení zdroje</td></tr>
+              <tr><td class="rl" data-l="Pramen">Náš součet</td><td class="num" data-l="Údaj">≥ 128 000</td><td class="q" data-l="Poznámka">Dolní mez pro typ 10/11</td></tr>
+            </tbody>
+          </table>
+
+          <p>
+            Nejčastěji citované číslo 180 000 se podle monografie týká <strong>exportu</strong>,
+            ne celkové výroby. Dolní mez ~128 000 pro dvěstěpadesátku je naše vlastní,
+            doložitelná z výrobních čísel. Přesné celkové číslo dnes nikdo nemá.
+          </p>
+        </section>
+
+        <!-- ================= CTA ================= -->
+        <div class="cta">
+          <div>
+            <span class="lb">Nejste si jistí</span>
+            <p>Čísla nesedí s doklady, nebo se vám ražba nezdá? Než koupíte, nechte si stroj projít.</p>
+          </div>
+          <a href="/sluzby/prohlidka-pred-koupi/">Prohlídka před koupí</a>
+        </div>
+
+        <!-- ================= zdroje ================= -->
+        <footer class="src">
+          <h2>Zdroje a jak jsme k číslům došli</h2>
+          <ol>
+            <li>
+              Procházka, Hubert: <cite>Jawa 250/350 Pérák: historie, vývoj, technika, sport</cite>.
+              Grada, 2009, str. 15–17, 48, 74. <span class="stamp kn">kniha</span>
+            </li>
+            <li>
+              Cuma, Zdeněk: sbírka fotografií výrobních štítků, zc-moto.webnode.cz —
+              zhruba 190 štítků pro 250 a 50 pro 350. Tabulky ročníků na této stránce
+              jsou náš vlastní dopočet z tohoto seznamu. <span class="stamp od">odhad</span>
+            </li>
+            <li>
+              Umístění ražeb v rámu — dva nezávislí diskutující s fotografiemi.
+              Monografie umístění ražeb neřeší. <span class="stamp ov">ověřeno</span>
+            </li>
+            <li>
+              Dělení na výrobní fáze — zc-moto, veteranportal.cz, valka.cz.
+              Prameny se v dataci rozcházejí. <span class="stamp sp">sporné</span>
+            </li>
+          </ol>
+        </footer>
+
+        <RejstrikEncyklopedie aktualni="/perak/identifikace/" />
+
+      </article>
+    </div>
+  </div>
+
+  <script is:inline>
+  (function () {
+    var R = {
+      '11': [[1,1500,1946],[1500,15800,1947],[15800,34900,1948],[34900,53800,1949],
+             [53800,73000,1950],[73000,84200,1951]],
+      '12': [[1,900,1948],[900,4500,1949],[4500,10000,1950]],
+      '18': [[1,8000,1950],[8000,14200,1951]]
+    };
+    function faze(t, n) {
+      if (t !== '11') return '';
+      if (n < 26000) return ' V té době nesla nádrž ještě logo FJ.';
+      if (n < 53800) return ' V té době už se na nádrži objevuje logo Zbrojovky.';
+      return ' V té době se na nádrži používalo prázdné kolečko.';
+    }
+    var inp = document.getElementById('sn');
+    var btn = document.getElementById('go');
+    if (!inp || !btn) return;
+
+    function dat() {
+      var raw = inp.value.trim().replace(/\s/g, '');
+      var out = document.getElementById('out');
+      var yr = document.getElementById('outYr');
+      var lb = document.getElementById('outLb');
+      var dsc = document.getElementById('outDsc');
+      out.classList.add('show');
+      out.classList.remove('err');
+
+      var m = raw.match(/^(10|11|12|18)[-\s.]?0*(\d+)(?:[-\s.](\d{2}))?$/i);
+      if (!m) {
+        out.classList.add('err');
+        lb.textContent = 'Nerozpoznáno';
+        yr.textContent = 'Zkuste formát 11-12862';
+        dsc.innerHTML = 'Číslo musí začínat typem <b>10</b>, <b>11</b>, <b>12</b> nebo <b>18</b>. ' +
+          'U strojů od roku 1952 připojte i dvojčíslí roku na konci.';
+        return;
+      }
+      var t = m[1] === '10' ? '11' : m[1];
+      var n = parseInt(m[2], 10);
+      var suf = m[3];
+
+      if (suf) {
+        var y = parseInt(suf, 10);
+        y = y < 40 ? 2000 + y : 1900 + y;
+        lb.textContent = 'Rok výroby — jednoznačně';
+        yr.textContent = y;
+        dsc.innerHTML = 'Od 1. ledna 1952 je rok součástí výrobního čísla, takže tady se nic ' +
+          'neodhaduje. Pořadové číslo <b>' + n + '</b> je pořadí v rámci roku ' + y + ', ne celkové.';
+        return;
+      }
+
+      var rng = R[t] || [];
+      var hit = null;
+      for (var i = 0; i < rng.length; i++) {
+        if (n >= rng[i][0] && n < rng[i][1]) { hit = rng[i]; break; }
+      }
+      if (!hit) {
+        out.classList.add('err');
+        lb.textContent = 'Mimo doložený rozsah';
+        yr.textContent = 'Číslo nesedí do žádného ročníku';
+        dsc.innerHTML = 'Typ <b>' + t + '</b> máme doložený zhruba do čísla ' +
+          rng[rng.length - 1][1].toLocaleString('cs') + '. Vyšší čísla bez dvojčíslí roku na konci ' +
+          'neznáme — může jít o překlep, o přeraženou ražbu, nebo o stroj, který nám v datech chybí. ' +
+          '<a href="/registr/pridat-stroj/">Zapište ho do registru</a> a doplníme ho do tabulky.';
+        return;
+      }
+      lb.textContent = 'Odhadovaný rok výroby';
+      yr.textContent = hit[2];
+      var okraj = (n - hit[0] < 2000) || (hit[1] - n < 2000);
+      dsc.innerHTML = 'Typ <b>' + t + '</b>, číslo <b>' + n.toLocaleString('cs') + '</b> spadá do rozsahu ' +
+        'roku <b>' + hit[2] + '</b>.' + faze(t, n) +
+        (okraj
+          ? ' <b>Pozor — číslo leží blízko hranice ročníku.</b> Hranice jsou rozmazané v pásmu ' +
+            'několika tisíc kusů, takže stroj může být i o rok jinde.'
+          : ' Berte to jako vodítko s tolerancí, ne jako přesný převodník.');
+    }
+    btn.addEventListener('click', dat);
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') dat(); });
+  })();
+  </script>
+</Layout>

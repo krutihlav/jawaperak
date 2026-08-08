@@ -1,0 +1,31 @@
+---
+import { encyklopedie } from '../data/encyklopedie';
+
+export interface Props {
+  /** href aktuální stránky, např. "/perak/identifikace/" — zvýrazní se v seznamu */
+  aktualni?: string;
+}
+const { aktualni } = Astro.props;
+---
+
+<nav class="idx" aria-label="Rejstřík encyklopedie">
+  <div class="idx-h">
+    <h2>Encyklopedie Péráku</h2>
+    <a class="idx-all" href="/perak/">Přehled &#8599;</a>
+  </div>
+  <ol>
+    {encyklopedie.map((s) => {
+      const here = s.href === aktualni;
+      const soon = !s.hotovo;
+      return (
+        <li class={here ? 'here' : soon ? 'soon' : ''}>
+          {here || soon ? (
+            <span aria-current={here ? 'page' : undefined}>{s.titul}</span>
+          ) : (
+            <a href={s.href}>{s.titul}</a>
+          )}
+        </li>
+      );
+    })}
+  </ol>
+</nav>
