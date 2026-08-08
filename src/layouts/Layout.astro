@@ -571,6 +571,57 @@ p{margin:0 0 .9em}
   .progress{transition:none}
   .stamp{transform:none}
 }
+
+/* ================================================================
+   ZPŘEHLEDNĚNÍ ČLÁNKŮ (8/2026)
+   Cílem je míň nábytku a víc vzduchu: popisky boxů přestávají být
+   verzálkami, razítko se zklidnilo, přibyl seznam častých chyb,
+   který nahrazuje čtyři červené boxy pod sebou.
+   ================================================================ */
+
+/* --- víc vzduchu --- */
+body{line-height:1.66}
+.art .sec p{margin:0 0 1.05em}
+.sec-h{margin:78px 0 22px}
+.box{margin:30px 0}
+.spec{margin:30px 0}
+.art h3{margin:40px 0 10px}
+
+/* --- popisky boxů nejsou verzálkami --- */
+.box .lb,.warn .lb,.fact .lb{font-family:var(--disp);font-weight:500;font-size:15px;
+  letter-spacing:.015em;text-transform:none;margin-bottom:7px;line-height:1.25}
+.box--fact .lb,.fact .lb{color:var(--ink)}
+.box--warn .lb,.warn .lb{color:var(--red)}
+.box--dilna .lb{color:var(--ocel)}
+
+/* --- zklidněné razítko: tenčí rámeček, bez natočení --- */
+.stamp{border-width:1px;transform:none;letter-spacing:.12em;font-size:9.5px;padding:2px 6px}
+
+/* --- popisek tabulky nese razítko a nemusí být verzálkami --- */
+.spec caption{font-family:var(--disp);font-weight:500;font-size:14.5px;
+  letter-spacing:.015em;text-transform:none;color:var(--ink);
+  text-align:left;padding-bottom:10px}
+.spec caption .stamp{margin-left:8px;vertical-align:1px}
+.spec caption i{font-style:normal;color:var(--mute);font-weight:400}
+
+/* --- výrobní číslo v běžném textu, ne jen v časové ose --- */
+.art .sn{font-family:var(--disp);font-weight:500;font-size:.94em;
+  letter-spacing:.04em;color:var(--red);white-space:nowrap}
+
+/* --- seznam častých chyb --- */
+.mist{list-style:none;margin:26px 0 0;padding:0;counter-reset:mi;border-top:2px solid var(--ink)}
+.mist li{counter-increment:mi;display:grid;grid-template-columns:26px 1fr;gap:15px;
+  margin:0;padding:17px 0;border-bottom:1px solid var(--hair)}
+.mist li::before{content:counter(mi);font-family:var(--disp);font-weight:500;font-size:12px;
+  color:var(--red);border-bottom:1.5px solid var(--red);text-align:center;
+  align-self:start;margin-top:5px;padding-bottom:1px}
+.mist b{display:block;font-family:var(--disp);font-weight:500;font-size:16.5px;
+  letter-spacing:.02em;margin-bottom:5px;line-height:1.25}
+.mist p{margin:0;font-size:16px}
+
+@media (max-width:640px){
+  .mist li{grid-template-columns:22px 1fr;gap:12px}
+}
 </style>
 </head>
 <body>
