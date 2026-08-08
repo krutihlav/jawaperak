@@ -107,6 +107,56 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
   const esc = (s) => String(s ?? '').replace(/[<>&"]/g, (c) =>
     ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 
+  // Bucket stroje-fotky je soukromý. Podpis funguje i s anon klíčem díky RLS policy
+  // verejne_cteni_schvalenych_fotek_storage (jen fotky schváleného stroje) —
+  // výsledná URL je časově omezená, ale samotné žádosti o podpis smí jít z prohlížeče.
+  async function podepsatCesty(cesty) {
+    if (cesty.length === 0) return {};
+    try {
+      const r = await fetch(`${SUPABASE_URL}/storage/v1/object/sign/stroje-fotky`, {
+        method: 'POST',
+        headers: { ...H, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paths: cesty, expiresIn: 3600 })
+      });
+      if (!r.ok) return {};
+      const vysledek = await r.json();
+      const mapa = {};
+      for (const p of vysledek) {
+        if (p.signedURL) mapa[p.path] = `${SUPABASE_URL}/storage/v1${p.signedURL}`;
+      }
+      return mapa;
+    } catch (e) {
+      console.error('Podpis náhledů se nepodařil', e);
+      return {};
+    }
+  }
+
+  // Pro seznam strojů vrátí mapu stroj_id -> podepsaná URL první fotky (poradi nejnižší).
+  async function nactiNahledy(idyStroju) {
+    if (idyStroju.length === 0) return {};
+    try {
+      const r = await fetch(
+        `${SUPABASE_URL}/rest/v1/stroje_fotky?select=stroj_id,url,poradi&stroj_id=in.(${idyStroju.join(',')})&order=poradi`,
+        { headers: H }
+      );
+      if (!r.ok) return {};
+      const radky = await r.json();
+      const prvniCesta = {};
+      for (const f of radky) {
+        if (!(f.stroj_id in prvniCesta)) prvniCesta[f.stroj_id] = f.url;
+      }
+      const mapaPodpisu = await podepsatCesty(Object.values(prvniCesta));
+      const nahledy = {};
+      for (const [strojId, cesta] of Object.entries(prvniCesta)) {
+        nahledy[strojId] = mapaPodpisu[cesta] || null;
+      }
+      return nahledy;
+    } catch (e) {
+      console.error('Náhledy fotek se nepodařilo načíst', e);
+      return {};
+    }
+  }
+
   function naplnSelect(selectEl, radky) {
     for (const r of radky) {
       const opt = document.createElement('option');
@@ -150,14 +200,22 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
     }
   }
 
-function karta(s) {
+function karta(s, nahledUrl) {
   const cislo = s.cislo_ramu_maskovane ? `<span class="k__cislo">${esc(s.cislo_ramu_maskovane)}</span>` : '';
   const misto = [s.region, s.zeme].filter(Boolean).map(esc).join(', ');
   const faze = s.vyrobni_faze && FAZE[s.vyrobni_faze] ? `<span class="tagx">${FAZE[s.vyrobni_faze]}</span>` : '';
   const prodej = s.na_prodej ? '<span class="tagx tagx--red">Na prodej</span>' : '';
+  const rohy = `
+    <span class="k__roh k__roh--tl" aria-hidden="true"></span>
+    <span class="k__roh k__roh--tr" aria-hidden="true"></span>
+    <span class="k__roh k__roh--bl" aria-hidden="true"></span>
+    <span class="k__roh k__roh--br" aria-hidden="true"></span>`;
+  const foto = nahledUrl
+    ? `<div class="k__ph k__ph--foto"><img src="${nahledUrl}" alt="" loading="lazy">${rohy}</div>`
+    : `<div class="k__ph"><span class="k__ph-text">Zatím bez fotky</span>${rohy}</div>`;
   return `
     <a class="k" href="/registr/stroj/${esc(s.slug)}/">
-      <div class="k__ph"><span>Bez fotky</span></div>
+      ${foto}
       <div class="k__body">
         <div class="k__top">
           <h3>${esc(TYP[s.typ] || ('Typ ' + s.typ))}${s.rok_vyroby ? ' · ' + esc(s.rok_vyroby) : ''}</h3>
@@ -173,6 +231,10 @@ function karta(s) {
     </a>`;
 }
 
+function skeletony(pocet) {
+  return Array.from({ length: pocet }, () => '<div class="k-skeleton" aria-hidden="true"></div>').join('');
+}
+
   async function nactiStroje() {
     const typ = document.getElementById('f-typ').value;
     const stav = document.getElementById('f-stav').value;
@@ -185,7 +247,7 @@ function karta(s) {
     if (faze) q += `&vyrobni_faze=eq.${faze}`;
     if (prodej) q += `&na_prodej=is.true`;
 
-    box.innerHTML = '<p class="loading">Načítám…</p>';
+    box.innerHTML = skeletony(6);
     try {
       const r = await fetch(q, { headers: H });
       const data = await r.json();
@@ -197,7 +259,8 @@ function karta(s) {
         </div>`;
         return;
       }
-      box.innerHTML = data.map(karta).join('');
+      const nahledy = await nactiNahledy(data.map((s) => s.id));
+      box.innerHTML = data.map((s) => karta(s, nahledy[s.id] || null)).join('');
     } catch (e) {
       box.innerHTML = '<p class="loading">Registr se nepodařilo načíst. Zkuste to prosím později.</p>';
       console.error(e);
@@ -240,30 +303,62 @@ function karta(s) {
   .chk{font-family:var(--disp);font-size:13px;letter-spacing:.06em;display:flex;
     align-items:center;gap:6px;cursor:pointer}
 
-  .grid-stroje{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
-  .k{display:block;color:inherit;text-decoration:none;border:1px solid var(--rule);
-  background:var(--paper-2);transition:border-color .15s}
-.k:hover{border-color:var(--ink)}
-  .k__ph{aspect-ratio:4/3;background:repeating-linear-gradient(45deg,#DFD2B4 0 14px,#D8CAAA 14px 28px);
+  .grid-stroje{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:26px 22px}
+
+  .k{position:relative;display:block;color:inherit;text-decoration:none;
+    background:var(--paper-2);border:1px solid var(--rule);
+    box-shadow:6px 6px 0 -1px var(--paper),6px 6px 0 0 var(--rule);
+    transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+  .k:hover,.k:focus-visible{
+    transform:translate(-3px,-3px);border-color:var(--ink);
+    box-shadow:9px 9px 0 -1px var(--paper),9px 9px 0 0 var(--ink)}
+  .k:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+
+  .k__ph{position:relative;aspect-ratio:4/3;overflow:hidden;
+    background:repeating-linear-gradient(45deg,#DFD2B4 0 14px,#D8CAAA 14px 28px);
     display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--rule)}
-  .k__ph span{font-family:var(--disp);font-size:11px;letter-spacing:.12em;
+  .k__ph-text{font-family:var(--disp);font-size:11px;letter-spacing:.12em;
     text-transform:uppercase;color:#7A6A50}
+  .k__ph--foto{background:var(--ink)}
+  .k__ph--foto img{width:100%;height:100%;object-fit:cover;display:block;
+    transition:transform .35s ease}
+  .k:hover .k__ph--foto img{transform:scale(1.045)}
+
+  /* Fotorůžky — jako ve starém albu, aplikují se i na placeholder bez fotky */
+  .k__roh{position:absolute;width:20px;height:20px;background:var(--paper-2);
+    clip-path:polygon(0 0,100% 0,0 100%);z-index:1}
+  .k__roh--tl{top:0;left:0}
+  .k__roh--tr{top:0;right:0;transform:rotate(90deg)}
+  .k__roh--br{bottom:0;right:0;transform:rotate(180deg)}
+  .k__roh--bl{bottom:0;left:0;transform:rotate(270deg)}
+
   .k__body{padding:14px 16px}
   .k__top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-  .k__top h3{margin:0;font-size:16px}
+  .k__top h3{margin:0;font-family:var(--disp);font-weight:600;font-size:16px;letter-spacing:.01em}
   .k__cislo{font-family:var(--disp);font-size:12.5px;letter-spacing:.05em;color:var(--mute);
     font-variant-numeric:tabular-nums;white-space:nowrap}
-  .k__meta{margin:9px 0 0;display:flex;gap:6px;flex-wrap:wrap}
+  .k__meta{margin:10px 0 0;display:flex;gap:6px;flex-wrap:wrap}
   .tagx{font-family:var(--disp);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
     border:1px solid var(--rule);padding:2px 7px;color:var(--mute)}
   .tagx--red{border-color:var(--red);color:var(--red)}
-  .k__misto{margin:8px 0 0;font-size:14px;color:var(--mute)}
-  .k__pribeh{margin:8px 0 0;font-size:14.5px}
+  .k__misto{margin:9px 0 0;font-size:14px;color:var(--mute)}
+  .k__pribeh{margin:8px 0 0;font-size:14.5px;line-height:1.5}
+
+  .k-skeleton{aspect-ratio:3/4;border:1px solid var(--rule);background:var(--paper-2);
+    background-image:linear-gradient(100deg,transparent 30%,var(--rule) 50%,transparent 70%);
+    background-size:200% 100%;animation:sk-shimmer 1.6s ease-in-out infinite}
+  @keyframes sk-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
   .loading{color:var(--mute);font-size:15px}
   .prazdno{grid-column:1/-1;border:1px dashed var(--rule);padding:30px 24px;text-align:center}
   .prazdno p{margin:0 0 8px}
   .prazdno .btn{margin-top:12px}
+
+  @media (prefers-reduced-motion: reduce){
+    .k,.k__ph--foto img{transition:none}
+    .k:hover{transform:none}
+    .k-skeleton{animation:none}
+  }
 
   @media (max-width:880px){
     .stats{grid-template-columns:repeat(2,1fr)}
