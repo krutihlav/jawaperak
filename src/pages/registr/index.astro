@@ -51,7 +51,7 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
           <label class="chk"><input type="checkbox" id="f-prodej"> Jen na prodej</label>
         </div>
 
-        <div id="vysledky" class="grid-stroje" aria-live="polite">
+        <div id="vysledky" class="seznam-stroju" aria-live="polite">
           <p class="loading">Načítám registr…</p>
         </div>
       </section>
@@ -205,18 +205,13 @@ function karta(s, nahledUrl) {
   const misto = [s.region, s.zeme].filter(Boolean).map(esc).join(', ');
   const faze = s.vyrobni_faze && FAZE[s.vyrobni_faze] ? `<span class="tagx">${FAZE[s.vyrobni_faze]}</span>` : '';
   const prodej = s.na_prodej ? '<span class="tagx tagx--red">Na prodej</span>' : '';
-  const rohy = `
-    <span class="k__roh k__roh--tl" aria-hidden="true"></span>
-    <span class="k__roh k__roh--tr" aria-hidden="true"></span>
-    <span class="k__roh k__roh--bl" aria-hidden="true"></span>
-    <span class="k__roh k__roh--br" aria-hidden="true"></span>`;
   const foto = nahledUrl
-    ? `<div class="k__ph k__ph--foto"><img src="${nahledUrl}" alt="" loading="lazy">${rohy}</div>`
-    : `<div class="k__ph"><span class="k__ph-text">Zatím bez fotky</span>${rohy}</div>`;
+    ? `<div class="k__ph"><img src="${nahledUrl}" alt="" loading="lazy"></div>`
+    : `<div class="k__ph k__ph--prazdno"><span class="k__ph-text">Bez<br>fotky</span></div>`;
   return `
     <a class="k" href="/registr/stroj/${esc(s.slug)}/">
       ${foto}
-      <div class="k__body">
+      <div class="k__mid">
         <div class="k__top">
           <h3>${esc(TYP[s.typ] || ('Typ ' + s.typ))}${s.rok_vyroby ? ' · ' + esc(s.rok_vyroby) : ''}</h3>
           ${cislo}
@@ -226,13 +221,21 @@ function karta(s, nahledUrl) {
           ${faze}${prodej}
         </p>
         ${misto ? `<p class="k__misto">${misto}</p>` : ''}
-        ${s.pribeh ? `<p class="k__pribeh">${esc(s.pribeh).slice(0, 140)}${s.pribeh.length > 140 ? '…' : ''}</p>` : ''}
+        ${s.pribeh ? `<p class="k__pribeh">${esc(s.pribeh).slice(0, 160)}${s.pribeh.length > 160 ? '…' : ''}</p>` : ''}
       </div>
     </a>`;
 }
 
 function skeletony(pocet) {
-  return Array.from({ length: pocet }, () => '<div class="k-skeleton" aria-hidden="true"></div>').join('');
+  return Array.from({ length: pocet }, () => `
+    <div class="k-skeleton" aria-hidden="true">
+      <div class="k-skeleton__ph sk-shimmer"></div>
+      <div class="k-skeleton__lines">
+        <div class="k-skeleton__line sk-shimmer" style="width:55%"></div>
+        <div class="k-skeleton__line sk-shimmer" style="width:30%"></div>
+        <div class="k-skeleton__line sk-shimmer" style="width:70%"></div>
+      </div>
+    </div>`).join('');
 }
 
   async function nactiStroje() {
@@ -303,61 +306,53 @@ function skeletony(pocet) {
   .chk{font-family:var(--disp);font-size:13px;letter-spacing:.06em;display:flex;
     align-items:center;gap:6px;cursor:pointer}
 
-  .grid-stroje{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:26px 22px}
+  .seznam-stroju{display:flex;flex-direction:column;border-top:1px solid var(--rule)}
 
-  .k{position:relative;display:block;color:inherit;text-decoration:none;
-    background:var(--paper-2);border:1px solid var(--rule);
-    box-shadow:6px 6px 0 -1px var(--paper),6px 6px 0 0 var(--rule);
-    transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
-  .k:hover,.k:focus-visible{
-    transform:translate(-3px,-3px);border-color:var(--ink);
-    box-shadow:9px 9px 0 -1px var(--paper),9px 9px 0 0 var(--ink)}
-  .k:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+  .k{display:flex;gap:16px;align-items:stretch;text-decoration:none;color:inherit;
+    padding:16px 6px;border-bottom:1px dashed var(--rule);transition:background-color .15s}
+  .k:hover{background:var(--paper-2)}
+  .k:focus-visible{outline:2px solid var(--red);outline-offset:-2px;background:var(--paper-2)}
 
-  .k__ph{position:relative;aspect-ratio:4/3;overflow:hidden;
-    background:repeating-linear-gradient(45deg,#DFD2B4 0 14px,#D8CAAA 14px 28px);
-    display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--rule)}
-  .k__ph-text{font-family:var(--disp);font-size:11px;letter-spacing:.12em;
-    text-transform:uppercase;color:#7A6A50}
-  .k__ph--foto{background:var(--ink)}
-  .k__ph--foto img{width:100%;height:100%;object-fit:cover;display:block;
-    transition:transform .35s ease}
-  .k:hover .k__ph--foto img{transform:scale(1.045)}
+  .k__ph{flex:0 0 92px;width:92px;aspect-ratio:1/1;overflow:hidden;border:1px solid var(--rule);
+    background:var(--ink)}
+  .k__ph img{display:block;width:100%;height:100%;object-fit:cover}
+  .k__ph--prazdno{background:repeating-linear-gradient(45deg,#DFD2B4 0 10px,#D8CAAA 10px 20px);
+    display:flex;align-items:center;justify-content:center;text-align:center}
+  .k__ph-text{font-family:var(--disp);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;
+    line-height:1.35;color:#7A6A50}
 
-  /* Fotorůžky — jako ve starém albu, aplikují se i na placeholder bez fotky */
-  .k__roh{position:absolute;width:20px;height:20px;background:var(--paper-2);
-    clip-path:polygon(0 0,100% 0,0 100%);z-index:1}
-  .k__roh--tl{top:0;left:0}
-  .k__roh--tr{top:0;right:0;transform:rotate(90deg)}
-  .k__roh--br{bottom:0;right:0;transform:rotate(180deg)}
-  .k__roh--bl{bottom:0;left:0;transform:rotate(270deg)}
-
-  .k__body{padding:14px 16px}
-  .k__top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .k__mid{flex:1;min-width:0}
+  .k__top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
   .k__top h3{margin:0;font-family:var(--disp);font-weight:600;font-size:16px;letter-spacing:.01em}
   .k__cislo{font-family:var(--disp);font-size:12.5px;letter-spacing:.05em;color:var(--mute);
     font-variant-numeric:tabular-nums;white-space:nowrap}
-  .k__meta{margin:10px 0 0;display:flex;gap:6px;flex-wrap:wrap}
+  .k__meta{margin:8px 0 0;display:flex;gap:6px;flex-wrap:wrap}
   .tagx{font-family:var(--disp);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
     border:1px solid var(--rule);padding:2px 7px;color:var(--mute)}
   .tagx--red{border-color:var(--red);color:var(--red)}
-  .k__misto{margin:9px 0 0;font-size:14px;color:var(--mute)}
-  .k__pribeh{margin:8px 0 0;font-size:14.5px;line-height:1.5}
+  .k__misto{margin:8px 0 0;font-size:14px;color:var(--mute)}
+  .k__pribeh{margin:6px 0 0;font-size:14.5px;line-height:1.5}
 
-  .k-skeleton{aspect-ratio:3/4;border:1px solid var(--rule);background:var(--paper-2);
-    background-image:linear-gradient(100deg,transparent 30%,var(--rule) 50%,transparent 70%);
+  .k-skeleton{display:flex;gap:16px;padding:16px 6px;border-bottom:1px dashed var(--rule)}
+  .k-skeleton__ph{flex:0 0 92px;width:92px;aspect-ratio:1/1;background:var(--paper-2)}
+  .k-skeleton__lines{flex:1;display:flex;flex-direction:column;gap:9px;justify-content:center}
+  .k-skeleton__line{height:11px;background:var(--paper-2)}
+  .sk-shimmer{background-image:linear-gradient(100deg,transparent 30%,var(--rule) 50%,transparent 70%);
     background-size:200% 100%;animation:sk-shimmer 1.6s ease-in-out infinite}
   @keyframes sk-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
   .loading{color:var(--mute);font-size:15px}
-  .prazdno{grid-column:1/-1;border:1px dashed var(--rule);padding:30px 24px;text-align:center}
+  .prazdno{border:1px dashed var(--rule);border-top:0;padding:30px 24px;text-align:center}
   .prazdno p{margin:0 0 8px}
   .prazdno .btn{margin-top:12px}
 
   @media (prefers-reduced-motion: reduce){
-    .k,.k__ph--foto img{transition:none}
-    .k:hover{transform:none}
-    .k-skeleton{animation:none}
+    .k{transition:none}
+    .sk-shimmer{animation:none}
+  }
+
+  @media (max-width:600px){
+    .k__ph{flex-basis:72px;width:72px}
   }
 
   @media (max-width:880px){
