@@ -10,7 +10,8 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
   description="Veřejná databáze dochovaných motocyklů Jawa 250 a 350 Pérák. Přidejte svůj stroj a pomozte zmapovat, kolik jich přežilo."
 >
   <div class="wrap">
-    <article class="art art--wide">
+    <div class="page">
+    <article class="art">
 
       <p class="kicker">Registr</p>
       <h1>Kolik Péráků přežilo?</h1>
@@ -73,7 +74,7 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
           </tbody>
         </table>
 
-        <div class="warn">
+        <div class="box box--warn">
           <span class="lb">Proč zakrýváme část čísel</span>
           <p>
             Kompletní výrobní číslo se dá zneužít ke klonování identity —
@@ -91,6 +92,7 @@ const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
       </section>
 
     </article>
+    </div>
   </div>
 </Layout>
 
@@ -281,8 +283,6 @@ function skeletony(pocet) {
 </script>
 
 <style is:global>
-  .art--wide{max-width:940px}
-
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);
     border:1px solid var(--rule);margin:26px 0}
   .stat{background:var(--paper-2);padding:16px 12px;text-align:center}
