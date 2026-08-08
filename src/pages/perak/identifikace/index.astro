@@ -7,11 +7,12 @@ import RejstrikEncyklopedie from '../../../components/RejstrikEncyklopedie.astro
   title="Výrobní čísla Jawa Pérák — kde jsou a jak podle nich datovat | jawaperak.cz"
   description="Kde má Jawa Pérák výrobní číslo, jak z něj odhadnout rok výroby a proč rok na štítku nemusí být rokem výroby. Tabulka ročníků odvozená z 240 fotografií původních štítků."
 >
-  <div class="wrap">
-    <div class="artgrid">
+  <div class="wrap wrap--art">
+    <div class="page">
 
       <!-- ================= boční osnova ================= -->
       <aside class="aside">
+        <div class="aside-in">
         <p class="aside-lb">Na této stránce</p>
         <ol id="toc">
           <li><a href="#kde">Kde jsou čísla</a></li>
@@ -27,6 +28,7 @@ import RejstrikEncyklopedie from '../../../components/RejstrikEncyklopedie.astro
           <div class="row"><span class="stamp ov">ověřeno</span></div>
           <div class="row"><span class="stamp od">odhad</span></div>
           <div class="row"><span class="stamp sp">sporné</span></div>
+        </div>
         </div>
       </aside>
 
@@ -176,13 +178,13 @@ import RejstrikEncyklopedie from '../../../components/RejstrikEncyklopedie.astro
               <tr><th>Rok</th><th>Rozsah výrobních čísel</th><th>Nejnižší doložený</th><th>Nejvyšší doložený</th></tr>
             </thead>
             <tbody>
-              <tr><td class="rl num" data-l="Rok">1946</td><td class="num" data-l="Rozsah">11-1 → 11-1 500<span class="bar"><i style="left:0;width:2%"></i></span></td><td class="num q" data-l="Nejnižší">11-34</td><td class="num q" data-l="Nejvyšší">11-1473</td></tr>
-              <tr><td class="rl num" data-l="Rok">1947</td><td class="num" data-l="Rozsah">11-1 500 → 11-15 800<span class="bar"><i style="left:2%;width:17%"></i></span></td><td class="num q" data-l="Nejnižší">11-1715</td><td class="num q" data-l="Nejvyšší">11-15799</td></tr>
-              <tr><td class="rl num" data-l="Rok">1948</td><td class="num" data-l="Rozsah">11-15 800 → 11-34 900<span class="bar"><i style="left:19%;width:23%"></i></span></td><td class="num q" data-l="Nejnižší">11-15823</td><td class="num q" data-l="Nejvyšší">11-34840</td></tr>
-              <tr><td class="rl num" data-l="Rok">1949</td><td class="num" data-l="Rozsah">11-34 900 → 11-53 800<span class="bar"><i style="left:42%;width:22%"></i></span></td><td class="num q" data-l="Nejnižší">11-34961</td><td class="num q" data-l="Nejvyšší">11-53753</td></tr>
-              <tr><td class="rl num" data-l="Rok">1950</td><td class="num" data-l="Rozsah">11-53 900 → 11-73 000<span class="bar"><i style="left:64%;width:23%"></i></span></td><td class="num q" data-l="Nejnižší">11-53909</td><td class="num q" data-l="Nejvyšší">11-72997</td></tr>
-              <tr><td class="rl num" data-l="Rok">1951</td><td class="num" data-l="Rozsah">11-73 900 → 11-84 100 a výš<span class="bar"><i style="left:87%;width:13%"></i></span></td><td class="num q" data-l="Nejnižší">11-73888</td><td class="num q" data-l="Nejvyšší">11-84109</td></tr>
-              <tr><td class="rl num" data-l="Rok">1952–54</td><td data-l="Rozsah">Řada se každý rok vrací k jedničce — viz sekce 03</td><td class="q" data-l="Nejnižší">—</td><td class="q" data-l="Nejvyšší">—</td></tr>
+              <tr><td class="rl num nw" data-l="Rok">1946</td><td class="num" data-l="Rozsah">11-1 → 11-1 500<span class="bar"><i style="left:0;width:2%"></i></span></td><td class="num q" data-l="Nejnižší">11-34</td><td class="num q" data-l="Nejvyšší">11-1473</td></tr>
+              <tr><td class="rl num nw" data-l="Rok">1947</td><td class="num" data-l="Rozsah">11-1 500 → 11-15 800<span class="bar"><i style="left:2%;width:17%"></i></span></td><td class="num q" data-l="Nejnižší">11-1715</td><td class="num q" data-l="Nejvyšší">11-15799</td></tr>
+              <tr><td class="rl num nw" data-l="Rok">1948</td><td class="num" data-l="Rozsah">11-15 800 → 11-34 900<span class="bar"><i style="left:19%;width:23%"></i></span></td><td class="num q" data-l="Nejnižší">11-15823</td><td class="num q" data-l="Nejvyšší">11-34840</td></tr>
+              <tr><td class="rl num nw" data-l="Rok">1949</td><td class="num" data-l="Rozsah">11-34 900 → 11-53 800<span class="bar"><i style="left:42%;width:22%"></i></span></td><td class="num q" data-l="Nejnižší">11-34961</td><td class="num q" data-l="Nejvyšší">11-53753</td></tr>
+              <tr><td class="rl num nw" data-l="Rok">1950</td><td class="num" data-l="Rozsah">11-53 900 → 11-73 000<span class="bar"><i style="left:64%;width:23%"></i></span></td><td class="num q" data-l="Nejnižší">11-53909</td><td class="num q" data-l="Nejvyšší">11-72997</td></tr>
+              <tr><td class="rl num nw" data-l="Rok">1951</td><td class="num" data-l="Rozsah">11-73 900 → 11-84 100 a výš<span class="bar"><i style="left:87%;width:13%"></i></span></td><td class="num q" data-l="Nejnižší">11-73888</td><td class="num q" data-l="Nejvyšší">11-84109</td></tr>
+              <tr><td class="rl num nw" data-l="Rok">1952–54</td><td data-l="Rozsah">Řada se každý rok vrací k jedničce — viz sekce 03</td><td class="q" data-l="Nejnižší">—</td><td class="q" data-l="Nejvyšší">—</td></tr>
             </tbody>
           </table>
 
@@ -225,12 +227,12 @@ import RejstrikEncyklopedie from '../../../components/RejstrikEncyklopedie.astro
               <tr><th>Rok</th><th>Typ</th><th>Rozsah</th><th>Nejnižší</th><th>Nejvyšší</th></tr>
             </thead>
             <tbody>
-              <tr><td class="rl num" data-l="Rok">1948</td><td class="rl" data-l="Typ">12</td><td class="num" data-l="Rozsah">12-1 → 12-900</td><td class="num q" data-l="Nejnižší">12-379</td><td class="num q" data-l="Nejvyšší">12-819</td></tr>
-              <tr><td class="rl num" data-l="Rok">1949</td><td class="rl" data-l="Typ">12</td><td class="num" data-l="Rozsah">12-900 → 12-4 500</td><td class="num q" data-l="Nejnižší">12-1423</td><td class="num q" data-l="Nejvyšší">12-4437</td></tr>
-              <tr><td class="rl num" data-l="Rok">1950</td><td class="rl" data-l="Typ">12</td><td class="num" data-l="Rozsah">12-4 500 → 12-10 000 (konec řady)</td><td class="num q" data-l="Nejnižší">12-3687</td><td class="num q" data-l="Nejvyšší">12-9576</td></tr>
-              <tr><td class="rl num" data-l="Rok">1950</td><td class="rl" data-l="Typ">18</td><td class="num" data-l="Rozsah">18-01 → 18-8 000</td><td class="num q" data-l="Nejnižší">—</td><td class="num q" data-l="Nejvyšší">—</td></tr>
-              <tr><td class="rl num" data-l="Rok">1951</td><td class="rl" data-l="Typ">18</td><td class="num" data-l="Rozsah">18-8 400 → 18-14 200</td><td class="num q" data-l="Nejnižší">18-8392</td><td class="num q" data-l="Nejvyšší">18-14151</td></tr>
-              <tr><td class="rl num" data-l="Rok">1952–55</td><td class="rl" data-l="Typ">18</td><td data-l="Rozsah">Řada od jedničky, rok v čísle</td><td class="num q" data-l="Nejnižší">—</td><td class="num q" data-l="Nejvyšší">—</td></tr>
+              <tr><td class="rl num nw" data-l="Rok">1948</td><td class="rl" data-l="Typ">12</td><td class="num" data-l="Rozsah">12-1 → 12-900</td><td class="num q" data-l="Nejnižší">12-379</td><td class="num q" data-l="Nejvyšší">12-819</td></tr>
+              <tr><td class="rl num nw" data-l="Rok">1949</td><td class="rl" data-l="Typ">12</td><td class="num" data-l="Rozsah">12-900 → 12-4 500</td><td class="num q" data-l="Nejnižší">12-1423</td><td class="num q" data-l="Nejvyšší">12-4437</td></tr>
+              <tr><td class="rl num nw" data-l="Rok">1950</td><td class="rl" data-l="Typ">12</td><td class="num" data-l="Rozsah">12-4 500 → 12-10 000 (konec řady)</td><td class="num q" data-l="Nejnižší">12-3687</td><td class="num q" data-l="Nejvyšší">12-9576</td></tr>
+              <tr><td class="rl num nw" data-l="Rok">1950</td><td class="rl" data-l="Typ">18</td><td class="num" data-l="Rozsah">18-01 → 18-8 000</td><td class="num q" data-l="Nejnižší">—</td><td class="num q" data-l="Nejvyšší">—</td></tr>
+              <tr><td class="rl num nw" data-l="Rok">1951</td><td class="rl" data-l="Typ">18</td><td class="num" data-l="Rozsah">18-8 400 → 18-14 200</td><td class="num q" data-l="Nejnižší">18-8392</td><td class="num q" data-l="Nejvyšší">18-14151</td></tr>
+              <tr><td class="rl num nw" data-l="Rok">1952–55</td><td class="rl" data-l="Typ">18</td><td data-l="Rozsah">Řada od jedničky, rok v čísle</td><td class="num q" data-l="Nejnižší">—</td><td class="num q" data-l="Nejvyšší">—</td></tr>
             </tbody>
           </table>
 

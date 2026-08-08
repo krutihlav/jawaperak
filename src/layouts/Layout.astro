@@ -5,7 +5,7 @@ export interface Props {
   description?: string;
 }
 const { title, description = 'Jawa Pérák — typová řada, výrobní čísla, technika a registr dochovaných strojů.' } = Astro.props;
-const menuEncy = encyklopedie.filter((s) => s.hotovo).slice(0, 6);
+const menuEncy = encyklopedie.filter((s) => s.hotovo).slice(0, 7);
 ---
 <!DOCTYPE html>
 <html lang="cs">
@@ -28,6 +28,7 @@ const menuEncy = encyklopedie.filter((s) => s.hotovo).slice(0, 6);
   --hair:#D2C4A6;
   --red:#A81C21;
   --ocel:#4C5F66;
+  --col:760px;          /* jednotna sirka textoveho sloupce na CELEM webu */
   --disp:"Oswald",Impact,sans-serif;
   --body:"Source Serif 4",Georgia,serif;
 }
@@ -35,12 +36,22 @@ const menuEncy = encyklopedie.filter((s) => s.hotovo).slice(0, 6);
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6}
 .wrap{max-width:1060px;margin:0 auto;padding:0 26px}
+/* Sirsi obal jen tam, kde vedle textu stoji bocni osnova.
+   Textovy sloupec uvnitr zustava stejne siroky a stejne vycentrovany. */
+.wrap--art{max-width:1240px}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--red);outline-offset:3px}
 h1,h2,h3{margin:0;font-family:var(--disp);font-weight:500;line-height:1.08;text-transform:uppercase;letter-spacing:.02em}
 h2{font-size:clamp(26px,3.4vw,36px)}
 h3{font-size:17px;font-weight:500;letter-spacing:.04em}
 p{margin:0 0 .9em}
+
+/* ================================================================
+   JEDNOTNY TEXTOVY SLOUPEC
+   Pouziva se na vsech strankach: encyklopedie, registr, historie,
+   sluzby, navody. Vzdy stejna sirka, vzdy vycentrovany v okne.
+   ================================================================ */
+.page{max-width:var(--col);margin:0 auto;padding:40px 0 64px;position:relative}
 
 /* ================= hlavička ================= */
 .top{border-bottom:3px double var(--ink)}
@@ -151,19 +162,20 @@ p{margin:0 0 .9em}
    ================================================================ */
 
 /* --- dvousloupcová osnova --- */
-.artgrid{display:grid;grid-template-columns:212px minmax(0,1fr);gap:56px;align-items:start;padding:40px 0 70px}
-.art{max-width:730px;min-width:0}
+.art{max-width:none;min-width:0}
 
-.aside{position:sticky;top:24px}
+/* Bocni osnova stoji v levem okraji stranky a sloupec textu neposouva. */
+.aside{position:absolute;top:0;bottom:0;left:-214px;width:190px}
+.aside-in{position:sticky;top:24px}
 .aside-lb{font-family:var(--disp);font-weight:500;font-size:11px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--mute);margin:0 0 12px;padding-bottom:9px;border-bottom:2px solid var(--ink)}
 .aside ol{list-style:none;margin:0;padding:0;counter-reset:s}
 .aside li{counter-increment:s;margin:0}
-.aside li a{display:grid;grid-template-columns:26px 1fr;gap:6px;align-items:baseline;
-  padding:7px 0 7px 9px;font-family:var(--disp);font-weight:400;font-size:13.5px;letter-spacing:.03em;
+.aside li a{display:grid;grid-template-columns:24px 1fr;gap:6px;align-items:baseline;
+  padding:7px 0 7px 9px;font-family:var(--disp);font-weight:400;font-size:13px;letter-spacing:.03em;
   color:var(--mute);text-decoration:none;line-height:1.3;border-left:2px solid transparent;
   transition:color .15s,border-color .15s}
-.aside li a::before{content:"0" counter(s);font-size:11px;font-weight:300;color:var(--rule);letter-spacing:.1em}
+.aside li a::before{content:"0" counter(s);font-size:10.5px;font-weight:300;color:var(--rule);letter-spacing:.1em}
 .aside li a:hover{color:var(--ink)}
 .aside li a.on{color:var(--red);border-left-color:var(--red);font-weight:500}
 .aside li a.on::before{color:var(--red)}
@@ -172,16 +184,15 @@ p{margin:0 0 .9em}
 .aside-foot .row{margin-bottom:6px;line-height:1.35}
 
 /* --- hlavička článku --- */
-.art .kicker{font-family:var(--disp);font-weight:500;font-size:11.5px;letter-spacing:.18em;
+.art .kicker,.page>.kicker{font-family:var(--disp);font-weight:500;font-size:11.5px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--red);margin:0 0 12px}
 .art .kicker a{text-decoration:none}
-.art h1{font-size:clamp(32px,5.2vw,54px);font-weight:600;letter-spacing:.005em}
-.art .lead{margin-top:16px;font-size:19.5px;color:var(--mute);line-height:1.5;max-width:60ch}
+.art h1,.page>h1{font-size:clamp(32px,5.2vw,52px);font-weight:600;letter-spacing:.005em}
+.art .lead,.page>.lead{margin-top:16px;font-size:19.5px;color:var(--mute);line-height:1.5;max-width:58ch}
 .art .meta{margin-top:20px;padding-top:12px;border-top:1px solid var(--rule);
   display:flex;flex-wrap:wrap;gap:6px 22px;font-family:var(--disp);font-weight:300;
   font-size:11.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--mute)}
 .art .meta b{font-weight:500;color:var(--ink)}
-.art p{max-width:66ch}
 .art>section{scroll-margin-top:20px}
 .art h3{margin:34px 0 9px;font-size:16px;font-weight:500;letter-spacing:.07em}
 
@@ -246,7 +257,8 @@ p{margin:0 0 .9em}
   border-bottom:2px solid var(--ink);color:var(--mute)}
 .spec td{padding:11px 14px 11px 0;border-bottom:1px solid var(--hair);vertical-align:top}
 .spec tbody tr:hover td{background:var(--paper-2)}
-.spec .rl{font-family:var(--disp);font-weight:500;letter-spacing:.04em;white-space:nowrap}
+.spec .rl{font-family:var(--disp);font-weight:500;letter-spacing:.04em}
+.spec .nw{white-space:nowrap}
 .spec .num{font-variant-numeric:tabular-nums;white-space:nowrap;font-family:var(--disp);letter-spacing:.04em}
 .spec .q{font-size:14.5px;color:var(--mute)}
 .bar{display:block;height:6px;background:var(--rule);margin-top:5px;position:relative}
@@ -261,7 +273,7 @@ p{margin:0 0 .9em}
   color:var(--paper);background:var(--ink);padding:2px 7px}
 .spot h4{margin:12px 14px 5px;font-family:var(--disp);font-weight:500;font-size:14px;
   letter-spacing:.05em;text-transform:uppercase;line-height:1.2}
-.spot p{margin:0 14px;font-size:14.5px;color:var(--mute);line-height:1.45;max-width:none}
+.spot p{margin:0 14px;font-size:14.5px;color:var(--mute);line-height:1.45}
 .spot .stx{margin:9px 14px 0}
 
 /* --- obrázky --- */
@@ -305,7 +317,7 @@ p{margin:0 0 .9em}
   letter-spacing:.02em;margin:0}
 .tool-out .yr small{display:block;font-size:11.5px;font-weight:400;letter-spacing:.16em;
   text-transform:uppercase;color:var(--mute);margin-bottom:6px}
-.tool-out .dsc{margin:12px 0 0;font-size:15.5px;color:var(--mute);max-width:52ch}
+.tool-out .dsc{margin:12px 0 0;font-size:15.5px;color:var(--mute)}
 .tool-out .dsc b{color:var(--ink)}
 .tool-out.err .yr{font-size:22px;color:var(--red)}
 
@@ -323,6 +335,8 @@ p{margin:0 0 .9em}
 .cta .lb{font-family:var(--disp);font-weight:500;font-size:10.5px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--red);display:block;margin-bottom:6px}
 .cta p{margin:0;font-size:16px;max-width:46ch}
+.art ul,.art ol{padding-left:20px}
+.art li{margin-bottom:6px}
 .cta>a{font-family:var(--disp);font-weight:500;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
   background:var(--ink);color:var(--paper);text-decoration:none;padding:12px 20px;white-space:nowrap}
 .cta>a:hover{background:var(--red)}
@@ -359,11 +373,6 @@ p{margin:0 0 .9em}
   text-transform:uppercase;color:var(--rule);margin-left:7px;vertical-align:1px}
 
 /* --- rozcestník /perak/ --- */
-.hub{max-width:820px;margin:0 auto;padding:40px 0 60px}
-.hub .kicker{font-family:var(--disp);font-weight:500;font-size:11.5px;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--red);margin:0 0 12px}
-.hub h1{font-size:clamp(32px,5.2vw,54px);font-weight:600}
-.hub .lead{margin-top:16px;font-size:19.5px;color:var(--mute);line-height:1.5;max-width:58ch}
 .hublist{margin:34px 0 0;border-top:2px solid var(--ink);counter-reset:h}
 .hubrow{counter-increment:h;display:grid;grid-template-columns:38px 1fr auto;gap:16px;
   align-items:baseline;padding:16px 0;border-bottom:1px solid var(--hair);text-decoration:none}
@@ -372,7 +381,7 @@ p{margin:0 0 .9em}
   letter-spacing:.12em;color:var(--rule)}
 .hubrow .tt{font-family:var(--disp);font-weight:500;font-size:19px;letter-spacing:.03em;
   text-transform:uppercase;line-height:1.15;display:block}
-.hubrow .ds{margin:5px 0 0;font-size:15.5px;color:var(--mute);line-height:1.45;max-width:56ch}
+.hubrow .ds{margin:5px 0 0;font-size:15.5px;color:var(--mute);line-height:1.45}
 .hubrow .fl{font-family:var(--disp);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--rule);white-space:nowrap}
 .hubrow:hover .tt{color:var(--red)}
@@ -381,6 +390,24 @@ p{margin:0 0 .9em}
 .hubrow.soon:hover{background:transparent}
 .hubrow.soon:hover .tt{color:var(--rule)}
 .hubrow.soon .ds{color:var(--rule)}
+
+.hubgrp{margin:34px 0 -2px;font-family:var(--disp);font-weight:500;font-size:11px;
+  letter-spacing:.17em;text-transform:uppercase;color:var(--red);
+  padding-bottom:8px;border-bottom:2px solid var(--ink)}
+.hubgrp+.hublist{margin-top:0;border-top:0}
+
+/* --- casova osa vyroby --- */
+.tl{margin:28px 0;border-left:2px solid var(--ink)}
+.tlrow{display:grid;grid-template-columns:78px 1fr;gap:18px;padding:0 0 22px 20px;position:relative}
+.tlrow::before{content:"";position:absolute;left:-6px;top:6px;width:10px;height:10px;
+  background:var(--paper);border:2px solid var(--red);border-radius:50%}
+.tlrow:last-child{padding-bottom:0}
+.tlrow .yr{font-family:var(--disp);font-weight:600;font-size:19px;letter-spacing:.05em;line-height:1.1}
+.tlrow .yr small{display:block;font-family:var(--disp);font-weight:300;font-size:10.5px;
+  letter-spacing:.1em;color:var(--mute);margin-top:3px;text-transform:uppercase}
+.tlrow .tx{margin:0;font-size:16px;line-height:1.5}
+.tlrow .tx .sn{font-family:var(--disp);font-weight:500;font-size:14px;letter-spacing:.05em;
+  color:var(--red);white-space:nowrap}
 
 /* --- navigace mezi články (starší stránky) --- */
 .next{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -429,8 +456,7 @@ p{margin:0 0 .9em}
 /* ================================================================
    MOBIL
    ================================================================ */
-@media (max-width:1000px){
-  .artgrid{grid-template-columns:1fr;gap:0;padding:22px 0 50px}
+@media (max-width:1239px){
   .aside{display:none}
 
   .mtoc{display:block;position:sticky;top:0;z-index:40;margin:0 -26px 24px;
@@ -450,7 +476,10 @@ p{margin:0 0 .9em}
     text-decoration:none;border-bottom:1px solid var(--hair)}
   .mtoc li a::before{content:"0" counter(m);font-size:11px;font-weight:300;color:var(--rule)}
   .mtoc li:last-child a{border-bottom:0}
+}
 
+@media (max-width:880px){
+  .page{padding:24px 0 50px}
   .spots{grid-template-columns:1fr;gap:0}
   .spot{border-bottom:0}
   .spot:last-child{border-bottom:1px solid var(--rule)}
@@ -458,9 +487,6 @@ p{margin:0 0 .9em}
   .cta{grid-template-columns:1fr;gap:14px}
   .cta>a{text-align:center}
   .next{grid-template-columns:1fr}
-}
-
-@media (max-width:880px){
   .hero .wrap{grid-template-columns:1fr;gap:36px;justify-items:center;text-align:center}
   .hero .sub{margin-left:auto;margin-right:auto}
   .two{grid-template-columns:1fr;gap:28px}
@@ -509,7 +535,7 @@ p{margin:0 0 .9em}
   .wrap{padding:0 20px}
   .mtoc{margin:0 -20px 22px}
   .mtoc summary,.mtoc ol{padding-left:20px;padding-right:20px}
-  .art .lead,.hub .lead{font-size:18px}
+  .art .lead,.page>.lead{font-size:18px}
   .sec-h{margin-top:48px}
   .tool-row{flex-direction:column}
   .tool-row button{border-left:0;border-top:2px solid var(--ink);padding:13px 0}
@@ -517,6 +543,9 @@ p{margin:0 0 .9em}
   .idx ol{columns:1}
   .hubrow{grid-template-columns:32px 1fr;gap:12px}
   .hubrow .fl{grid-column:2;margin-top:6px}
+  .tlrow{grid-template-columns:1fr;gap:4px;padding-left:18px}
+  .tlrow .yr{font-size:17px}
+  .tlrow .yr small{display:inline;margin-left:8px}
 
   .spec thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   .spec,.spec tbody,.spec tr,.spec td{display:block;width:100%}
@@ -524,6 +553,7 @@ p{margin:0 0 .9em}
   .spec tbody tr:hover td{background:transparent}
   .spec td{border:0;padding:5px 0}
   .spec td+td{border-top:1px dotted var(--hair)}
+  .spec .nw{white-space:normal}
   .spec td::before{content:attr(data-l);display:block;
     font-family:var(--disp);font-weight:500;font-size:10.5px;letter-spacing:.14em;
     text-transform:uppercase;color:var(--mute);margin-bottom:2px}
@@ -565,9 +595,8 @@ p{margin:0 0 .9em}
         </ul>
       </div>
       <a href="/registr/">Registr</a>
-      <a href="/dilna/">Dílna</a>
       <a href="/navody/">Návody</a>
-      <a href="/historie/">Historie</a>
+      <a href="/dilna/">Dílna</a>
       <a class="lang-in" href="/en/" hreflang="en">English</a>
     </nav>
 
@@ -588,9 +617,9 @@ p{margin:0 0 .9em}
         <div class="row">
           <span class="t">Encyklopedie</span>
           <span class="ls">
-            <a href="/perak/typ-10-a-typ-11/">Typová řada</a>
+            <a href="/perak/250/">Pérák 250</a>
+            <a href="/perak/350/">Pérák 350</a>
             <a href="/perak/identifikace/">Výrobní čísla</a>
-            <a href="/perak/motor-12-vs-18/">Motor</a>
             <a href="/perak/technicke-udaje/">Technické údaje</a>
             <a href="/historie/">Historie</a>
             <a href="/perak/">Celý přehled</a>

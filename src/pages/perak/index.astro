@@ -1,16 +1,16 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { encyklopedie } from '../../data/encyklopedie';
+import { encyklopedie, skupiny } from '../../data/encyklopedie';
 
 const hotovo = encyklopedie.filter((s) => s.hotovo).length;
 ---
 
 <Layout
   title="Encyklopedie Jawa Pérák — typy, technika, identifikace | jawaperak.cz"
-  description="Referenční přehled o motocyklu Jawa 250/350 Pérák: typová řada, výrobní čísla a datování, motor, podvozek, elektroinstalace, barvy a technické údaje."
+  description="Referenční přehled o motocyklu Jawa 250/350 Pérák: dvěstěpadesátka i třistapadesátka, výrobní čísla a datování, motor, podvozek, elektroinstalace, barvy a technické údaje."
 >
   <div class="wrap">
-    <div class="hub">
+    <div class="page">
 
       <p class="kicker">Pilíř webu</p>
       <h1>Encyklopedie Péráku</h1>
@@ -29,27 +29,36 @@ const hotovo = encyklopedie.filter((s) => s.hotovo).length;
         </ol>
       </div>
 
-      <div class="hublist">
-        {encyklopedie.map((s) =>
-          s.hotovo ? (
-            <a class="hubrow" href={s.href}>
-              <span>
-                <span class="tt">{s.titul}</span>
-                <span class="ds">{s.popis}</span>
-              </span>
-              <span class="fl">Číst &#8594;</span>
-            </a>
-          ) : (
-            <div class="hubrow soon">
-              <span>
-                <span class="tt">{s.titul}</span>
-                <span class="ds">{s.popis}</span>
-              </span>
-              <span class="fl">Chystáme</span>
+      {skupiny.map((g) => {
+        const strany = encyklopedie.filter((s) => s.skupina === g.klic);
+        if (strany.length === 0) return null;
+        return (
+          <>
+            <p class="hubgrp">{g.nazev} — {g.popis}</p>
+            <div class="hublist">
+              {strany.map((s) =>
+                s.hotovo ? (
+                  <a class="hubrow" href={s.href}>
+                    <span>
+                      <span class="tt">{s.titul}</span>
+                      <span class="ds">{s.popis}</span>
+                    </span>
+                    <span class="fl">Číst &#8594;</span>
+                  </a>
+                ) : (
+                  <div class="hubrow soon">
+                    <span>
+                      <span class="tt">{s.titul}</span>
+                      <span class="ds">{s.popis}</span>
+                    </span>
+                    <span class="fl">Chystáme</span>
+                  </div>
+                )
+              )}
             </div>
-          )
-        )}
-      </div>
+          </>
+        );
+      })}
 
       <div class="cta">
         <div>

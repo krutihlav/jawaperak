@@ -8,6 +8,10 @@ import vercel from '@astrojs/vercel/serverless';
 export default defineConfig({
   site: 'https://jawaperak.cz',
   output: 'hybrid',
+  redirects: {
+  '/perak/typ-10-a-typ-11': '/perak/250/',
+  '/perak/motor-12-vs-18': '/perak/350/',
+},
   adapter: vercel(),
   i18n: {
     defaultLocale: 'cs',
