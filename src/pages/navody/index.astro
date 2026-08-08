@@ -1,0 +1,73 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const rada250 = [
+  {
+    tt: 'Seznam náhradních dílů (1949)',
+    ds: 'Kompletní dobový katalog. Zbrojovka Brno, závod Praha-Nusle II, platí od č. stroje 11–01.',
+    fl: '71 dvoustran',
+    href: '/navody/katalog-dilu-jawa-250-1949/',
+  },
+];
+
+const rada350 = [
+  {
+    tt: 'Seznam náhradních dílů',
+    ds: 'Připravujeme — jakmile budou skeny hotové, katalog přibude sem.',
+    fl: 'chystáme',
+    soon: true,
+  },
+];
+---
+
+<Layout
+  title="Návody a katalogy dílů Jawa Pérák | jawaperak.cz"
+  description="Dobové návody k obsluze a katalogy náhradních dílů pro Jawu 250 a 350 Pérák — vyčištěné a zvětšené skeny, listování funguje i na mobilu."
+>
+  <div class="wrap">
+    <div class="page">
+
+      <p class="kicker">Návody</p>
+      <h1>Návody a katalogy dílů</h1>
+      <p class="lead">
+        Dobové tiskoviny ke stroji — návody k obsluze a katalogy náhradních
+        dílů. Skeny čistíme a zvětšujeme, aby šly číst i drobné položky
+        v tabulkách, a dá se v nich listovat rovnou v prohlížeči, i na
+        mobilu. Sbírka postupně roste — přibývat bude průběžně.
+      </p>
+
+      <div class="hubgrp">Jawa 250</div>
+      <div class="hublist">
+        {rada250.map((p) => (
+          <a class="hubrow" href={p.href}>
+            <span class="tt-wrap">
+              <span class="tt">{p.tt}</span>
+              <span class="ds">{p.ds}</span>
+            </span>
+            <span class="fl">{p.fl}</span>
+          </a>
+        ))}
+      </div>
+
+      <div class="hubgrp">Jawa 350</div>
+      <div class="hublist">
+        {rada350.map((p) => (
+          <div class="hubrow soon">
+            <span class="tt-wrap">
+              <span class="tt">{p.tt}</span>
+              <span class="ds">{p.ds}</span>
+            </span>
+            <span class="fl">{p.fl}</span>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    /* .tt a .ds musí být jeden grid item (sloupec 1fr) — zabalíme je
+       do jednoho bloku, aby .fl zůstal ve svém vlastním sloupci vpravo */
+    .tt-wrap{display:block}
+  </style>
+</Layout>
