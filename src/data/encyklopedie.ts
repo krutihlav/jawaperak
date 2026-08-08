@@ -86,7 +86,7 @@ export const encyklopedie: EncyStranka[] = [
     titul: 'Barvy a provedení',
     popis: 'Laky, linky, nápisy a chrom podle období. Podle čeho poznáte provedení, které neodpovídá roku výroby.',
     skupina: 'uzel',
-    hotovo: false,
+    hotovo: true,
   },
 
   // ---------- data ----------
@@ -109,7 +109,7 @@ export const encyklopedie: EncyStranka[] = [
     titul: 'Technické údaje',
     popis: 'Srovnávací tabulka všech typů na jednom místě — rozměry, hmotnosti, převody, výkony.',
     skupina: 'data',
-    hotovo: false,
+    hotovo: true,
   },
 
   // ---------- verze a kontext ----------
@@ -118,21 +118,21 @@ export const encyklopedie: EncyStranka[] = [
     titul: 'Vojenské verze',
     popis: 'Značení, odlišnosti výbavy a zvláštní formát výrobního čísla.',
     skupina: 'verze',
-    hotovo: false,
+    hotovo: true,
   },
   {
     href: '/perak/sidecary/',
     titul: 'Sidecary a tříkolky',
     popis: 'Dobové postranní vozíky, uchycení k rámu a co obnáší provoz s vozíkem dnes.',
     skupina: 'verze',
-    hotovo: false,
+    hotovo: true,
   },
   {
     href: '/perak/riksa/',
     titul: 'Rikša',
     popis: 'Tovární tříkolka odvozená z Péráka, stavěná pro asijské trhy. Téma, o kterém český web mlčí.',
     skupina: 'verze',
-    hotovo: false,
+    hotovo: true,
   },
   {
     href: '/historie/',
