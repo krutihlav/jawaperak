@@ -246,17 +246,26 @@ const jePribehEn = !!stroj?.pribeh_en;
           </p>
 
           {fotkySPodpisem.length > 0 && (
-            <div class="galerie">
-              {fotkySPodpisem.map((f) => (
-                <figure>
+            <div class="galerie" id="galerie">
+              {fotkySPodpisem.map((f, i) => (
+                <button type="button" class="galerie__pol" data-index={i}>
+                  <span class="galerie__cislo">#{String(i + 1).padStart(2, '0')}</span>
                   <img src={f.zobrazitUrl} loading="lazy" alt={f.popisek || titulek} />
-                  {(f.popisek || f.zdroj) && (
-                    <figcaption>{f.popisek}{f.zdroj && ` — zdroj: ${f.zdroj}`}</figcaption>
-                  )}
-                </figure>
+                </button>
               ))}
             </div>
           )}
+
+          <div class="lightbox" id="lightbox" hidden>
+            <button type="button" class="lightbox__zavrit" id="lb-zavrit" aria-label="Zavřít">✕</button>
+            <button type="button" class="lightbox__sipka lightbox__sipka--l" id="lb-predchozi" aria-label="Předchozí fotka">‹</button>
+            <figure class="lightbox__obsah">
+              <img id="lb-img" src="" alt="" />
+              <figcaption id="lb-popis"></figcaption>
+            </figure>
+            <button type="button" class="lightbox__sipka lightbox__sipka--r" id="lb-dalsi" aria-label="Další fotka">›</button>
+            <p class="lightbox__pocet" id="lb-pocet"></p>
+          </div>
 
           {(stroj.pribeh || stroj.pribeh_en) && (
             <div class="pribeh">
@@ -281,7 +290,14 @@ const jePribehEn = !!stroj?.pribeh_en;
   </div>
 </Layout>
 
-<script define:vars={{ jePribehEn }}>
+<script define:vars={{
+  jePribehEn,
+  fotkyProLightbox: fotkySPodpisem.map((f) => ({
+    url: f.zobrazitUrl,
+    popisek: f.popisek || '',
+    zdroj: f.zdroj || ''
+  }))
+}}>
   const T = {
     en: {
       tuNadpis: 'Technical data', lDruh: 'Vehicle<br>type', lRok: 'year of manufacture', lBarva: 'colour',
@@ -310,6 +326,63 @@ const jePribehEn = !!stroj?.pribeh_en;
     }
   }
   document.querySelectorAll('.lb-btn').forEach((b) => b.addEventListener('click', () => prepni(b.dataset.lang)));
+
+  // --- Lightbox pro galerii fotek ---
+  const FOTKY = fotkyProLightbox;
+  if (FOTKY.length > 0) {
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbPopis = document.getElementById('lb-popis');
+    const lbPocet = document.getElementById('lb-pocet');
+    const btnPredchozi = document.getElementById('lb-predchozi');
+    const btnDalsi = document.getElementById('lb-dalsi');
+    let index = 0;
+
+    function vykresli() {
+      const f = FOTKY[index];
+      lbImg.src = f.url;
+      lbImg.alt = f.popisek;
+      lbPopis.textContent = [f.popisek, f.zdroj && `zdroj: ${f.zdroj}`].filter(Boolean).join(' — ');
+      lbPocet.textContent = `#${String(index + 1).padStart(2, '0')} / ${String(FOTKY.length).padStart(2, '0')}`;
+    }
+
+    function otevri(i) {
+      index = i;
+      vykresli();
+      lightbox.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+
+    function zavri() {
+      lightbox.hidden = true;
+      document.body.style.overflow = '';
+    }
+
+    function posun(o) {
+      index = (index + o + FOTKY.length) % FOTKY.length;
+      vykresli();
+    }
+
+    if (FOTKY.length < 2) {
+      btnPredchozi.hidden = true;
+      btnDalsi.hidden = true;
+      lbPocet.hidden = true;
+    }
+
+    document.querySelectorAll('.galerie__pol').forEach((tlacitko) => {
+      tlacitko.addEventListener('click', () => otevri(Number(tlacitko.dataset.index)));
+    });
+    document.getElementById('lb-zavrit').addEventListener('click', zavri);
+    btnPredchozi.addEventListener('click', () => posun(-1));
+    btnDalsi.addEventListener('click', () => posun(1));
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) zavri(); });
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.hidden) return;
+      if (e.key === 'Escape') zavri();
+      if (e.key === 'ArrowLeft') posun(-1);
+      if (e.key === 'ArrowRight') posun(1);
+    });
+  }
 </script>
 
 <style>
@@ -368,14 +441,39 @@ const jePribehEn = !!stroj?.pribeh_en;
 
   .tp__pozn{font-size:13px;color:var(--mute);margin:0 0 26px;line-height:1.5}
 
-  .galerie{counter-reset:frame;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-    gap:2px;background:var(--ink);border:1px solid var(--ink);margin:0 0 28px}
-  .galerie figure{counter-increment:frame;margin:0;background:var(--paper);position:relative}
-  .galerie figure::before{content:'#' counter(frame,decimal-leading-zero);position:absolute;top:8px;left:8px;
-    background:var(--ink);color:var(--paper);font-family:'SF Mono','Courier New',monospace;
-    font-size:10px;padding:2px 6px}
-  .galerie img{width:100%;height:200px;object-fit:cover;display:block}
-  .galerie figcaption{padding:8px 10px;font-size:12px;color:var(--mute);border-top:1px solid var(--rule)}
+  .galerie{column-count:3;column-gap:3px;margin:0 0 28px}
+  .galerie__pol{all:unset;display:block;width:100%;margin-bottom:3px;position:relative;
+    cursor:zoom-in;break-inside:avoid}
+  .galerie__pol img{display:block;width:100%;height:auto;border:1px solid var(--ink)}
+  .galerie__pol:hover img{outline:2px solid var(--red);outline-offset:-2px}
+  .galerie__cislo{position:absolute;top:8px;left:8px;background:var(--ink);color:var(--paper);
+    font-family:'SF Mono','Courier New',monospace;font-size:10px;padding:2px 6px;pointer-events:none}
+  @media (max-width:760px){ .galerie{column-count:2} }
+  @media (max-width:460px){ .galerie{column-count:1} }
+
+  .lightbox{position:fixed;inset:0;z-index:200;background:rgba(22,25,27,.94);
+    display:flex;align-items:center;justify-content:center;padding:56px 20px}
+  .lightbox__obsah{margin:0;max-width:88vw;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .lightbox__obsah img{display:block;max-width:88vw;max-height:74vh;width:auto;height:auto;
+    border:1px solid var(--paper)}
+  .lightbox__obsah figcaption{color:var(--paper-2);font-size:14px;text-align:center;max-width:64ch;
+    min-height:1em}
+  .lightbox__zavrit{position:absolute;top:16px;right:18px;background:transparent;
+    border:1px solid var(--paper-2);color:var(--paper);font-size:16px;line-height:1;
+    width:38px;height:38px;cursor:pointer;font-family:var(--disp)}
+  .lightbox__zavrit:hover{background:var(--paper);color:var(--ink)}
+  .lightbox__sipka{position:absolute;top:50%;transform:translateY(-50%);background:transparent;
+    border:0;color:var(--paper-2);font-size:46px;line-height:1;font-family:Georgia,serif;
+    cursor:pointer;padding:6px 18px}
+  .lightbox__sipka:hover{color:var(--red)}
+  .lightbox__sipka--l{left:0}
+  .lightbox__sipka--r{right:0}
+  .lightbox__pocet{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+    color:var(--paper-2);font-family:'SF Mono','Courier New',monospace;font-size:11px;letter-spacing:.06em}
+  @media (max-width:600px){
+    .lightbox{padding:70px 12px}
+    .lightbox__sipka{font-size:34px;padding:6px 10px}
+  }
 
   .pribeh{border-left:3px solid var(--red);padding:2px 0 2px 20px;margin:0 0 28px}
   .pribeh h2{margin:0 0 10px;font-family:var(--disp);font-size:11.5px;letter-spacing:.15em;
