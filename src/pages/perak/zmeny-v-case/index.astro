@@ -1,0 +1,555 @@
+---
+export const prerender = false;
+
+import Layout from '../../../layouts/Layout.astro';
+import RejstrikEncyklopedie from '../../../components/RejstrikEncyklopedie.astro';
+
+const SUPABASE_URL = 'https://hcszrmqtwnkzlbrecrey.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
+const H = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
+
+async function nacti(cesta) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${cesta}`, { headers: H });
+  return r.ok ? r.json() : [];
+}
+
+// Celá tabulka změn se načte na serveru a vloží do stránky jako JSON.
+// Filtrování pak běží v prohlížeči, takže zadání čísla je okamžité
+// a nejde na server žádný další dotaz. Anon klíč se do prohlížeče neposílá.
+const zmeny = await nacti(
+  'zmeny_dilu?select=dil,typ,poradi,popis_zmeny,vyrobni_cislo_od,rok_od,zdroj,jistota,poznamka&order=dil,typ,poradi'
+);
+
+const pocetZaznamu = zmeny.length;
+const pocetDilu = new Set(zmeny.map((z) => z.dil)).size;
+---
+
+<Layout
+  title="Co má mít můj stroj — vyhodnocení podle výrobního čísla | jawaperak.cz"
+  description="Zadejte výrobní číslo Péráka a nástroj z databáze doložených změn složí seznam dílů, které k němu podle pramenů patří. Včetně toho, jak jisté které zařazení je."
+>
+  <div class="wrap wrap--art">
+    <div class="page">
+
+      <aside class="aside">
+        <div class="aside-in">
+          <p class="aside-lb">Na této stránce</p>
+          <ol id="toc">
+            <li><a href="#nastroj">Nástroj</a></li>
+            <li><a href="#jak">Jak to počítá</a></li>
+            <li><a href="#neni">Co to neříká</a></li>
+            <li><a href="#data">Odkud data jsou</a></li>
+          </ol>
+          <div class="aside-foot">
+            <p class="t">Značení jistoty</p>
+            <div class="row"><span class="stamp kn">kniha</span></div>
+            <div class="row"><span class="stamp ov">ověřeno</span></div>
+            <div class="row"><span class="stamp od">odhad</span></div>
+            <div class="row"><span class="stamp sp">sporné</span></div>
+          </div>
+        </div>
+      </aside>
+
+      <article class="art">
+
+        <details class="mtoc">
+          <summary><span>Obsah stránky — <span class="cur" id="curSec">Nástroj</span></span></summary>
+          <ol>
+            <li><a href="#nastroj">Nástroj</a></li>
+            <li><a href="#jak">Jak to počítá</a></li>
+            <li><a href="#neni">Co to neříká</a></li>
+            <li><a href="#data">Odkud data jsou</a></li>
+          </ol>
+        </details>
+
+        <p class="kicker"><a href="/perak/">Encyklopedie</a> — Identifikace a data</p>
+        <h1>Co má mít můj stroj</h1>
+        <p class="lead">
+          Zadejte výrobní číslo a nástroj vám z databáze doložených změn složí
+          seznam dílů, které k tomu číslu podle pramenů patří. U každého dílu
+          zároveň řekne, jak jistá ta informace je.
+        </p>
+
+        <div class="meta">
+          <span>Aktualizováno <b>8. 8. 2026</b></span>
+          <span>Záznamů v databázi <b>{pocetZaznamu}</b></span>
+          <span>Sledovaných dílů <b>{pocetDilu}</b></span>
+        </div>
+
+        <section class="sec" id="nastroj">
+          <div class="sec-h">
+            <span class="sec-n">01</span>
+            <h2>Nástroj</h2>
+            <p class="sub">Zadejte číslo z výrobního štítku nebo z ražby v rámu. Funguje pro typy 10, 11, 12 i 18.</p>
+          </div>
+
+          <div class="zvc-tool">
+            <label class="zvc-lbl" for="zvc-vc">Výrobní číslo stroje</label>
+            <div class="zvc-inrow">
+              <input type="text" id="zvc-vc" placeholder="např. 11-34567 nebo 11-07390-52" autocomplete="off" spellcheck="false">
+              <button type="button" class="zvc-go" id="zvc-go">Vyhodnotit</button>
+            </div>
+            <div class="zvc-ex">
+              Vyzkoušet:
+              <button type="button" data-ex="11-1200">11-1200</button>
+              <button type="button" data-ex="11-34567">11-34567</button>
+              <button type="button" data-ex="11-70000">11-70000</button>
+              <button type="button" data-ex="11-07390-52">11-07390-52</button>
+              <button type="button" data-ex="12-4200">12-4200</button>
+              <button type="button" data-ex="18-8392">18-8392</button>
+            </div>
+          </div>
+
+          <div id="zvc-out"></div>
+        </section>
+
+        <section class="sec" id="jak">
+          <div class="sec-h">
+            <span class="sec-n">02</span>
+            <h2>Jak to počítá</h2>
+            <p class="sub">Aby výsledku šlo věřit, je dobré vědět, na čem stojí.</p>
+          </div>
+
+          <p>
+            U každého dílu máme v databázi řadu provedení, jak šla za sebou.
+            U některých změn víme <strong>přesné výrobní číslo</strong>, od kterého
+            platí. U jiných víme jen rok. Nástroj proto pracuje ve dvou režimech
+            a vždy říká, který z nich právě použil.
+          </p>
+
+          <div class="box box--fact">
+            <span class="lb">Když známe výrobní číslo</span>
+            <p>
+              Nástroj prostě porovná vaše číslo s tím v databázi. Výsledek je
+              spolehlivý — třeba u brzdových bubnů, kde víme, že se od
+              <span class="sn">11-61551</span> zvětšily ze 150 na 160 mm.
+            </p>
+          </div>
+
+          <div class="box box--warn">
+            <span class="lb">Když známe jen rok</span>
+            <p>
+              Pak si nástroj musí rok vašeho stroje nejdřív odhadnout z výrobního
+              čísla. Ten odhad má chybu — <b>klidně rok na obě strany</b>. Takové
+              díly poznáte podle toho, že karta má <b>přerušovaný okraj</b>. Berte
+              je jako vodítko, ne jako jistotu.
+            </p>
+          </div>
+
+          <p>
+            Trochu potíží dělá číslování. Do konce roku 1951 běžela jedna
+            průběžná řada, takže vyšší číslo znamená pozdější stroj. Od 1. ledna
+            1952 se ale začalo <strong>každý rok počítat znovu od jedničky</strong>
+            a rok se přidal na konec čísla. Stroj <span class="sn">11-00096-52</span>
+            je proto novější než <span class="sn">11-84109</span>, i když má
+            mnohem nižší číslo. Nástroj s tím počítá.
+          </p>
+
+          <div class="rel">
+            <span class="t">Souvisí</span>
+            <a href="/perak/identifikace/">Kde má Pérák čísla</a>
+            <a href="/perak/250/">Pérák 250 — typ 10 a 11</a>
+            <a href="/perak/350/">Pérák 350 — typ 12 a 18</a>
+          </div>
+        </section>
+
+        <section class="sec" id="neni">
+          <div class="sec-h">
+            <span class="sec-n">03</span>
+            <h2>Co to neříká</h2>
+            <p class="sub">Tohle je nejdůležitější sekce na stránce. Přečtěte si ji dřív, než podle výpisu začnete něco tvrdit.</p>
+          </div>
+
+          <p>
+            Nástroj vám řekne, co stroj <strong>nejspíš dostal z výroby</strong>.
+            Neřekne vám, co na něm dnes musí být. To jsou dvě různé věci a plete
+            si je spousta lidí.
+          </p>
+
+          <div class="box box--warn">
+            <span class="lb">Proč se neshoda běžně stává</span>
+            <ul>
+              <li>Díly se ve fabrice kombinovaly podle toho, co bylo zrovna na skladě. Změny se nezaváděly ze dne na den.</li>
+              <li>Spousta dílů se za sedmdesát let vyměnila úplně legitimně — protože dosloužily.</li>
+              <li>Některé výměny se dělaly už tehdy a doporučovaly se. Třeba čtyřpólové dynamo se běžně nahrazovalo šestipólovým.</li>
+              <li>Většina údajů v databázi má razítko <span class="stamp od">odhad</span>, protože pochází z pozorování konkrétních strojů, ne z továrních záznamů.</li>
+            </ul>
+          </div>
+
+          <p>
+            <strong>Neshoda sama o sobě není důkaz podvodu.</strong> Když ale
+            nesedí víc věcí najednou, a zvlášť když nesedí rám, motor a štítek
+            mezi sebou, stojí za to se ptát dál. Rozhodující jsou vždycky ražby
+            a doklady, ne tenhle výpis.
+          </p>
+        </section>
+
+        <section class="sec" id="data">
+          <div class="sec-h">
+            <span class="sec-n">04</span>
+            <h2>Odkud data jsou</h2>
+            <p class="sub">Databáze se plní ručně a průběžně roste. Každý záznam má uvedený pramen.</p>
+          </div>
+
+          <p>
+            Momentálně je v databázi <strong>{pocetZaznamu} záznamů</strong>
+            u <strong>{pocetDilu} různých dílů</strong>. Nejvíc jich máme u
+            dvěstěpadesátky, protože se vyráběla nejdéle a je nejlíp zdokumentovaná.
+          </p>
+
+          <p>
+            Razítko u každého dílu se odvozuje přímo z pramene. Když záznam pochází
+            z knihy, dostane <span class="stamp kn">kniha</span>. Když se na něm
+            shodly dva nezávislé prameny, dostane <span class="stamp ov">ověřeno</span>.
+            Když stojí na jednom pozorování, je to <span class="stamp od">odhad</span>.
+            A když si prameny odporují, je to <span class="stamp sp">sporné</span>
+            a my to rovnou přiznáme.
+          </p>
+
+          <div class="box box--fact">
+            <span class="lb">Máte doplněk nebo opravu?</span>
+            <p>
+              Databáze roste hlavně z toho, co lidi pošlou. Pokud u svého stroje
+              víte o změně, kterou tu nemáme — a hlavně pokud k ní znáte výrobní
+              číslo — ozvěte se. Přesná čísla jsou to nejcennější, co k tématu
+              existuje, a shánějí se nejhůř.
+            </p>
+          </div>
+        </section>
+
+        <div class="cta">
+          <div>
+            <span class="lb">Nejste si jistí</span>
+            <p>Projdeme stroj před koupí, zkontrolujeme čísla a řekneme, co vás čeká.</p>
+          </div>
+          <a href="/sluzby/prohlidka-pred-koupi/">Prohlídka před koupí</a>
+        </div>
+
+        <footer class="src">
+          <h2>Zdroje</h2>
+          <ol>
+            <li>
+              Vlastní databáze konstrukčních změn — {pocetZaznamu} záznamů,
+              každý s uvedeným pramenem a mírou jistoty.
+            </li>
+            <li>
+              Procházka, Hubert: <cite>Jawa 250/350 Pérák: historie, vývoj, technika, sport</cite>.
+              Grada, 2009. <span class="stamp kn">kniha</span>
+            </li>
+            <li>
+              Odhad roku podle výrobního čísla — odvozeno z fotografií dochovaných
+              výrobních štítků. <span class="stamp od">odhad</span>
+            </li>
+          </ol>
+        </footer>
+
+        <RejstrikEncyklopedie aktualni="/perak/zmeny-v-case/" />
+
+      </article>
+    </div>
+  </div>
+
+  <script type="application/json" id="zvc-data" set:html={JSON.stringify(zmeny)}></script>
+</Layout>
+
+<style is:global>
+.zvc-tool{border:2px solid var(--ink,#241f18);background:rgba(0,0,0,.045);padding:20px 20px 22px;margin:0 0 22px}
+.zvc-lbl{display:block;font:500 12px/1 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.14em;opacity:.7;margin-bottom:9px}
+.zvc-inrow{display:flex;gap:10px;flex-wrap:wrap}
+.zvc-inrow input{flex:1 1 240px;min-width:0;font:500 22px/1 Oswald,sans-serif;letter-spacing:.05em;padding:13px 14px;border:1px solid var(--ink,#241f18);background:rgba(255,255,255,.35);color:inherit}
+.zvc-inrow input:focus{outline:2px solid var(--red,#A81C21);outline-offset:-1px}
+.zvc-go{font:500 14px/1 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.1em;padding:0 26px;border:1px solid var(--ink,#241f18);background:var(--red,#A81C21);color:#fff;cursor:pointer}
+.zvc-go:hover{filter:brightness(.88)}
+.zvc-ex{margin-top:13px;font-size:13px;opacity:.8}
+.zvc-ex button{font:500 12.5px/1 Oswald,sans-serif;letter-spacing:.05em;background:transparent;border:1px solid rgba(0,0,0,.25);color:inherit;padding:5px 9px;margin:0 5px 5px 0;cursor:pointer}
+.zvc-ex button:hover{border-color:var(--red,#A81C21);color:var(--red,#A81C21)}
+
+.zvc-read{border:1px solid var(--ink,#241f18);border-top:4px solid var(--red,#A81C21);padding:17px 19px;margin:0 0 8px;background:rgba(0,0,0,.03)}
+.zvc-read .zvc-t{font:500 11.5px/1 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.16em;color:var(--red,#A81C21);margin:0 0 12px}
+.zvc-facts{display:flex;flex-wrap:wrap;gap:20px 32px}
+.zvc-facts .k{font-size:11.5px;text-transform:uppercase;letter-spacing:.1em;opacity:.65;display:block}
+.zvc-facts .v{font:500 21px/1.2 Oswald,sans-serif}
+.zvc-facts .v small{font:400 13px/1.3 inherit;font-family:inherit;opacity:.7;display:block;margin-top:3px;letter-spacing:0;text-transform:none}
+
+.zvc-note{border:1px solid rgba(0,0,0,.2);border-left:4px solid var(--ink,#241f18);background:rgba(0,0,0,.03);padding:12px 15px;font-size:14px;margin:0 0 12px;line-height:1.55}
+
+.zvc-grp{margin:22px 0 0}
+.zvc-grp h3{font:500 19px/1.25 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.03em;border-bottom:2px solid var(--ink,#241f18);padding-bottom:6px;margin:0 0 14px;display:flex;justify-content:space-between;align-items:baseline}
+.zvc-grp h3 span{font:400 12px/1 Oswald,sans-serif;letter-spacing:.1em;opacity:.6}
+
+.zvc-card{border:1px solid rgba(0,0,0,.22);background:rgba(0,0,0,.03);margin:0 0 11px;padding:14px 16px}
+.zvc-card.soft{border-style:dashed}
+.zvc-card .zvc-dil{font:500 12px/1 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.13em;opacity:.65;margin:0 0 8px}
+.zvc-card .zvc-now{font-size:16.5px;margin:0;line-height:1.55}
+.zvc-card .zvc-m{margin-top:8px;font-size:12.5px;opacity:.75;display:flex;gap:10px;flex-wrap:wrap;align-items:center;line-height:1.5}
+
+.zvc-hist{margin-top:10px;border-top:1px solid rgba(0,0,0,.15);padding-top:9px}
+.zvc-hist summary{cursor:pointer;font:500 11.5px/1 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.1em;opacity:.7;list-style:none}
+.zvc-hist summary::-webkit-details-marker{display:none}
+.zvc-hist summary:before{content:"▸ ";color:var(--red,#A81C21)}
+.zvc-hist[open] summary:before{content:"▾ "}
+.zvc-hist ol{margin:11px 0 0;padding-left:20px;font-size:14px;opacity:.75;line-height:1.55}
+.zvc-hist li{margin-bottom:7px}
+.zvc-hist li.is{opacity:1;font-weight:500}
+.zvc-hist li.is:after{content:" — tohle je vaše";color:var(--red,#A81C21);font-size:12px;font-weight:400}
+
+.zvc-err{border:2px solid var(--red,#A81C21);background:rgba(168,28,33,.07);padding:15px 18px;font-size:15px;line-height:1.6}
+
+.zvc-close{border:1px solid var(--ink,#241f18);padding:17px 19px;margin-top:24px;background:rgba(0,0,0,.03)}
+.zvc-close .zvc-t{font:500 11.5px/1 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.16em;color:var(--red,#A81C21);margin:0 0 10px}
+.zvc-close p{margin:0 0 9px;font-size:15px;line-height:1.6}
+.zvc-close p:last-child{margin-bottom:0}
+
+@media(max-width:560px){
+  .zvc-facts{gap:14px 22px}
+  .zvc-facts .v{font-size:19px}
+}
+</style>
+
+<script>
+  const el = document.getElementById('zvc-data');
+  const DATA = el ? JSON.parse(el.textContent || '[]') : [];
+
+  const UZLY = {
+    'motor':'Motor','motor - klikové ústrojí':'Motor','výfuky':'Motor',
+    'řetězy':'Motor','palivový kohout':'Motor',
+    'rám':'Podvozek','rám a přední vidlice':'Podvozek','přední vidlice':'Podvozek',
+    'podkova přední vidlice':'Podvozek','přední kluzáky':'Podvozek',
+    'brýle a tlumič řízení':'Podvozek','brzdové bubny':'Podvozek','kola':'Podvozek',
+    'stojan':'Podvozek','řídítka':'Podvozek','přední blatník':'Podvozek',
+    'zadní blatník a nosič':'Podvozek',
+    'elektroinstalace - dynamo':'Elektrika','kontaktnice':'Elektrika',
+    'maska reflektoru':'Elektrika','přepínač světel':'Elektrika',
+    'spínací skříňka':'Elektrika','tachometr':'Elektrika','zadní světlo':'Elektrika',
+    'schránky':'Elektrika','kastlíky':'Elektrika',
+    'nádrž':'Nádrž a značení','typové označení':'Nádrž a značení'
+  };
+  const PORADI = ['Motor','Podvozek','Elektrika','Nádrž a značení','Ostatní'];
+
+  // Odhad roku podle výrobního čísla — odvozeno z fotografií štítků.
+  const ROKY = {
+    '11':[[1946,1,1500],[1947,1501,15800],[1948,15801,34900],[1949,34901,53800],[1950,53801,73000],[1951,73001,90000]],
+    '12':[[1948,1,900],[1949,901,4500],[1950,4501,10000]],
+    '18':[[1950,1,8000],[1951,8001,14200]]
+  };
+
+  function parseVC(raw){
+    if(!raw) return null;
+    const s = String(raw).trim().toUpperCase().replace(/\s+/g,'');
+    const m = s.match(/^(10|11|12|18)[-\/]?0*(\d{1,6})(?:[-\/](\d{2}))?$/);
+    if(!m) return null;
+    const typ = m[1]==='10' ? '11' : m[1];
+    const cislo = parseInt(m[2],10);
+    const rocnik = m[3] ? 1900+parseInt(m[3],10) : null;
+    if(rocnik && (rocnik<1952 || rocnik>1955)) return {chyba:'rocnik'};
+    return {typ, cislo, rocnik, bylo10:m[1]==='10'};
+  }
+
+  // klíč pro porovnání: [režim, rok, číslo]; režim 0 = průběžná řada, 1 = roční
+  function klic(typ, cislo, rocnik){
+    if(rocnik) return [1, rocnik, cislo];
+    const tab = ROKY[typ] || [];
+    let rok = tab.length ? tab[tab.length-1][0] : 0;
+    for(const p of tab){ if(cislo>=p[1] && cislo<=p[2]){ rok=p[0]; break; } }
+    return [0, rok, cislo];
+  }
+  function porovnej(a,b){
+    if(a[0]!==b[0]) return a[0]-b[0];
+    if(a[0]===1 && a[1]!==b[1]) return a[1]-b[1];
+    return a[2]-b[2];
+  }
+  function odhadRoku(typ,cislo,rocnik){
+    if(rocnik) return {rok:rocnik, presny:true};
+    const tab = ROKY[typ] || [];
+    for(const p of tab){ if(cislo>=p[1] && cislo<=p[2]) return {rok:p[0], presny:false}; }
+    return {rok:null, presny:false};
+  }
+
+  function vyhodnot(p){
+    const mujKlic = klic(p.typ, p.cislo, p.rocnik);
+    const odh = odhadRoku(p.typ, p.cislo, p.rocnik);
+    const mujRok = odh.rok;
+
+    const podleDilu = {};
+    DATA.filter(z => String(z.typ) === p.typ).forEach(z => {
+      (podleDilu[z.dil] = podleDilu[z.dil] || []).push(z);
+    });
+
+    const vysledek = [];
+    Object.keys(podleDilu).forEach(dil => {
+      const rada = podleDilu[dil].slice().sort((a,b) => (a.poradi||0)-(b.poradi||0));
+      let aktivni = -1, jistota = 'zadna', matchlo = false;
+
+      rada.forEach((z,i) => {
+        let plati = false, jak = null;
+        if(z.vyrobni_cislo_od){
+          const pk = parseVC(z.vyrobni_cislo_od);
+          if(pk && !pk.chyba){
+            plati = porovnej(mujKlic, klic(pk.typ, pk.cislo, pk.rocnik)) >= 0;
+            jak = 'cislo';
+          }
+        }
+        if(!plati && !jak && z.rok_od && mujRok){
+          plati = mujRok >= z.rok_od;
+          jak = 'rok';
+        }
+        if(!plati && !jak && i===0) plati = true;   // výchozí provedení
+        if(plati){ aktivni = i; jistota = jak || 'zadna'; if(jak) matchlo = true; }
+      });
+
+      if(aktivni < 0) aktivni = 0;
+      // Když se nic nechytlo a provedení je víc, nedokážeme rozhodnout.
+      const neurcite = !matchlo && rada.length > 1;
+      vysledek.push({dil, rada, aktivni, jistota, neurcite, uzel: UZLY[dil] || 'Ostatní'});
+    });
+
+    return {vysledek, odh};
+  }
+
+  function razitko(z){
+    if(/Procházka/i.test(z.zdroj || '')) return '<span class="stamp kn">kniha</span>';
+    if(z.jistota === 'overeno') return '<span class="stamp ov">ověřeno</span>';
+    if(z.jistota === 'nejiste') return '<span class="stamp sp">sporné</span>';
+    return '<span class="stamp od">odhad</span>';
+  }
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  }
+  function sklonuj(n, a, b, c){ return n===1 ? a : (n<5 ? b : c); }
+
+  function vykresli(raw){
+    const out = document.getElementById('zvc-out');
+    if(!out) return;
+    const p = parseVC(raw);
+
+    if(!p){
+      out.innerHTML = '<div class="zvc-err"><b>Tohle číslo neumíme přečíst.</b> ' +
+        'Čekáme tvar <span class="num">11-34567</span> u strojů z let 1946 až 1951, ' +
+        'nebo <span class="num">11-07390-52</span> u strojů z let 1952 až 1954. ' +
+        'Na začátku může být 10, 11, 12 nebo 18.</div>';
+      return;
+    }
+    if(p.chyba === 'rocnik'){
+      out.innerHTML = '<div class="zvc-err"><b>Rok na konci čísla nedává smysl.</b> ' +
+        'Roční řady se používaly jen v letech 1952 až 1955.</div>';
+      return;
+    }
+
+    const {vysledek, odh} = vyhodnot(p);
+    const nazev = p.typ === '11' ? 'Jawa 250, typ 10 nebo 11'
+                : p.typ === '12' ? 'Jawa-Ogar 350, typ 12'
+                : 'Jawa 350, typ 18';
+    const kubatura = p.typ === '11' ? '250 ccm' : '350 ccm';
+
+    let h = '';
+
+    h += '<div class="zvc-read"><p class="zvc-t">Co jsme z čísla poznali</p><div class="zvc-facts">';
+    h += '<div><span class="k">Typ</span><span class="v">' + esc(nazev) + '</span></div>';
+    h += '<div><span class="k">Kubatura</span><span class="v">' + kubatura + '</span></div>';
+    if(odh.rok){
+      h += '<div><span class="k">Rok výroby</span><span class="v">' + odh.rok +
+           '<small>' + (odh.presny ? 'čte se přímo z čísla' : 'odhad podle čísla') + '</small></span></div>';
+    } else {
+      h += '<div><span class="k">Rok výroby</span><span class="v">nevíme<small>číslo je mimo doložený rozsah</small></span></div>';
+    }
+    h += '<div><span class="k">Číslování</span><span class="v">' +
+         (p.rocnik ? 'roční řada' : 'průběžná řada') + '</span></div>';
+    h += '</div></div>';
+
+    if(p.rocnik){
+      h += '<div class="zvc-note">Od roku 1952 je rok součástí výrobního čísla, takže ' +
+           '<b>rok výroby známe přesně</b>. Zařazení jednotlivých dílů je i tak jen ' +
+           'pravděpodobné — proč, píšeme pod výpisem.</div>';
+    } else {
+      h += '<div class="zvc-note">Rok jsme <b>odhadli z výrobního čísla</b>, není to údaj ze štítku. ' +
+           'Hranice mezi ročníky jsou rozmazané, protože rok na štítku nemusel být rokem, ' +
+           'kdy vznikl rám. <b>Počítejte s odchylkou klidně rok na obě strany.</b></div>';
+    }
+    if(p.bylo10){
+      h += '<div class="zvc-note">Zadali jste číslo začínající <span class="num">10-</span>. ' +
+           'Výrobní čísla ale začínala <b>11- od úplného začátku výroby</b>, bez ohledu na to, ' +
+           'jaké typové označení stroj tehdy nesl. Počítali jsme s typem 11.</div>';
+    }
+
+    const skupiny = {};
+    vysledek.forEach(v => { (skupiny[v.uzel] = skupiny[v.uzel] || []).push(v); });
+
+    let celkem = 0, podleCisla = 0;
+    vysledek.forEach(v => { celkem++; if(v.jistota === 'cislo') podleCisla++; });
+
+    PORADI.forEach(uzel => {
+      const g = skupiny[uzel];
+      if(!g || !g.length) return;
+      g.sort((a,b) => a.dil.localeCompare(b.dil,'cs'));
+      h += '<div class="zvc-grp"><h3>' + esc(uzel) + '<span>' + g.length + ' ' +
+           sklonuj(g.length,'díl','díly','dílů') + '</span></h3>';
+
+      g.forEach(v => {
+        const z = v.rada[v.aktivni];
+        const mekke = v.jistota !== 'cislo';
+        h += '<div class="zvc-card' + (mekke ? ' soft' : '') + '">';
+        h += '<p class="zvc-dil">' + esc(v.dil) + '</p>';
+
+        if(v.neurcite){
+          h += '<p class="zvc-now"><b>Tady vám neporadíme.</b> U tohoto dílu známe víc provedení, ' +
+               'ale nevíme, od kterého čísla ani roku se která zaváděla. Rozbalte si celou řadu ' +
+               'a porovnejte sami.</p>';
+        } else {
+          h += '<p class="zvc-now">' + esc(z.popis_zmeny) + '</p>';
+          h += '<div class="zvc-m">' + razitko(z);
+          h += '<span>' + (v.jistota === 'cislo' ? 'určeno podle výrobního čísla'
+                        : v.jistota === 'rok' ? 'určeno jen podle roku, takže méně jistě'
+                        : 'první známé provedení') + '</span>';
+          if(z.vyrobni_cislo_od) h += '<span>platí od <span class="num">' + esc(z.vyrobni_cislo_od) + '</span></span>';
+          h += '</div>';
+          if(z.poznamka) h += '<div class="zvc-m"><span>' + esc(z.poznamka) + '</span></div>';
+        }
+
+        if(v.rada.length > 1){
+          h += '<details class="zvc-hist"><summary>Všechna provedení (' + v.rada.length + ')</summary><ol>';
+          v.rada.forEach((r,i) => {
+            const od = r.vyrobni_cislo_od ? ' <span class="num">od ' + esc(r.vyrobni_cislo_od) + '</span>'
+                     : (r.rok_od ? ' <span class="num">od ' + r.rok_od + '</span>' : '');
+            h += '<li class="' + (!v.neurcite && i === v.aktivni ? 'is' : '') + '">' +
+                 esc(r.popis_zmeny) + od + '</li>';
+          });
+          h += '</ol></details>';
+        }
+        h += '</div>';
+      });
+      h += '</div>';
+    });
+
+    if(!celkem){
+      h += '<div class="zvc-err"><b>K tomuhle typu zatím v databázi nic nemáme.</b></div>';
+      out.innerHTML = h;
+      return;
+    }
+
+    h += '<div class="zvc-close"><p class="zvc-t">Jak to číst</p>';
+    h += '<p>Prošli jsme <b>' + celkem + ' ' + sklonuj(celkem,'díl','díly','dílů') + '</b>. ' +
+         'U <b>' + podleCisla + '</b> z nich se dá zařazení opřít o konkrétní výrobní číslo, ' +
+         'takže tomu jde věřit. U zbytku známe jen rok, a ten jsme museli odhadnout — ' +
+         'proto mají karty přerušovaný okraj.</p>';
+    h += '<p>Výpis říká, co stroj <b>nejspíš dostal z výroby</b>. Neříká, co na něm dnes musí být. ' +
+         'Díly se ve fabrice kombinovaly podle skladu a za sedmdesát let se spousta z nich ' +
+         'legitimně vyměnila. <b>Když něco nesedí, ještě to neznamená podvod.</b></p>';
+    h += '<p>Rozhodují vždycky ražby a doklady, ne tenhle výpis.</p></div>';
+
+    out.innerHTML = h;
+  }
+
+  const inp = document.getElementById('zvc-vc');
+  const btn = document.getElementById('zvc-go');
+  if(btn && inp){
+    btn.addEventListener('click', () => vykresli(inp.value));
+    inp.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); vykresli(inp.value); } });
+  }
+  document.querySelectorAll('.zvc-ex button').forEach(b => {
+    b.addEventListener('click', () => {
+      if(inp) inp.value = b.dataset.ex;
+      vykresli(b.dataset.ex);
+    });
+  });
+</script>
+</Layout>

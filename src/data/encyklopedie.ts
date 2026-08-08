@@ -102,7 +102,7 @@ export const encyklopedie: EncyStranka[] = [
     titul: 'Co má mít můj stroj',
     popis: 'Zadáte výrobní číslo a vypadne seznam dílů, které k němu podle databáze změn patří.',
     skupina: 'data',
-    hotovo: false,
+    hotovo: true,
   },
   {
     href: '/perak/technicke-udaje/',
