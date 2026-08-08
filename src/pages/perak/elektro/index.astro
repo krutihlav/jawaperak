@@ -1,0 +1,657 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import RejstrikEncyklopedie from '../../../components/RejstrikEncyklopedie.astro';
+---
+
+<Layout
+  title="Elektroinstalace Jawa Pérák — dynamo, zapalování, spínací skříňky | jawaperak.cz"
+  description="Šestivoltová dynamobateriová soustava Péráka: čtyřpólové a šestipólové dynamo, regulátor, zapalování, pět provedení spínací skříňky, světla a proč elektrika není spolehlivé datovací vodítko."
+>
+  <div class="wrap wrap--art">
+    <div class="page">
+
+      <aside class="aside">
+        <div class="aside-in">
+          <p class="aside-lb">Na této stránce</p>
+          <ol id="toc">
+            <li><a href="#soustava">Šest voltů a jak to funguje</a></li>
+            <li><a href="#dynamo">Dynamo a regulátor</a></li>
+            <li><a href="#zapalovani">Zapalování</a></li>
+            <li><a href="#skrinka">Spínací skříňka</a></li>
+            <li><a href="#spotrebice">Světla a spotřebiče</a></li>
+            <li><a href="#datovani">Proč elektrika nedatuje</a></li>
+            <li><a href="#chyby">Časté chyby</a></li>
+          </ol>
+          <div class="aside-foot">
+            <p class="t">Značení jistoty</p>
+            <div class="row"><span class="stamp kn">kniha</span></div>
+            <div class="row"><span class="stamp ov">ověřeno</span></div>
+            <div class="row"><span class="stamp od">odhad</span></div>
+            <div class="row"><span class="stamp sp">sporné</span></div>
+          </div>
+        </div>
+      </aside>
+
+      <article class="art">
+
+        <details class="mtoc">
+          <summary><span>Obsah stránky — <span class="cur" id="curSec">Šest voltů a jak to funguje</span></span></summary>
+          <ol>
+            <li><a href="#soustava">Šest voltů a jak to funguje</a></li>
+            <li><a href="#dynamo">Dynamo a regulátor</a></li>
+            <li><a href="#zapalovani">Zapalování</a></li>
+            <li><a href="#skrinka">Spínací skříňka</a></li>
+            <li><a href="#spotrebice">Světla a spotřebiče</a></li>
+            <li><a href="#datovani">Proč elektrika nedatuje</a></li>
+            <li><a href="#chyby">Časté chyby</a></li>
+          </ol>
+        </details>
+
+        <p class="kicker"><a href="/perak/">Encyklopedie</a> — Technika po uzlech</p>
+        <h1>Elektroinstalace</h1>
+        <p class="lead">
+          Šest voltů, dynamo na konci klikového hřídele a spínací skříňka, která
+          za osm let prošla pěti provedeními. Elektrika Péráka je jednoduchá,
+          ale je to zároveň uzel, který se u strojů měnil nejvíc — a proto je
+          při určování stáří stroje nejméně spolehlivý.
+        </p>
+
+        <div class="meta">
+          <span>Aktualizováno <b>8. 8. 2026</b></span>
+          <span>Čtení <b>12 minut</b></span>
+          <span>Platí pro typy <b>10, 11, 12, 18</b></span>
+        </div>
+
+        <div class="tldr">
+          <h2>Co si odnést</h2>
+          <ol>
+            <li><span>Soustava je <b>dynamobateriová, 6 V</b>, se záporným pólem na kostře. Při startu a nízkých otáčkách napájí zapalování baterie, <b>zhruba od 950 ot/min</b> ji vystřídá dynamo.</span></li>
+            <li><span>Čtyřpólové dynamo měly jen stroje J 250 s čísly <span class="sn">11-01</span> až 7000 a <span class="sn">11-8001</span> až 9600. Všechno ostatní, včetně celé třistapadesátky, má <b>šestipólové 45 W</b>.</span></li>
+            <li><span>Spínací skříňka prošla vývojem od <b>hliníkové s ukazatelem rychlosti</b> po <b>bakelitovou PAL</b> — a starší se při závadách vyměňovaly za novější.</span></li>
+            <li><span>Právě proto <b>elektro nepoužívejte k datování stroje</b>. Je to nejčastěji vyměňovaná skupina dílů na celém motocyklu.</span></li>
+          </ol>
+        </div>
+
+        <section class="sec" id="soustava">
+          <div class="sec-h">
+            <span class="sec-n">01</span>
+            <h2>Šest voltů a jak to funguje</h2>
+            <p class="sub">Jeden primární okruh, značení svorek převzaté od Bosche a akumulátor, který startuje jiskru.</p>
+          </div>
+
+          <p>
+            Primární okruh o napětí 6 V je spojený s akumulátorem a s dynamem
+            a zásobuje elektrickou energií všechny spotřebiče. Jednotlivé svorky
+            jsou na spínacích skříňkách, spotřebičích i na kabelech označené čísly,
+            která PAL převzal <strong>podle značení elektrických zařízení firmy
+            Bosch</strong>. Ta čísla platí dodnes a při hledání v dobovém schématu
+            se vyplatí je znát.
+          </p>
+
+          <table class="spec">
+            <caption>Značení svorek</caption>
+            <thead>
+              <tr><th>Svorka</th><th>Připojení</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="rl nw num" data-l="Svorka">1</td><td data-l="Připojení">Přívod k přerušovači zapalování</td></tr>
+              <tr><td class="rl nw num" data-l="Svorka">2</td><td data-l="Připojení">Přívod k druhému přerušovači — jen u J 350</td></tr>
+              <tr><td class="rl nw num" data-l="Svorka">30</td><td data-l="Připojení">Přívod přes pojistku ke kladnému pólu baterie</td></tr>
+              <tr><td class="rl nw num" data-l="Svorka">51</td><td data-l="Připojení">Přívod k hlavním kontaktům regulátoru napětí</td></tr>
+              <tr><td class="rl nw num" data-l="Svorka">54</td><td data-l="Připojení">Přívod k houkačce, později i k brzdovému světlu</td></tr>
+              <tr><td class="rl nw num" data-l="Svorka">56</td><td data-l="Připojení">Přívod k přepínači dálkového a tlumeného světla</td></tr>
+              <tr><td class="rl nw num" data-l="Svorka">57</td><td data-l="Připojení">Přívod k parkovacímu světlu ve světlometu</td></tr>
+              <tr><td class="rl nw num" data-l="Svorka">58</td><td data-l="Připojení">Přívod ke koncovému světlu, přímo nebo přes odpor</td></tr>
+              <tr><td class="rl nw num" data-l="Svorka">61</td><td data-l="Připojení">Přívod ke kontrolce nabíjení nebo k ampérmetru</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Akumulátor</h3>
+
+          <p>
+            Všechny Péráky kromě <strong>první série J 250</strong> dostávaly olověný
+            akumulátor 6 V / 14 Ah, připojený záporným pólem na kostru. První série
+            měla akumulátor <strong>6 V / 7 Ah</strong> — detail, který se jinde
+            neuvádí a který u velmi raného stroje sedí do celkového obrazu.
+          </p>
+
+          <table class="spec">
+            <caption>Stav baterie podle hustoty elektrolytu</caption>
+            <thead>
+              <tr><th>Stav</th><th>Hustota</th><th>Napětí na článek</th><th>Odolá mrazu</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="rl nw" data-l="Stav">Dobře nabitá</td>
+                <td data-l="Hustota">1,24 g/cm³</td>
+                <td data-l="Napětí">2,2 V</td>
+                <td data-l="Mráz">−50 °C</td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Stav">Zcela vybitá</td>
+                <td data-l="Hustota">1,18 g/cm³</td>
+                <td data-l="Napětí">1,8 V</td>
+                <td data-l="Mráz">−5 °C</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="box box--fact">
+            <span class="lb">Proč se vybitá baterie v zimě rozmrzne <span class="stamp kn">kniha</span></span>
+            <p>
+              Rozdíl mezi −50 °C a −5 °C je jediná věc: hustota elektrolytu.
+              Vybitá olověná baterie ponechaná přes zimu ve stroji promrzne
+              a je po ní. Pro odstavený Pérák to znamená baterii buď vyjmout
+              a udržovat nabitou, nebo počítat s tím, že na jaře se kupuje nová.
+            </p>
+          </div>
+        </section>
+
+        <section class="sec" id="dynamo">
+          <div class="sec-h">
+            <span class="sec-n">02</span>
+            <h2>Dynamo a regulátor</h2>
+            <p class="sub">Čtyři póly, nebo šest — a jediné místo v celé elektrice, kde známe přesné rozsahy výrobních čísel.</p>
+          </div>
+
+          <p>
+            Rotor dynama, tzv. kotva, je nasazený na kuželové ploše pravého čepu
+            klikového hřídele a na jeho konci sedí na klínku vačka ovládající
+            přerušovač. Rotorové cívky jsou navinuté do drážek v tělese rotoru
+            a připojené k lamelám kolektoru, který je přes uhlíky spojený se
+            statorovými cívkami na nástavcích upevněných na pravé půlce monobloku.
+            Statorové cívky jsou zapojené v sérii, z jedné strany na svorku 61,
+            z druhé na samočinný regulátor napětí.
+          </p>
+
+          <div class="box box--fact">
+            <span class="lb">Přesné rozsahy — vzácnost u téhle látky <span class="stamp kn">kniha</span></span>
+            <p>
+              Původní <b>čtyřpólové derivační dynamo</b> bylo použito u strojů J 250
+              s výrobními čísly <span class="sn">11-01</span> až <span class="sn">7000</span>
+              a <span class="sn">11-8001</span> až <span class="sn">9600</span>.
+              U všech ostatních strojů J 250 a u <b>všech</b> strojů J 350 typu 12
+              i 18 už bylo použito jen <b>šestipólové dynamo s výkonem 45 W při 6 V</b>.
+            </p>
+          </div>
+
+          <p>
+            Obě dynama se kromě počtu pólů liší i provedením odporového vinutí:
+            u čtyřpólového je odporové vinutí připojené k vinutí jedné statorové
+            cívky, kdežto u šestipólového je cívka s odporovým vinutím samostatná.
+          </p>
+
+          <div class="box box--warn">
+            <span class="lb">Šestipólové dynamo v raném stroji je legitimní oprava</span>
+            <p>
+              Čtyřpólové dynamo lze nahradit šestipólovým <b>bez úprav monobloku</b>,
+              ale musí se použít hlubší provedení pravého víka bloku (katalogové
+              číslo 11 1102a). Tahle výměna se dělala běžně už tehdy. Šestipólové
+              dynamo ve stroji s číslem pod 9600 tedy samo o sobě neznamená
+              skládanku — ale hlubší víko bloku k němu patřit musí.
+            </p>
+          </div>
+
+          <p>
+            Přepínání mezi akumulátorem a dynamem obstarával automaticky
+            <strong>jednokotvový samočinný regulátor napětí se zpětným spínačem</strong>.
+            U všech Péráků se používal regulátor PAL 6 V / 45 W typu 09-9510.00,
+            přišroubovaný přímo ke statoru dynama. Seřizování a opravy regulátoru
+            kniha doporučuje svěřit odborné dílně — a to doporučení platí dál.
+          </p>
+        </section>
+
+        <section class="sec" id="zapalovani">
+          <div class="sec-h">
+            <span class="sec-n">03</span>
+            <h2>Zapalování</h2>
+            <p class="sub">Samostatný okruh na každý válec, přerušovač seřizovaný na tisícinu — a svíčky, které mají u každého typu jinou tepelnou hodnotu.</p>
+          </div>
+
+          <p>
+            Zapalovací okruh je pro každý válec samostatný, včetně přerušovače
+            a indukční cívky — u dvouválce tedy dva kompletní okruhy. Zdrojem proudu
+            při spouštění a při nízkých otáčkách je akumulátor,
+            <strong>zhruba od 950 ot/min</strong> jeho funkci přebírá dynamo,
+            které zároveň akumulátor dobíjí.
+          </p>
+
+          <div class="box box--fact">
+            <span class="lb">Dvě provedení přerušovače u třistapadesátky <span class="stamp kn">kniha</span></span>
+            <p>
+              U dvouválců se používala <b>dvě provedení</b>: buď dva přerušovače
+              na společném držáku, nebo dva oddělené. U společného držáku se předstih
+              levého válce ve směru jízdy seřizuje dolním přerušovačem a pravého
+              horním — a u toho druhého už <b>nelze natáčet držák</b>, protože by se
+              porušilo nastavení prvního. Mezera se u něj musí nastavit šroubováním
+              pohyblivého kontaktu. U dvou oddělených přerušovačů se každý seřizuje
+              zvlášť, stejně jako u jednoválce.
+            </p>
+          </div>
+
+          <p>
+            Postup seřízení předstihu je dobově popsaný poměrně přesně: píst se
+            nastaví do horní úvrati, vzdálenost kontaktů se seřídí měrkami dodávanými
+            v nářadí stroje tak, aby tenčí prošla suvně a tlustší neprošla. Pak se
+            klikovým hřídelem pootočí zpět před horní úvrať o předepsanou vzdálenost
+            a v této poloze smí být mezi kontakty vůle nejvýše 0,05 mm.
+            Spolehlivější než měrka je <strong>žárovková zkoušečka zapojená mezi
+            kontakty</strong> — v poloze správného předstihu musí žárovka právě
+            zhasnout.
+          </p>
+
+          <table class="spec">
+            <caption>Zapalovací svíčky</caption>
+            <thead>
+              <tr><th>Údaj</th><th>Hodnota</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="rl nw" data-l="Údaj">Závit</td><td data-l="Hodnota">M14 × 1,25</td></tr>
+              <tr><td class="rl nw" data-l="Údaj">Vzdálenost elektrod</td><td data-l="Hodnota">0,5–0,6 mm</td></tr>
+              <tr><td class="rl nw" data-l="Údaj">Tepelná hodnota — Jawa 250</td><td class="num" data-l="Hodnota">175–195</td></tr>
+              <tr><td class="rl nw" data-l="Údaj">Tepelná hodnota — Jawa-Ogar 350 (typ 12)</td><td class="num" data-l="Hodnota">195–225</td></tr>
+              <tr><td class="rl nw" data-l="Údaj">Tepelná hodnota — Jawa 350 typ 18</td><td class="num" data-l="Hodnota">225–240</td></tr>
+              <tr><td class="rl nw" data-l="Údaj">Kontrola stavu</td><td data-l="Hodnota">nejpozději po 5 000 km</td></tr>
+              <tr><td class="rl nw" data-l="Údaj">Výměna</td><td data-l="Hodnota">po 15 000 km bez ohledu na vzhled</td></tr>
+            </tbody>
+          </table>
+
+          <p>
+            Tepelnou hodnotu lze posoudit podle zbarvení izolátoru kolem vnitřní
+            elektrody: správně má být <strong>světle okrový, „bílá káva“</strong>.
+            Tmavší okrová až hnědá znamená příliš teplou svíčku, bílé nebo smetanové
+            zbarvení naopak příliš studenou. Rozdíl v předepsané tepelné hodnotě mezi
+            typem 12 a typem 18 je přitom výrazný — je to jeden z mála případů, kdy
+            <strong>na přečíslování typu záleží i v provozu</strong>.
+          </p>
+
+          <div class="box box--warn">
+            <span class="lb">Vysokonapěťové kabely — modernizace, která zhoršila spolehlivost</span>
+            <p>
+              Původní VN kabely s <b>měděným licnovým jádrem</b> byly velmi odolné
+              a prakticky bezporuchové. Po zavedení předpisů o odrušení se ale vesměs
+              nahrazovaly stíněnými kabely s <b>vodivým uhlíkovým jádrem</b>, které
+              se při méně šetrném zacházení snadno přeruší. Když Pérák nepravidelně
+              vynechává, je tohle jedno z prvních míst ke kontrole — spolu s botkou
+              svíčky, která měla v odrušeném provedení vložený odpor.
+            </p>
+          </div>
+
+          <p>
+            Kondenzátor brání nadměrnému jiskření mezi kontakty přerušovače.
+            Poškozený se projeví nepravidelným zapalováním a obtížným startováním,
+            protože dává slabší jiskru — a protože je <strong>neopravitelný</strong>,
+            jediné řešení je výměna. Pro jeho funkci je důležitá čistota svorek
+            i povrchu a dobré ukostření.
+          </p>
+        </section>
+
+        <section class="sec" id="skrinka">
+          <div class="sec-h">
+            <span class="sec-n">04</span>
+            <h2>Spínací skříňka</h2>
+            <p class="sub">Nejvýraznější a nejčastěji měněný díl elektriky. Pět provedení a jeden příběh o tom, jak dvouválec přinutil Jawu změnit materiál.</p>
+          </div>
+
+          <p>
+            Původní skříňky z lehkého kovu si Jawa vyráběla sama, včetně indukční
+            cívky. Obsahovaly šestipolohový provozní přepínač ovládaný klíčkem,
+            kontrolní žárovku nabíjení a <strong>tři kontrolní žárovky řazení</strong>:
+            prostřední signalizovala neutrál, levá zařazený první nebo třetí stupeň
+            a pravá druhý nebo čtvrtý. To je detail, který dnešní řidič nečeká —
+            Pérák měl v podstatě ukazatel zařazeného převodu.
+          </p>
+
+          <div class="box box--fact">
+            <span class="lb">Dvouválec vynutil bakelit <span class="stamp kn">kniha</span></span>
+            <p>
+              U J 250 se jediná indukční cívka montovala podle druhu buď do skříňky,
+              nebo vedle ní na držák v prostoru pod nádrží mezi hlavou válce
+              a skříňkou. Po zahájení výroby dvouválců ale kovové skříňky přestaly
+              vyhovovat — <b>neměly dost vnitřního prostoru pro druhou zapalovací
+              cívku</b>. Na začátku výroby Jawa-Ogar 350 se proto cívky montovaly
+              vedle kovové skříňky, a právě z tohoto důvodu byly zavedeny
+              <b>nové bakelitové skříňky PAL s místem pro dvě cívky</b>.
+            </p>
+          </div>
+
+          <table class="spec">
+            <caption>Provedení spínací skříňky</caption>
+            <thead>
+              <tr><th>Provedení</th><th>Znak</th><th>Období / od čísla</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="rl nw" data-l="Provedení">1. hliníková</td>
+                <td data-l="Znak">Se zobrazením zařazené rychlosti, cívka vně nebo uvnitř</td>
+                <td data-l="Období">od 1946</td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Provedení">2. bakelitová vysoká</td>
+                <td data-l="Znak">S ampérmetrem a integrovanou hlubokou cívkou</td>
+                <td class="num" data-l="Období">11-46001</td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Provedení">3. bakelitová nízká</td>
+                <td data-l="Znak">Zapalovací cívka přesunuta na rám pod nádrž</td>
+                <td data-l="Období">od 1950</td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Provedení">PAL s kotoučem</td>
+                <td data-l="Znak">Dvě cívky, ampérmetr ±10 A, kontaktový spínací kotouč</td>
+                <td data-l="Období">do 11-74499 (250), do 18-11900 (typ 18) <span class="stamp kn">kniha</span></td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Provedení">PAL s hvězdicí</td>
+                <td data-l="Znak">Kontaktová hvězdice místo kotouče</td>
+                <td data-l="Období">navazuje, plus všechny opravy <span class="stamp kn">kniha</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="box box--warn">
+            <span class="lb">Hvězdice ve starém stroji nic nedokazuje <span class="stamp kn">kniha</span></span>
+            <p>
+              Kontaktový spínací kotouč se <b>časem deformoval a nešel spolehlivě
+              opravit</b>. Při závadách se proto starší skříňky s kotoučem
+              <b>vždy vyměňovaly za provedení s hvězdicí</b>. Hvězdice se tak dnes
+              vyskytuje i na strojích, které ji z výroby nikdy neměly — a je to
+              dobová oprava, ne nepůvodnost.
+            </p>
+          </div>
+
+          <p>
+            U třistapadesátky se dělení drží typů: typ 12 měl hliníkovou skříňku
+            s ukazatelem zařazené rychlosti a indukční dvoucívku samostatně pod
+            skříňkou, typ 18 bakelitovou s ampérmetrem a cívkami uvnitř. Tomu
+            odpovídá i tvar úchytů na nádrži — hluboké pro hliníkovou, mělké
+            pro bakelitovou. <strong>Nádrž a skříňka spolu musí ladit.</strong>
+          </p>
+
+          <p>
+            S vývojem skříňky souvisí i kontaktnice: raná je tříkolíková, připojená
+            konektorem a určená pro hliníkovou skříňku s ukazatelem rychlostí, zatímco
+            od <span class="num">11-46000</span> nastupuje kontaktnice
+            <strong>s kontaktem neutrálu</strong>. Neutrál signalizuje čep s pružným
+            dotykem nanýtovaný na kulise řazení v převodovce — takže tenhle drát
+            vede až dovnitř bloku.
+          </p>
+
+          <div class="rel">
+            <span class="t">Souvisí</span>
+            <a href="/perak/motor/">Kulisa řazení a ukazatel neutrálu</a>
+            <a href="/perak/barvy-a-provedeni/">Nádrž a její úchyty</a>
+            <a href="/perak/identifikace/">Datování podle výrobního čísla</a>
+          </div>
+        </section>
+
+        <section class="sec" id="spotrebice">
+          <div class="sec-h">
+            <span class="sec-n">05</span>
+            <h2>Světla a spotřebiče</h2>
+            <p class="sub">Světlomet zabudovaný do vidlice, koncovka na blatníku a několik drobností, které se během výroby změnily.</p>
+          </div>
+
+          <p>
+            Ve světlometu obou Péráků jsou dvě žárovky: hlavní dvouvláknová
+            <strong>6 V, 25/25 W</strong> přepínatelná pro potkávací a dálkové
+            světlo, a <strong>6 V, 3 W</strong> pro parkovací světlo. Parabolické
+            zrcadlo bylo buď stříbřené, u pozdějších vakuově pokovené hliníkem.
+            Zrcadlo se ve svislé rovině naklápí seřizovacím knoflíkem na rámečku
+            světlometu — protože samotný rámeček je uchycen pevně na ramenech vidlice.
+          </p>
+
+          <p>
+            Do pláště světlometu byl standardně vestavěn rychloměr, jehož stupnice
+            byla nepřímo osvětlena světlem od hlavní žárovky <strong>přes výřez
+            v parabole</strong>. Koncové a brzdové světlo sedí v plechovém krytu
+            kapkovitého tvaru na zadním blatníku a svítí směrem dolů bílým světlem
+            na tabulku SPZ a přes červené sklíčko dozadu.
+          </p>
+
+          <table class="spec">
+            <caption>Změny na spotřebičích</caption>
+            <thead>
+              <tr><th>Díl</th><th>Rané provedení</th><th>Pozdější</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="rl nw" data-l="Díl">Zadní světlo</td>
+                <td data-l="Rané">Slídové sklíčko se svislými pruhy</td>
+                <td data-l="Pozdější">Skleněný „diamant“, od 1950; rámeček shodný</td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Díl">Přepínač světel (250)</td>
+                <td data-l="Rané">Hliníkové tělo, díry se závity</td>
+                <td class="num" data-l="Pozdější">Plechový, otvor bez závitu, od 11-09109-52</td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Díl">Přepínač (350)</td>
+                <td data-l="Rané">Typ 12: hliník, závity, plechové páčky</td>
+                <td data-l="Pozdější">Typ 18: kov bez závitu, hliníkové páčky</td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Díl">Maska reflektoru (250)</td>
+                <td data-l="Rané">Otvor pro šroub k podkově a krycí plíšek mezi packami</td>
+                <td data-l="Pozdější">Bez otvoru, později i bez plíšku; maska ze dvou částí</td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Díl">Maska (350)</td>
+                <td data-l="Rané">Typ 12: ze tří kusů, svařované výstupky, zapuštěný otvor pro tachometr</td>
+                <td data-l="Pozdější">Typ 18: ze dvou plechů, vystouplý otvor pro tachometr</td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Díl">Kastlík baterie</td>
+                <td data-l="Rané">Typ 12: pouzdro pro baterii</td>
+                <td data-l="Pozdější">Typ 18: jen podložka</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Tachometr — pět výrobců za osm let</h3>
+
+          <p>
+            Rychloměr je zvláštní kapitola. Během výroby se stěhoval mezi podniky
+            tak, že podle štítku na ciferníku jde odhadnout období — s tou obvyklou
+            výhradou, že se přístroje běžně vyměňovaly.
+          </p>
+
+          <div class="tl">
+            <div class="tlrow">
+              <span class="yr">1946<small>VDO</small></span>
+              <p class="tx">Logo <b>VDO Praha</b> na štítku. <span class="stamp od">odhad</span></p>
+            </div>
+            <div class="tlrow">
+              <span class="yr">—<small>Křižík</small></span>
+              <p class="tx">
+                Po transformaci VDO Praha logo <b>Elektrotechnické závody Křižík</b>,
+                následně přechod loga z „FJ“ na „Z“. <span class="stamp od">odhad</span>
+              </p>
+            </div>
+            <div class="tlrow">
+              <span class="yr">1950<small>Technometra</small></span>
+              <p class="tx">
+                Výrobu přebírá n. p. <b>Technometra</b>; na stupnici přibývá
+                doporučené řazení rychlostí. <span class="stamp od">odhad</span>
+              </p>
+            </div>
+            <div class="tlrow">
+              <span class="yr">1951/52<small>Aeropal</small></span>
+              <p class="tx">
+                Výroba se stěhuje do pobočného závodu <b>Aeropal</b> v Uherském
+                Hradišti, z něhož je dnešní Mesit. <span class="stamp od">odhad</span>
+              </p>
+            </div>
+            <div class="tlrow">
+              <span class="yr">—<small>PAL Kbely</small></span>
+              <p class="tx">
+                Poslední doložená etapa: výroba tachometrů v závodě
+                <b>PAL Kbely</b> u Prahy. <span class="stamp sp">sporné</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="box box--fact">
+            <span class="lb">Tachometr u třistapadesátky <span class="stamp ov">ověřeno</span></span>
+            <p>
+              Typ 12 má <b>dlouhou ručičku, stupnici do 140 km/h a značku OGAR</b>
+              na ciferníku. Typ 18 má <b>krátkou ručičku, stupnici do 160 km/h,
+              značku JAWA s kolečkem</b> a přidaný ukazatel doporučeného řazení.
+              Je to jeden z nejlépe čitelných rozdílů mezi oběma typy — pokud tedy
+              přístroj někdo nevyměnil, což se stávalo často.
+            </p>
+          </div>
+
+          <div class="box box--fact">
+            <span class="lb">Exportní rarita: dvojí napětí <span class="stamp kn">kniha</span></span>
+            <p>
+              Jen u několika menších sérií typu Jawa 250 se pro export místo
+              dynamobateriového zapalování používalo <b>magnetoelektrické zapalování
+              dodávající primární proud dvojího napětí: 6 V pro zapalování a 12 V
+              pro hlavní světlomet</b>. Šlo o stroje pro země bez podmínek pro údržbu
+              akumulátorů. Kniha uvádí, že není pravděpodobné, že by se s touhle verzí
+              dnes u nás někdo setkal — pokud by se ale objevila, je to rarita
+              a patří do registru.
+            </p>
+          </div>
+        </section>
+
+        <section class="sec" id="datovani">
+          <div class="sec-h">
+            <span class="sec-n">06</span>
+            <h2>Proč elektrika nedatuje</h2>
+            <p class="sub">Sekce, kterou by měl přečíst každý, kdo chce určit stáří stroje podle spínací skříňky.</p>
+          </div>
+
+          <p>
+            U rámu a plechů platí, že se měnily zřídka — díl vydržel, dokud
+            nedosloužil. U elektriky je to naopak. Skoro každá součástka téhle
+            skupiny má doloženo, že se při závadě <strong>vyměňovala za novější
+            provedení</strong>, protože starší se přestalo vyrábět nebo se
+            neosvědčilo.
+          </p>
+
+          <table class="spec">
+            <caption>Doložené dobové výměny za novější typ</caption>
+            <thead>
+              <tr><th>Díl</th><th>Co se dělo</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="rl nw" data-l="Díl">Spínací skříňka</td>
+                <td data-l="Co">Kotouč se deformoval, při opravě se <b>vždy</b> montovala hvězdice <span class="stamp kn">kniha</span></td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Díl">Dynamo</td>
+                <td data-l="Co">Čtyřpólové se nahrazovalo šestipólovým, jen s hlubším víkem bloku <span class="stamp kn">kniha</span></td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Díl">VN kabely</td>
+                <td data-l="Co">Původní měděné nahrazeny stíněnými po zavedení předpisů o odrušení <span class="stamp kn">kniha</span></td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Díl">Kondenzátor</td>
+                <td data-l="Co">Neopravitelný, jediné řešení je výměna</td>
+              </tr>
+              <tr>
+                <td class="rl nw" data-l="Díl">Tachometr</td>
+                <td data-l="Co">Nejméně pět výrobních etap; přístroj se běžně měnil při poruše</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="box box--warn">
+            <span class="lb">Praktický závěr</span>
+            <p>
+              Elektrika je u Péráka <b>nejhorší datovací vodítko ze všech uzlů</b>.
+              Datujte podle rámu, ražby a plechových dílů; elektriku používejte
+              jako doplněk, který může potvrdit obraz, ale nesmí ho určovat.
+              A opačně: nesoulad v elektrice není důkaz podvodu. Je to nejspíš
+              stopa po sedmdesáti letech provozu.
+            </p>
+          </div>
+        </section>
+
+        <section class="sec" id="chyby">
+          <div class="sec-h">
+            <span class="sec-n">07</span>
+            <h2>Časté chyby</h2>
+            <p class="sub">Kde se u elektriky Péráka chybuje nejčastěji — při hledání závady i při posuzování stroje.</p>
+          </div>
+
+          <div class="box box--warn">
+            <span class="lb">Chyba 1 — hledá se závada v cívce, a je v kabelu</span>
+            <p>
+              Stíněné VN kabely s uhlíkovým jádrem se přerušují uvnitř izolace,
+              takže zvenku vypadají v pořádku. Než se demontuje cívka nebo skříňka,
+              vyplatí se kabely a botku svíčky proměřit.
+            </p>
+          </div>
+
+          <div class="box box--warn">
+            <span class="lb">Chyba 2 — přechod na 12 V bez rozmyslu</span>
+            <p>
+              Přestavba na dvanáct voltů řeší reálný problém se svícením, ale
+              nevratně mění charakter stroje a u sběratelsky hodnotného kusu
+              snižuje cenu. Pokud se do ní jde, má smysl uchovat všechny původní
+              díly a přestavbu udělat tak, aby byla zpětně odstranitelná.
+            </p>
+          </div>
+
+          <div class="box box--warn">
+            <span class="lb">Chyba 3 — nádrž a skříňka z různých období</span>
+            <p>
+              Úchyty na nádrži jsou hluboké pro hliníkovou skříňku s cívkou
+              a mělké pro bakelitovou. Když spolu nesedí, něco se dodatečně upravovalo —
+              a stojí za to zjistit co.
+            </p>
+          </div>
+
+          <div class="box box--dilna">
+            <span class="lb">Z dílny</span>
+            <p>
+              <i>Doplnit vlastní zkušenosti: co se nejčastěji ukáže jako skutečná
+              příčina, když Pérák „nedává jiskru“, jak se stavíme k přestavbám
+              na 12 V, a jaká je dnes realita s dostupností skříněk, regulátorů
+              a masek reflektoru.</i>
+            </p>
+          </div>
+        </section>
+
+        <div class="cta">
+          <div>
+            <span class="lb">Nejste si jistí</span>
+            <p>Projdeme stroj před koupí, zkontrolujeme čísla a řekneme, co vás čeká.</p>
+          </div>
+          <a href="/sluzby/prohlidka-pred-koupi/">Prohlídka před koupí</a>
+        </div>
+
+        <footer class="src">
+          <h2>Zdroje</h2>
+          <ol>
+            <li>
+              Procházka, Hubert: <cite>Jawa 250/350 Pérák: historie, vývoj, technika, sport</cite>.
+              Grada, 2009, str. 64–71. <span class="stamp kn">kniha</span>
+            </li>
+            <li>
+              Rozsahy výrobních čísel u čtyřpólového dynama a platnost provedení
+              spínacích skříněk PAL — tamtéž, str. 65–67. <span class="stamp ov">ověřeno</span>
+            </li>
+            <li>
+              Vlastní databáze konstrukčních změn — záznamy pro dynamo, spínací
+              skříňku, kontaktnici, masku reflektoru, přepínač světel, tachometr,
+              zadní světlo, schránky a kastlíky. <span class="stamp od">odhad</span>
+            </li>
+            <li>
+              Rozdíly tachometru a masky reflektoru u typu 12 a 18 — terénní
+              pramen. <span class="stamp ov">ověřeno</span>
+            </li>
+          </ol>
+        </footer>
+
+        <RejstrikEncyklopedie aktualni="/perak/elektro/" />
+
+      </article>
+    </div>
+  </div>
+</Layout>
