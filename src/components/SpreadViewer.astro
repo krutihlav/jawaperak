@@ -1,0 +1,609 @@
+---
+// Znovupoužitelný prohlížeč dobových skenů (katalogy dílů, návody k obsluze…).
+// Virtualizovaný — v DOM jsou vždy jen 3 obrázky (předchozí/aktuální/další),
+// zbytek se dotahuje až za potřeby. Vlastní pinch-zoom + posun po přiblížení
+// + swipe mezi stranami postavené na Pointer Events, funguje na dotyku i myši.
+export interface SpreadItem {
+  src: string;
+  alt: string;
+  label: string;
+}
+export interface Props {
+  items: SpreadItem[];
+  hashPrefix?: string;
+}
+const { items, hashPrefix = 's' } = Astro.props;
+const N = items.length;
+const uid = 'sv' + Math.random().toString(36).slice(2, 8);
+---
+
+<div class="spread-viewer-wrap" data-hash-prefix={hashPrefix}>
+  <div class="sv-bar">
+    <button class="sv-btn sv-prev" type="button" aria-label="Předchozí strana">‹</button>
+    <div class="sv-count" aria-live="polite">
+      <span class="sv-cur">1</span><span class="sv-sep">/</span><span class="sv-total">{N}</span>
+      <small class="sv-label"></small>
+    </div>
+    <button class="sv-btn sv-next" type="button" aria-label="Další strana">›</button>
+  </div>
+
+  <div
+    class="sv-stage"
+    tabindex="0"
+    role="group"
+    aria-label="Prohlížeč skenů — šipky nebo tažení pro listování, štípnutím nebo dvojím poklepáním přiblížíte"
+  >
+    <div class="sv-track">
+      <div class="sv-frame sv-role-prev" aria-hidden="true"><img alt="" decoding="async" draggable="false" /></div>
+      <div class="sv-frame sv-role-cur"><img alt="" decoding="async" draggable="false" fetchpriority="high" /></div>
+      <div class="sv-frame sv-role-next" aria-hidden="true"><img alt="" decoding="async" draggable="false" /></div>
+    </div>
+    <div class="sv-spinner" aria-hidden="true"></div>
+  </div>
+
+  <div class="sv-tools">
+    <div class="sv-zoom">
+      <button class="sv-btn sv-ic sv-zout" type="button" aria-label="Oddálit">−</button>
+      <button class="sv-btn sv-ic sv-zreset" type="button" aria-label="Přizpůsobit obrazovce">Fit</button>
+      <button class="sv-btn sv-ic sv-zin" type="button" aria-label="Přiblížit">+</button>
+    </div>
+    <div class="sv-jump">
+      <label for={`${uid}-jump`}>Strana</label>
+      <input type="number" id={`${uid}-jump`} class="sv-jump-input" min="1" max={N} inputmode="numeric" placeholder="č.">
+      <button class="sv-btn sv-jgo" type="button">Přejít</button>
+    </div>
+    <button class="sv-btn sv-ic sv-fs" type="button" aria-label="Celá obrazovka" hidden>⛶</button>
+  </div>
+
+  <noscript>
+    <div class="sv-noscript">
+      {items.map((it) => (
+        <figure>
+          <img src={it.src} alt={it.alt} loading="lazy" decoding="async" />
+          <figcaption>{it.label}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </noscript>
+
+  <script type="application/json" class="sv-data" set:html={JSON.stringify(items)}></script>
+
+  <script is:inline>
+  (function () {
+    var script = document.currentScript;
+    var root = script.closest('.spread-viewer-wrap');
+    var DATA = JSON.parse(root.querySelector('.sv-data').textContent);
+    var N = DATA.length;
+    var HASH_PREFIX = root.getAttribute('data-hash-prefix') || 's';
+
+    var stage = root.querySelector('.sv-stage');
+    var track = root.querySelector('.sv-track');
+    var frameEls = {
+      prev: root.querySelector('.sv-role-prev'),
+      cur: root.querySelector('.sv-role-cur'),
+      next: root.querySelector('.sv-role-next'),
+    };
+    var imgEls = {
+      prev: frameEls.prev.querySelector('img'),
+      cur: frameEls.cur.querySelector('img'),
+      next: frameEls.next.querySelector('img'),
+    };
+    var spinner = root.querySelector('.sv-spinner');
+    var elCur = root.querySelector('.sv-cur');
+    var elLabel = root.querySelector('.sv-label');
+    var btnPrev = root.querySelector('.sv-prev');
+    var btnNext = root.querySelector('.sv-next');
+    var btnZin = root.querySelector('.sv-zin');
+    var btnZout = root.querySelector('.sv-zout');
+    var btnZreset = root.querySelector('.sv-zreset');
+    var btnFs = root.querySelector('.sv-fs');
+    var jumpInput = root.querySelector('.sv-jump-input');
+    var btnJump = root.querySelector('.sv-jgo');
+
+    var index = 0;
+    var ratio = 1.32; // upresni se po nacteni prvniho obrazku
+    var scale = 1, tx = 0, ty = 0;
+    var animating = false;
+    var lastInputWasTouch = false;
+
+    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+    function dist(a, b) { var dx = a.x - b.x, dy = a.y - b.y; return Math.sqrt(dx * dx + dy * dy); }
+    function midpoint(a, b) { return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; }
+
+    function parseInitialIndex() {
+      var re = new RegExp('^#' + HASH_PREFIX + '(\\d+)$');
+      var mm = re.exec(location.hash);
+      if (mm) {
+        var n = parseInt(mm[1], 10) - 1;
+        if (n >= 0 && n < N) return n;
+      }
+      return 0;
+    }
+
+    // ---------- rozměry jeviště ----------
+    function fitStage() {
+      var isMobile = window.innerWidth <= 640;
+      var availW = stage.parentElement.clientWidth;
+      var vhBudget = isMobile ? window.innerHeight * 0.58 : Math.min(window.innerHeight * 0.72, 760);
+      var w = availW, h = w / ratio;
+      if (h > vhBudget) { h = vhBudget; w = h * ratio; }
+      stage.style.width = Math.round(w) + 'px';
+      stage.style.height = Math.round(h) + 'px';
+    }
+
+    function resetTrackPosition() {
+      track.style.transition = 'none';
+      track.style.transform = 'translate3d(' + (-stage.clientWidth) + 'px,0,0)';
+    }
+
+    // ---------- načítání snímků ----------
+    function setFrameImg(img, i) {
+      var frame = img.parentElement;
+      if (i < 0 || i >= N) {
+        img.removeAttribute('src');
+        img.alt = '';
+        frame.classList.add('sv-empty');
+        return;
+      }
+      frame.classList.remove('sv-empty');
+      var d = DATA[i];
+      if (img.dataset.idx !== String(i)) {
+        img.dataset.idx = String(i);
+        img.alt = d.alt;
+        img.src = d.src;
+      }
+    }
+
+    function updateFrames() {
+      setFrameImg(imgEls.prev, index - 1);
+      setFrameImg(imgEls.cur, index);
+      setFrameImg(imgEls.next, index + 1);
+    }
+
+    function preload(i) {
+      if (i < 0 || i >= N) return;
+      var im = new Image();
+      im.src = DATA[i].src;
+    }
+
+    function updateUI() {
+      elCur.textContent = String(index + 1);
+      elLabel.textContent = DATA[index].label ? '(' + DATA[index].label + ')' : '';
+      btnPrev.disabled = index === 0;
+      btnNext.disabled = index === N - 1;
+      try { history.replaceState(null, '', '#' + HASH_PREFIX + (index + 1)); } catch (e) {}
+    }
+
+    function resetZoomInstant() {
+      scale = 1; tx = 0; ty = 0;
+      imgEls.cur.style.transition = 'none';
+      imgEls.cur.style.transform = 'translate3d(0,0,0) scale(1)';
+      stage.style.touchAction = 'pan-y';
+      stage.classList.remove('sv-zoomed');
+    }
+
+    function showSpinnerIfNeeded() {
+      spinner.classList.remove('sv-error');
+      if (imgEls.cur.complete && imgEls.cur.naturalWidth) spinner.classList.remove('sv-show');
+      else spinner.classList.add('sv-show');
+    }
+
+    function setIndex(i) {
+      index = clamp(i, 0, N - 1);
+      resetZoomInstant();
+      updateFrames();
+      updateUI();
+      preload(index - 2); preload(index + 2);
+      showSpinnerIfNeeded();
+    }
+
+    imgEls.cur.addEventListener('load', function () {
+      spinner.classList.remove('sv-show');
+      if (imgEls.cur.naturalWidth && imgEls.cur.naturalHeight) {
+        ratio = imgEls.cur.naturalWidth / imgEls.cur.naturalHeight;
+        fitStage();
+        resetTrackPosition();
+      }
+    });
+    imgEls.cur.addEventListener('error', function () {
+      spinner.classList.remove('sv-show');
+      spinner.classList.add('sv-error');
+    });
+
+    // ---------- zoom ----------
+    function containSize() {
+      var bw = frameEls.cur.clientWidth, bh = frameEls.cur.clientHeight;
+      var nw = imgEls.cur.naturalWidth || bw, nh = imgEls.cur.naturalHeight || bh;
+      var s = Math.min(bw / nw, bh / nh);
+      return { w: nw * s, h: nh * s, bw: bw, bh: bh };
+    }
+
+    function maxScale() {
+      var c = containSize();
+      var nw = imgEls.cur.naturalWidth || 2200;
+      return clamp(nw / Math.max(1, c.w), 2.2, 8);
+    }
+
+    function clampPan() {
+      var c = containSize();
+      var sw = c.w * scale, sh = c.h * scale;
+      var maxTx = Math.max(0, (sw - c.bw) / 2);
+      var maxTy = Math.max(0, (sh - c.bh) / 2);
+      tx = clamp(tx, -maxTx, maxTx);
+      ty = clamp(ty, -maxTy, maxTy);
+    }
+
+    function applyZoomTransform(animate) {
+      imgEls.cur.style.transition = animate ? 'transform .28s cubic-bezier(.2,.7,.2,1)' : 'none';
+      imgEls.cur.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,0) scale(' + scale.toFixed(3) + ')';
+      stage.style.touchAction = scale > 1.02 ? 'none' : 'pan-y';
+      stage.classList.toggle('sv-zoomed', scale > 1.02);
+    }
+
+    function zoomAt(newScale, cx, cy, animate) {
+      newScale = clamp(newScale, 1, maxScale());
+      var rect = frameEls.cur.getBoundingClientRect();
+      var ax = (cx == null ? rect.left + rect.width / 2 : cx) - (rect.left + rect.width / 2);
+      var ay = (cy == null ? rect.top + rect.height / 2 : cy) - (rect.top + rect.height / 2);
+      var r = newScale / scale;
+      if (r !== 1) {
+        tx = ax - (ax - tx) * r;
+        ty = ay - (ay - ty) * r;
+        scale = newScale;
+      }
+      clampPan();
+      applyZoomTransform(animate);
+    }
+
+    function toggleZoomAt(cx, cy) {
+      if (scale > 1.02) zoomAt(1, cx, cy, true);
+      else zoomAt(Math.min(2.6, maxScale()), cx, cy, true);
+    }
+
+    // ---------- listování (swipe) ----------
+    var pointers = new Map();
+    var mode = 'idle'; // idle | swipe | pan | pinch
+    var swipeStartX = 0, swipeStartY = 0, swipeDx = 0;
+    var panLastX = 0, panLastY = 0;
+    var pinchStartDist = 0, pinchLastMid = null;
+    var tapLastTime = 0, tapLastX = 0, tapLastY = 0;
+    var gestureStartX = 0, gestureStartY = 0;
+
+    function cancelAnimation() {
+      if (animating) {
+        track.style.transition = 'none';
+        resetTrackPosition();
+        animating = false;
+      }
+    }
+
+    function applySwipeDrag(dx) {
+      var atStart = index === 0 && dx > 0;
+      var atEnd = index === N - 1 && dx < 0;
+      if (atStart || atEnd) dx *= 0.35;
+      swipeDx = dx;
+      track.style.transition = 'none';
+      track.style.transform = 'translate3d(' + (-stage.clientWidth + dx) + 'px,0,0)';
+    }
+
+    function animateTrackTo(dir, cb) {
+      animating = true;
+      var sw = stage.clientWidth;
+      track.style.transition = 'transform .3s cubic-bezier(.2,.7,.2,1)';
+      track.style.transform = 'translate3d(' + (-sw + dir * sw) + 'px,0,0)';
+      var done = function () {
+        track.removeEventListener('transitionend', done);
+        track.style.transition = 'none';
+        resetTrackPosition();
+        animating = false;
+        if (cb) cb();
+      };
+      track.addEventListener('transitionend', done);
+      setTimeout(function () { if (animating) done(); }, 400);
+    }
+
+    function step(delta) {
+      if (animating) return;
+      var ni = index + delta;
+      if (ni < 0 || ni >= N) return;
+      animateTrackTo(-delta, function () { setIndex(ni); });
+    }
+
+    function jumpTo(ni) {
+      ni = clamp(ni, 0, N - 1);
+      if (ni === index) return;
+      if (animating) cancelAnimation();
+      setIndex(ni);
+    }
+
+    function finalizeSwipe() {
+      if (Math.abs(swipeDx) < 1) { swipeDx = 0; return; } // beze změny, track je už na základní pozici
+      var sw = stage.clientWidth;
+      var commit = Math.abs(swipeDx) > sw * 0.18;
+      if (commit && swipeDx < 0 && index < N - 1) animateTrackTo(-1, function () { setIndex(index + 1); });
+      else if (commit && swipeDx > 0 && index > 0) animateTrackTo(1, function () { setIndex(index - 1); });
+      else animateTrackTo(0, function () {});
+      swipeDx = 0;
+    }
+
+    function onPointerDown(e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      lastInputWasTouch = e.pointerType === 'touch';
+      if (animating) cancelAnimation();
+      try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (pointers.size === 1) {
+        gestureStartX = e.clientX; gestureStartY = e.clientY;
+        if (scale > 1.02) {
+          mode = 'pan';
+          panLastX = e.clientX; panLastY = e.clientY;
+        } else {
+          mode = 'swipe';
+          swipeStartX = e.clientX; swipeStartY = e.clientY; swipeDx = 0;
+        }
+      } else if (pointers.size === 2) {
+        if (mode === 'swipe') { track.style.transition = 'none'; resetTrackPosition(); }
+        mode = 'pinch';
+        var pts = Array.from(pointers.values());
+        pinchStartDist = dist(pts[0], pts[1]);
+        pinchLastMid = midpoint(pts[0], pts[1]);
+      }
+    }
+
+    function onPointerMove(e) {
+      if (!pointers.has(e.pointerId)) return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (mode === 'pinch') {
+        var pts = Array.from(pointers.values()).slice(0, 2);
+        if (pts.length < 2) return;
+        var d = dist(pts[0], pts[1]);
+        var m = midpoint(pts[0], pts[1]);
+        if (pinchStartDist > 0) {
+          var factor = d / pinchStartDist;
+          pinchStartDist = d;
+          var target = clamp(scale * factor, 1, maxScale());
+          var r = target / scale;
+          var rect = frameEls.cur.getBoundingClientRect();
+          var ax = m.x - (rect.left + rect.width / 2), ay = m.y - (rect.top + rect.height / 2);
+          if (r !== 1) { tx = ax - (ax - tx) * r; ty = ay - (ay - ty) * r; scale = target; }
+        }
+        if (pinchLastMid) { tx += m.x - pinchLastMid.x; ty += m.y - pinchLastMid.y; }
+        pinchLastMid = m;
+        clampPan();
+        applyZoomTransform(false);
+      } else if (mode === 'pan') {
+        var dx = e.clientX - panLastX, dy = e.clientY - panLastY;
+        panLastX = e.clientX; panLastY = e.clientY;
+        tx += dx; ty += dy;
+        clampPan();
+        applyZoomTransform(false);
+      } else if (mode === 'swipe') {
+        applySwipeDrag(e.clientX - swipeStartX);
+      }
+    }
+
+    function onPointerUp(e) {
+      pointers.delete(e.pointerId);
+      try { stage.releasePointerCapture(e.pointerId); } catch (err) {}
+
+      if (mode === 'pinch') {
+        if (pointers.size < 2) {
+          var rest = Array.from(pointers.values());
+          if (rest.length === 1) {
+            mode = scale > 1.02 ? 'pan' : 'swipe';
+            panLastX = rest[0].x; panLastY = rest[0].y;
+            swipeStartX = rest[0].x; swipeStartY = rest[0].y; swipeDx = 0;
+            gestureStartX = rest[0].x; gestureStartY = rest[0].y;
+          } else {
+            mode = 'idle';
+          }
+        }
+        return;
+      }
+
+      // pan i swipe jsou vždy gesta jedním prstem — poslední ukazatel právě zvednut
+      if ((mode === 'pan' || mode === 'swipe') && pointers.size === 0) {
+        var totalDx = e.clientX - gestureStartX, totalDy = e.clientY - gestureStartY;
+        var wasTap = Math.abs(totalDx) < 10 && Math.abs(totalDy) < 10;
+        var wasSwipe = mode === 'swipe';
+        if (wasTap && e.pointerType === 'touch') {
+          var now = Date.now();
+          if (now - tapLastTime < 320 && Math.abs(e.clientX - tapLastX) < 30 && Math.abs(e.clientY - tapLastY) < 30) {
+            tapLastTime = 0;
+            toggleZoomAt(e.clientX, e.clientY);
+            if (wasSwipe) animateTrackTo(0, function () {});
+            mode = 'idle';
+            return;
+          }
+          tapLastTime = now; tapLastX = e.clientX; tapLastY = e.clientY;
+        }
+        if (wasSwipe) finalizeSwipe();
+        mode = 'idle';
+      }
+    }
+
+    function onPointerCancel(e) {
+      pointers.delete(e.pointerId);
+      try { stage.releasePointerCapture(e.pointerId); } catch (err) {}
+      if (mode === 'swipe' && pointers.size === 0) { animateTrackTo(0, function () {}); mode = 'idle'; }
+      else if (pointers.size === 0) mode = 'idle';
+    }
+
+    stage.addEventListener('pointerdown', onPointerDown);
+    stage.addEventListener('pointermove', onPointerMove);
+    stage.addEventListener('pointerup', onPointerUp);
+    stage.addEventListener('pointercancel', onPointerCancel);
+
+    stage.addEventListener('dblclick', function (e) {
+      if (lastInputWasTouch) return;
+      e.preventDefault();
+      toggleZoomAt(e.clientX, e.clientY);
+    });
+
+    stage.addEventListener('wheel', function (e) {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      var factor = Math.exp(-e.deltaY * 0.012);
+      zoomAt(scale * factor, e.clientX, e.clientY, false);
+    }, { passive: false });
+
+    stage.addEventListener('keydown', function (e) {
+      switch (e.key) {
+        case 'ArrowRight': e.preventDefault(); step(1); break;
+        case 'ArrowLeft': e.preventDefault(); step(-1); break;
+        case 'Home': e.preventDefault(); jumpTo(0); break;
+        case 'End': e.preventDefault(); jumpTo(N - 1); break;
+        case '+': case '=': e.preventDefault(); zoomAt(scale + 0.7, null, null, true); break;
+        case '-': case '_': e.preventDefault(); zoomAt(scale - 0.7, null, null, true); break;
+        case '0': e.preventDefault(); zoomAt(1, null, null, true); break;
+        case 'Escape': if (scale > 1.02) { e.preventDefault(); zoomAt(1, null, null, true); } break;
+      }
+    });
+
+    btnPrev.addEventListener('click', function () { step(-1); });
+    btnNext.addEventListener('click', function () { step(1); });
+    btnZin.addEventListener('click', function () { zoomAt(scale + 0.7, null, null, true); });
+    btnZout.addEventListener('click', function () { zoomAt(scale - 0.7, null, null, true); });
+    btnZreset.addEventListener('click', function () { zoomAt(1, null, null, true); });
+
+    function doJump() {
+      var n = parseInt(jumpInput.value, 10);
+      if (!n || n < 1 || n > N) return;
+      jumpTo(n - 1);
+      jumpInput.value = '';
+      jumpInput.blur();
+    }
+    btnJump.addEventListener('click', doJump);
+    jumpInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); doJump(); } });
+
+    // ---------- fullscreen ----------
+    function fsElement() { return document.fullscreenElement || document.webkitFullscreenElement; }
+    var canFs = !!(root.requestFullscreen || root.webkitRequestFullscreen);
+    if (canFs) {
+      btnFs.hidden = false;
+      btnFs.addEventListener('click', function () {
+        if (!fsElement()) {
+          var req = root.requestFullscreen || root.webkitRequestFullscreen;
+          req.call(root);
+        } else {
+          var exit = document.exitFullscreen || document.webkitExitFullscreen;
+          exit.call(document);
+        }
+      });
+      var onFsChange = function () {
+        requestAnimationFrame(function () { fitStage(); resetTrackPosition(); });
+      };
+      document.addEventListener('fullscreenchange', onFsChange);
+      document.addEventListener('webkitfullscreenchange', onFsChange);
+    }
+
+    // ---------- resize ----------
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        fitStage();
+        resetZoomInstant();
+        resetTrackPosition();
+      }, 120);
+    });
+
+    // ---------- start ----------
+    function init() {
+      fitStage();
+      index = parseInitialIndex();
+      resetTrackPosition();
+      updateFrames();
+      updateUI();
+      showSpinnerIfNeeded();
+      preload(index - 2); preload(index - 1); preload(index + 1); preload(index + 2);
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+  })();
+  </script>
+
+  <style>
+    .spread-viewer-wrap{margin-top:30px;border:2px solid var(--ink);background:#111}
+
+    .sv-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:10px 14px;background:var(--ink);color:var(--paper)}
+    .sv-btn{font-family:var(--disp);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+      background:var(--paper-2);color:var(--ink);border:0;padding:8px 14px;cursor:pointer;
+      -webkit-tap-highlight-color:transparent}
+    .sv-btn:hover{background:var(--red);color:var(--paper)}
+    .sv-btn:disabled{opacity:.35;cursor:default;background:var(--paper-2);color:var(--ink)}
+    .sv-btn:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+    .sv-count{font-family:var(--disp);font-size:12px;letter-spacing:.08em;text-align:center;
+      font-variant-numeric:tabular-nums}
+    .sv-label{opacity:.7;letter-spacing:.03em;text-transform:none;display:block;margin-top:2px}
+
+    .sv-stage{position:relative;overflow:hidden;background:#1c1712;margin:0 auto;
+      touch-action:pan-y;overscroll-behavior:contain;cursor:grab;
+      -webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+    .sv-stage:active{cursor:grabbing}
+    .sv-stage:focus-visible{outline:2px solid var(--red);outline-offset:-3px}
+
+    .sv-track{display:flex;width:300%;height:100%;will-change:transform}
+    .sv-frame{width:33.3333%;height:100%;flex:0 0 33.3333%;position:relative;
+      display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .sv-frame.sv-empty{background:#151009}
+    .sv-frame img{display:block;width:100%;height:100%;object-fit:contain;
+      -webkit-user-drag:none;pointer-events:none;will-change:transform}
+
+    .sv-spinner{position:absolute;inset:0;display:none;align-items:center;justify-content:center;pointer-events:none}
+    .sv-spinner.sv-show{display:flex}
+    .sv-spinner::after{content:"";width:34px;height:34px;border-radius:50%;
+      border:3px solid rgba(232,222,200,.25);border-top-color:var(--paper);
+      animation:sv-spin .8s linear infinite}
+    .sv-spinner.sv-error::after{display:none}
+    .sv-spinner.sv-error::before{content:"Obrázek se nepodařilo načíst";
+      font-family:var(--disp);font-size:12px;letter-spacing:.06em;color:var(--paper);
+      background:rgba(0,0,0,.4);padding:8px 14px}
+    @keyframes sv-spin{to{transform:rotate(360deg)}}
+
+    .sv-tools{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+      padding:12px 14px;background:var(--paper-2);border-top:1px solid var(--rule)}
+    .sv-zoom{display:flex;gap:0;border:2px solid var(--ink)}
+    .sv-zoom .sv-btn{border-right:1px solid var(--ink);min-width:40px}
+    .sv-zoom .sv-btn:last-child{border-right:0}
+    .sv-jump{display:flex;align-items:center;gap:10px;margin-left:auto}
+    .sv-jump label{font-family:var(--disp);font-size:12px;letter-spacing:.08em;
+      text-transform:uppercase;color:var(--mute)}
+    .sv-jump-input{width:64px;font-family:var(--disp);font-size:15px;padding:7px 9px;
+      border:2px solid var(--ink);background:var(--paper);color:var(--ink)}
+    .sv-fs{min-width:40px}
+
+    @media (max-width:640px){
+      .sv-bar{padding:9px 10px}
+      .sv-btn{padding:7px 11px;font-size:11px}
+      .sv-tools{gap:10px}
+      .sv-fs{order:1}
+      .sv-jump{order:2;margin-left:0;flex-basis:100%;justify-content:flex-end}
+    }
+
+    .spread-viewer-wrap:fullscreen,
+    .spread-viewer-wrap:-webkit-full-screen{
+      display:flex;flex-direction:column;justify-content:center;background:#000;border:0}
+    .spread-viewer-wrap:fullscreen .sv-stage,
+    .spread-viewer-wrap:-webkit-full-screen .sv-stage{
+      width:100%!important;height:auto!important;flex:1 1 0%;min-height:0}
+    .spread-viewer-wrap:fullscreen .sv-bar,
+    .spread-viewer-wrap:fullscreen .sv-tools,
+    .spread-viewer-wrap:-webkit-full-screen .sv-bar,
+    .spread-viewer-wrap:-webkit-full-screen .sv-tools{flex:0 0 auto}
+
+    .sv-noscript{display:flex;flex-direction:column;gap:16px;padding:16px}
+    .sv-noscript figure{margin:0}
+    .sv-noscript img{display:block;width:100%;height:auto}
+    .sv-noscript figcaption{margin-top:6px;font-family:var(--disp);font-size:12px;
+      letter-spacing:.08em;text-transform:uppercase;color:var(--paper)}
+
+    @media (prefers-reduced-motion:reduce){
+      .sv-spinner::after{animation:none}
+    }
+  </style>
+</div>

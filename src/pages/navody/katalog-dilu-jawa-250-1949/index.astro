@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import SpreadViewer from '../../../components/SpreadViewer.astro';
 
 const BASE = '/navody/katalog-dilu-jawa-250-1949';
 
@@ -15,16 +16,16 @@ for (let left = 2; left <= 138; left += 2) {
   });
 }
 
-const viewerData = spreads.map((s, i) => ({
+const items = spreads.map((s) => ({
   src: `${BASE}/${s.file}.jpg`,
+  alt: `Sken katalogu Jawa 250 — ${s.label}`,
   label: s.label,
-  eager: i === 0,
 }));
 ---
 
 <Layout
   title="Seznam náhradních dílů Jawa 250 (1949) — sken katalogu | jawaperak.cz"
-  description="Kompletní dobový katalog náhradních dílů pro motocykl Jawa 250 (vydání 1949, Zbrojovka Brno). Vyčištěné a zvětšené sken s listováním, funguje i na mobilu."
+  description="Kompletní dobový katalog náhradních dílů pro motocykl Jawa 250 (vydání 1949, Zbrojovka Brno). Vyčištěné a zvětšené skeny s pohodlným listováním a přibližováním, funguje skvěle i na mobilu."
 >
   <div class="wrap">
     <div class="page">
@@ -34,132 +35,26 @@ const viewerData = spreads.map((s, i) => ({
       <p class="lead">
         Kompletní dobový katalog — Zbrojovka Brno, závod Praha-Nusle II, platí
         od č. stroje 11–01. Skeny jsme vyčistili a zvětšili, aby šly číst
-        i drobné položky v tabulkách. Listuj šipkami nebo tažením, na mobilu
-        i klasickým swipem — přiblížíš štípnutím dvou prstů.
+        i drobné položky v tabulkách.
       </p>
 
-      <div class="viewer-wrap" id="katalog-viewer">
-        <div class="viewer-bar">
-          <button class="vbtn prev" aria-label="Předchozí strana">‹ Předchozí</button>
-          <span class="page-count"><span id="pc-cur">1</span> / {spreads.length} <small id="pc-label"></small></span>
-          <button class="vbtn next" aria-label="Další strana">Další ›</button>
-        </div>
-        <div class="viewer" id="viewer">
-          {viewerData.map((s) => (
-            <div class="slide">
-              <div class="slide-inner">
-                <img
-                  src={s.src}
-                  alt={`Sken katalogu Jawa 250 — ${s.label}`}
-                  loading={s.eager ? 'eager' : 'lazy'}
-                  decoding="async"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="viewer-jump">
-          <label for="jump">Skok na stranu</label>
-          <input type="number" id="jump" min="1" max={spreads.length} placeholder="číslo dvoustrany">
-          <button class="vbtn" id="jump-go">Přejít</button>
-        </div>
-      </div>
+      <SpreadViewer items={items} hashPrefix="s" />
 
       <p class="hint">
-        Dvojklik nebo dvojité poklepání na obrázek přiblíží detail.
-        Zdroj: dobový tištěný katalog, vydání 1949.
+        Na mobilu: přibliž štípnutím dvou prstů nebo dvojím poklepáním, po
+        přiblížení posouváš tažením prstu, mezi stranami listuješ swipem.
+        Na počítači: myší přibližuje kolečko s <kbd>Ctrl</kbd> (nebo gesto na
+        trackpadu), tažením myší listuješ, šipky <kbd>←</kbd> <kbd>→</kbd> na
+        klávesnici stránkují. Odkaz na konkrétní dvoustranu jde poslat rovnou
+        přes adresu v adresním řádku. Zdroj: dobový tištěný katalog, vydání 1949.
       </p>
 
     </div>
   </div>
 
-  <script type="application/json" id="katalog-data" set:html={JSON.stringify(spreads.map(s => s.label))}></script>
-
-  <script is:inline>
-  (function () {
-    const labels = JSON.parse(document.getElementById('katalog-data').textContent);
-    const viewer = document.getElementById('viewer');
-    const pcCur = document.getElementById('pc-cur');
-    const pcLabel = document.getElementById('pc-label');
-    const wrap = document.getElementById('katalog-viewer');
-
-    function update() {
-      const w = viewer.clientWidth || 1;
-      const i = Math.max(0, Math.round(viewer.scrollLeft / w));
-      pcCur.textContent = i + 1;
-      pcLabel.textContent = labels[i] ? '(' + labels[i] + ')' : '';
-    }
-    viewer.addEventListener('scroll', () => requestAnimationFrame(update));
-    window.addEventListener('resize', update);
-    update();
-    setTimeout(update, 300);
-
-    wrap.querySelector('.prev').addEventListener('click', () => {
-      viewer.scrollBy({ left: -viewer.clientWidth, behavior: 'smooth' });
-    });
-    wrap.querySelector('.next').addEventListener('click', () => {
-      viewer.scrollBy({ left: viewer.clientWidth, behavior: 'smooth' });
-    });
-
-    wrap.querySelectorAll('.slide-inner').forEach((inner) => {
-      let zoomed = false;
-      inner.addEventListener('dblclick', (e) => {
-        zoomed = !zoomed;
-        inner.style.transform = zoomed ? 'scale(2.2)' : 'scale(1)';
-        inner.style.transformOrigin = zoomed ? (e.offsetX + 'px ' + e.offsetY + 'px') : 'center';
-      });
-      // jednoduchy double-tap na dotykovych zarizenich
-      let lastTap = 0;
-      inner.addEventListener('touchend', (e) => {
-        const now = Date.now();
-        if (now - lastTap < 300) {
-          zoomed = !zoomed;
-          inner.style.transform = zoomed ? 'scale(2.2)' : 'scale(1)';
-          inner.style.transformOrigin = 'center';
-        }
-        lastTap = now;
-      });
-    });
-
-    document.getElementById('jump-go').addEventListener('click', () => {
-      const input = document.getElementById('jump');
-      const n = parseInt(input.value, 10);
-      if (!n || n < 1 || n > labels.length) return;
-      viewer.scrollTo({ left: (n - 1) * viewer.clientWidth, behavior: 'smooth' });
-    });
-  })();
-  </script>
-
   <style>
-    .viewer-wrap{margin-top:30px;border:2px solid var(--ink);background:#111}
-    .viewer-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;
-      padding:10px 14px;background:var(--ink);color:var(--paper)}
-    .vbtn{font-family:var(--disp);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
-      background:var(--paper-2);color:var(--ink);border:0;padding:8px 14px;cursor:pointer}
-    .vbtn:hover{background:var(--red);color:var(--paper)}
-    .page-count{font-family:var(--disp);font-size:12px;letter-spacing:.08em;text-align:center}
-    .page-count small{opacity:.7;letter-spacing:.03em;text-transform:none;display:block;margin-top:2px}
-
-    .viewer{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-      scrollbar-width:none}
-    .viewer::-webkit-scrollbar{display:none}
-    .slide{flex:0 0 100%;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;
-      overflow:auto;touch-action:pinch-zoom pan-x pan-y;background:#1c1712;min-height:200px}
-    .slide-inner{position:relative;max-width:100%;transition:transform .25s ease}
-    .slide-inner img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
-
-    .viewer-jump{display:flex;align-items:center;gap:10px;padding:12px 14px;
-      background:var(--paper-2);border-top:1px solid var(--rule);flex-wrap:wrap}
-    .viewer-jump label{font-family:var(--disp);font-size:12px;letter-spacing:.08em;
-      text-transform:uppercase;color:var(--mute)}
-    .viewer-jump input{width:100px;font-family:var(--disp);font-size:15px;padding:7px 9px;
-      border:2px solid var(--ink);background:var(--paper);color:var(--ink)}
-
-    .hint{margin-top:14px;font-size:14.5px;color:var(--mute)}
-
-    @media (max-width:640px){
-      .viewer-bar{padding:9px 10px}
-      .vbtn{padding:7px 11px;font-size:11px}
-    }
+    kbd{font-family:var(--disp);font-size:.85em;letter-spacing:.02em;
+      border:1px solid var(--rule);border-bottom-width:2px;border-radius:3px;
+      padding:0 5px;background:var(--card)}
   </style>
 </Layout>
