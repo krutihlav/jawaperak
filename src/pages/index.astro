@@ -20,8 +20,6 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   <div class="ld-ident__text">
     <p class="ld-label">Co mám za stroj</p>
     <p class="ld-p">Opište tovární číslo ze štítku nebo z rámu. Řekneme vám rok výroby, provedení a na co si u něj dát pozor.</p>
-    <img class="ld-ident__stitek" src="/stitek-perak.webp" width="150" height="322" loading="lazy"
-      alt="Výrobní štítek Jawa, tovární číslo 11-12862, rok výroby 1947, Zbrojovka Ing. F. Janeček, Praha-Nusle II.">
   </div>
   <div class="ld-ident__ctrl">
     <div class="ld-row">
@@ -260,8 +258,6 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   .ld-label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
     color:var(--red);margin:0}
   .ld-p{font-family:var(--body);font-size:15px;line-height:1.65;color:var(--mute);margin:12px 0 0}
-  .ld-ident__stitek{display:block;margin-top:18px;width:120px;height:auto;
-    filter:drop-shadow(0 6px 10px rgba(28,26,23,.25))}
   .ld-row{display:flex;gap:10px;font-family:var(--disp);flex-wrap:wrap}
   .ld-seg{display:flex;gap:6px;background:var(--paper-2);padding:4px;border-radius:4px}
   .ld-seg__btn{padding:8px 14px;border:0;border-radius:3px;background:transparent;color:var(--ink);
@@ -357,9 +353,9 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
   @media (max-width:880px){
     .ld-hero{height:380px}
-    .ld-hero__text{left:22px;bottom:24px}
+    .ld-hero__ph{align-items:flex-start;padding-top:26px}
+    .ld-hero__text{left:22px;bottom:24px;max-width:calc(100% - 44px)}
     .ld-ident{grid-template-columns:1fr;gap:22px;padding:28px 22px}
-    .ld-ident__stitek{display:none}
     .ld-row{flex-direction:column;align-items:stretch}
     .ld-seg{align-self:flex-start}
     .ld-go{min-height:44px}
