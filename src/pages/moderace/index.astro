@@ -41,9 +41,10 @@ import Layout from '../../layouts/Layout.astro';
 <script>
   import { createClient } from '@supabase/supabase-js';
 
-  const SUPABASE_URL = 'https://hcszrmqtwnkzlbrecrey.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
 
   const elPrihlaseni = document.getElementById('prihlaseni');
   const elPanel = document.getElementById('panel');
