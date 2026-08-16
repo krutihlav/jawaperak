@@ -4,8 +4,8 @@ export const prerender = false;
 import Layout from '../../../layouts/Layout.astro';
 import RejstrikEncyklopedie from '../../../components/RejstrikEncyklopedie.astro';
 
-const SUPABASE_URL = 'https://hcszrmqtwnkzlbrecrey.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_EJ3eN_tBhUDWt7dbQcYCwg_asAVeZDE';
+const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
+const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 const H = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
 
 async function nacti(cesta) {
