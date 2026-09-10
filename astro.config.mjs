@@ -31,9 +31,16 @@ export default defineConfig({
   // sami (stejné proměnné, které by jinak registrovala integrace), aby
   // `astro:env/client` a `astro:env/server` skutečně obsahovaly
   // PUBLIC_DECAP_CMS_SRC_URL a OAUTH_GITHUB_* proměnné.
+  //
+  // OAUTH_GITHUB_CLIENT_ID/SECRET jsou schválně `optional` s prázdným
+  // defaultem (a validateSecrets: false) — jsou to proměnné jen pro
+  // /admin přihlášení, ne pro zbytek webu. Kdyby byly povinné, chybějící
+  // proměnná (např. na Preview deployi, kde ještě nejsou nastavené) by
+  // shodila build CELÉHO webu místo toho, aby jen nefungovalo přihlášení
+  // do CMS. Přesně tohle se stalo při prvním nasazení.
   experimental: {
     env: {
-      validateSecrets: true,
+      validateSecrets: false,
       schema: {
         PUBLIC_DECAP_CMS_SRC_URL: envField.string({
           context: 'client',
@@ -47,8 +54,18 @@ export default defineConfig({
           optional: true,
           default: '3.3.3',
         }),
-        OAUTH_GITHUB_CLIENT_ID: envField.string({ context: 'server', access: 'secret' }),
-        OAUTH_GITHUB_CLIENT_SECRET: envField.string({ context: 'server', access: 'secret' }),
+        OAUTH_GITHUB_CLIENT_ID: envField.string({
+          context: 'server',
+          access: 'secret',
+          optional: true,
+          default: '',
+        }),
+        OAUTH_GITHUB_CLIENT_SECRET: envField.string({
+          context: 'server',
+          access: 'secret',
+          optional: true,
+          default: '',
+        }),
         OAUTH_GITHUB_REPO_ID: envField.string({
           context: 'server',
           access: 'secret',
