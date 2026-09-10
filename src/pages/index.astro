@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import photos from '../data/homepage.json';
 
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
@@ -7,7 +8,11 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 <Layout title="Pérák — typy, výrobní čísla, technika | jawaperak.cz">
 
 <section class="ld-hero">
-  <div class="ld-hero__ph" aria-hidden="true"><span>fotografie — Jawa Pérák, celý stroj z boku</span></div>
+  {photos.hero.image ? (
+    <img class="ld-hero__img" src={photos.hero.image} alt={photos.hero.alt} />
+  ) : (
+    <div class="ld-hero__ph" aria-hidden="true"><span>{photos.hero.placeholderText}</span></div>
+  )}
   <div class="ld-hero__scrim"></div>
   <div class="ld-hero__text">
     <p class="ld-eyebrow">Zbrojovka Ing. F. Janeček — Praha-Nusle II.</p>
@@ -84,18 +89,16 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   <p class="ld-perex">Podle původní knížky obsluhy, přefocené a doplněné o to, co se za osmdesát let ukázalo.</p>
 
   <div class="ld-udrzba__grid">
-    <figure class="ld-udrzba__card">
-      <div class="ld-udrzba__ph" aria-hidden="true"><span>karburátor</span></div>
-      <figcaption>Zavírání vzduchového filtru karburátoru</figcaption>
-    </figure>
-    <figure class="ld-udrzba__card">
-      <div class="ld-udrzba__ph" aria-hidden="true"><span>reflektor</span></div>
-      <figcaption>Seřizování sklonu paraboly reflektoru</figcaption>
-    </figure>
-    <figure class="ld-udrzba__card">
-      <div class="ld-udrzba__ph" aria-hidden="true"><span>převodovka</span></div>
-      <figcaption>Kontrola oleje v převodové skříni</figcaption>
-    </figure>
+    {photos.udrzba.map((p) => (
+      <figure class="ld-udrzba__card">
+        {p.image ? (
+          <img class="ld-udrzba__img" src={p.image} alt={p.alt} />
+        ) : (
+          <div class="ld-udrzba__ph" aria-hidden="true"><span>{p.placeholderText}</span></div>
+        )}
+        <figcaption>{p.caption}</figcaption>
+      </figure>
+    ))}
   </div>
 </section>
 
@@ -124,8 +127,12 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
       <a class="ld-dilna__link" href="/dilna/">Renovační deníky</a>
     </div>
     <figure class="ld-dilna__photo">
-      <div class="ld-dilna__ph" aria-hidden="true"><span>fotografie zakázky</span></div>
-      <figcaption>Typ 11 (1951), stav při převzetí</figcaption>
+      {photos.dilna.image ? (
+        <img class="ld-dilna__img" src={photos.dilna.image} alt={photos.dilna.alt} />
+      ) : (
+        <div class="ld-dilna__ph" aria-hidden="true"><span>{photos.dilna.placeholderText}</span></div>
+      )}
+      <figcaption>{photos.dilna.caption}</figcaption>
     </figure>
   </div>
 </section>
@@ -239,6 +246,7 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
   /* --- Hero --- */
   .ld-hero{position:relative;height:520px;overflow:hidden;border-bottom:1px solid var(--rule)}
+  .ld-hero__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .ld-hero__ph{position:absolute;inset:0;background:repeating-linear-gradient(45deg,#DFD2B4 0 14px,#D8CAAA 14px 28px);
     display:flex;align-items:center;justify-content:center;text-align:center;padding:20px}
   .ld-hero__ph span{font-family:var(--disp);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
@@ -299,6 +307,7 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   /* --- Obsluha a údržba --- */
   .ld-udrzba__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
   .ld-udrzba__card{margin:0;display:flex;flex-direction:column;gap:10px}
+  .ld-udrzba__img{display:block;width:100%;height:200px;object-fit:cover}
   .ld-udrzba__ph{height:200px;background:repeating-linear-gradient(45deg,#DFD2B4 0 12px,#D8CAAA 12px 24px);
     border:1px solid #8A7B5E;display:flex;align-items:flex-end;padding:9px}
   .ld-udrzba__ph span{font-family:var(--disp);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
@@ -331,6 +340,7 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   .ld-dilna__p{font-family:var(--body);font-size:16px;line-height:1.65;color:#c9c4b8;margin:12px 0 22px;text-wrap:pretty}
   .ld-dilna__link{font-family:var(--disp);font-size:14px;border-bottom:1px solid #f2efe6;color:#f2efe6;text-decoration:none}
   .ld-dilna__photo{margin:0;display:flex;flex-direction:column;gap:10px}
+  .ld-dilna__img{display:block;width:100%;height:240px;object-fit:cover}
   .ld-dilna__ph{height:240px;background:repeating-linear-gradient(45deg,#2a2620 0 12px,#242019 12px 24px);
     border:1px solid #3a352c;display:flex;align-items:flex-end;padding:9px}
   .ld-dilna__ph span{font-family:var(--disp);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c9c4b8}

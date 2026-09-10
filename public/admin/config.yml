@@ -167,6 +167,57 @@ collections:
                 name: body
                 widget: markdown
 
+  - name: fotografie
+    label: Fotografie na ostatních stránkách
+    files:
+      - name: homepage
+        label: "Domovská stránka (/)"
+        file: src/data/homepage.json
+        media_folder: "/public/uploads/homepage"
+        public_folder: "/uploads/homepage"
+        fields:
+          - label: "Hlavní fotka nahoře (hero)"
+            name: hero
+            widget: object
+            fields:
+              - { label: Fotografie, name: image, widget: image, required: false, hint: "Dokud tu žádná není, zobrazí se placeholder." }
+              - { label: "Alt text (až bude foto nahrané)", name: alt, widget: string }
+              - { label: "Text v placeholderu", name: placeholderText, widget: string }
+          - label: "Tři fotky — Obsluha a údržba"
+            name: udrzba
+            widget: list
+            summary: "{{caption}}"
+            fields:
+              - { label: Fotografie, name: image, widget: image, required: false }
+              - { label: "Alt text (až bude foto nahrané)", name: alt, widget: string }
+              - { label: "Text v placeholderu", name: placeholderText, widget: string }
+              - { label: Popisek pod fotkou, name: caption, widget: string }
+          - label: "Fotka — Z naší dílny"
+            name: dilna
+            widget: object
+            fields:
+              - { label: Fotografie, name: image, widget: image, required: false }
+              - { label: "Alt text (až bude foto nahrané)", name: alt, widget: string }
+              - { label: "Text v placeholderu", name: placeholderText, widget: string }
+              - { label: Popisek pod fotkou, name: caption, widget: string }
+
+      - name: motor-12-vs-18
+        label: "Motor typ 12 a 18 (/perak/motor-12-vs-18/)"
+        file: src/data/motor-12-vs-18.json
+        media_folder: "/public/uploads/encyklopedie"
+        public_folder: "/uploads/encyklopedie"
+        fields:
+          - label: "Fotografie / perokresba"
+            name: figure
+            widget: object
+            fields:
+              - { label: Fotografie, name: image, widget: image, required: false }
+              - { label: "Text v placeholderu (než je foto nahráno)", name: placeholderText, widget: string }
+              - { label: "Alt text (popis pro nevidomé/SEO, až bude nahraná)", name: alt, widget: string }
+              - { label: "Popisek pod fotkou — tučná část", name: caption, widget: string }
+              - { label: "Popisek pod fotkou — zbytek věty", name: captionRest, widget: string, required: false }
+              - { label: "Zdroj / credit", name: credit, widget: string, required: false }
+
   - name: navody
     label: Návody a katalogy
     files:

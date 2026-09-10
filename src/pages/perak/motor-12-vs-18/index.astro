@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import data from '../../../data/motor-12-vs-18.json';
 ---
 
 <Layout
@@ -163,13 +164,23 @@ import Layout from '../../../layouts/Layout.astro';
           </tbody>
         </table>
 
-        <figure class="fig">
-          <div class="ph"><span>Místo pro perokresbu řezu klikovým ústrojím s vyznačeným labyrintem</span></div>
-          <figcaption>
-            <b>Těsnění středního čela.</b> Doplnit schéma z katalogu náhradních dílů.
-            <span class="cred">Zdroj: doplnit</span>
-          </figcaption>
-        </figure>
+        {data.figure.image ? (
+          <figure class="fig">
+            <img src={data.figure.image} alt={data.figure.alt} />
+            <figcaption>
+              <b>{data.figure.caption}</b> {data.figure.captionRest}
+              {data.figure.credit && <span class="cred">{data.figure.credit}</span>}
+            </figcaption>
+          </figure>
+        ) : (
+          <figure class="fig">
+            <div class="ph"><span>{data.figure.placeholderText}</span></div>
+            <figcaption>
+              <b>{data.figure.caption}</b> {data.figure.captionRest}
+              {data.figure.credit && <span class="cred">{data.figure.credit}</span>}
+            </figcaption>
+          </figure>
+        )}
       </section>
 
       <section id="chyby">

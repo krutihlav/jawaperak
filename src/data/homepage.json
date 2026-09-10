@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "image": "",
+    "alt": "Jawa Pérák, celý stroj z boku",
+    "placeholderText": "fotografie — Jawa Pérák, celý stroj z boku"
+  },
+  "udrzba": [
+    {
+      "image": "",
+      "alt": "Zavírání vzduchového filtru karburátoru",
+      "placeholderText": "karburátor",
+      "caption": "Zavírání vzduchového filtru karburátoru"
+    },
+    {
+      "image": "",
+      "alt": "Seřizování sklonu paraboly reflektoru",
+      "placeholderText": "reflektor",
+      "caption": "Seřizování sklonu paraboly reflektoru"
+    },
+    {
+      "image": "",
+      "alt": "Kontrola oleje v převodové skříni",
+      "placeholderText": "převodovka",
+      "caption": "Kontrola oleje v převodové skříni"
+    }
+  ],
+  "dilna": {
+    "image": "",
+    "alt": "Typ 11 (1951), stav při převzetí do renovace",
+    "placeholderText": "fotografie zakázky",
+    "caption": "Typ 11 (1951), stav při převzetí"
+  }
+}
