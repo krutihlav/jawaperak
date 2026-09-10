@@ -112,6 +112,18 @@ collections:
                 name: body
                 widget: markdown
                 hint: "Do textu můžeš kdekoliv vložit obrázek tlačítkem v liště (nahraje se do knihovny médií a zmenší/zkomprimuje automaticky). Stávající tabulky a barevné boxy jsou technické HTML bloky — nejdou upravit vizuálně, jen v režimu „Raw“ (přepínač vpravo nahoře v poli)."
+              - label: "Fotografie k sekci (nepovinné)"
+                name: figure
+                widget: object
+                required: false
+                hint: "Dokud tu není nahraná fotka, zobrazí se místo ní na webu šedý placeholder s popiskem."
+                fields:
+                  - { label: Fotografie, name: image, widget: image, required: false, hint: "Nahraj foto — dokud tu žádné není, na webu se zobrazí jen placeholder s textem níže." }
+                  - { label: "Text v placeholderu (než je foto nahráno)", name: placeholderText, widget: string }
+                  - { label: "Alt text (popis fotky pro nevidomé/SEO, až bude nahraná)", name: alt, widget: string }
+                  - { label: "Popisek pod fotkou — tučná část", name: caption, widget: string }
+                  - { label: "Popisek pod fotkou — zbytek věty", name: captionRest, widget: string, required: false }
+                  - { label: "Zdroj / credit", name: credit, widget: string, required: false }
           - label: Zdroje
             name: sources
             widget: list

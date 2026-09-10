@@ -63,6 +63,25 @@ const stampLabel: Record<string, string> = {
               <p class="sub">{s.sub}</p>
             </div>
             <Fragment set:html={s.body} />
+            {s.figure && (
+              s.figure.image ? (
+                <figure class="fig">
+                  <img src={s.figure.image} alt={s.figure.alt} />
+                  <figcaption>
+                    <b>{s.figure.caption}</b> {s.figure.captionRest}
+                    {s.figure.credit && <span class="cred">{s.figure.credit}</span>}
+                  </figcaption>
+                </figure>
+              ) : (
+                <figure class="fig">
+                  <div class="ph"><span>{s.figure.placeholderText}</span></div>
+                  <figcaption>
+                    <b>{s.figure.caption}</b> {s.figure.captionRest}
+                    {s.figure.credit && <span class="cred">{s.figure.credit}</span>}
+                  </figcaption>
+                </figure>
+              )
+            )}
           </section>
         ))}
 
