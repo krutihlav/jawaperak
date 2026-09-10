@@ -108,13 +108,10 @@ collections:
               - { label: "ID (kotva v URL, bez diakritiky, pomlčky)", name: id, widget: string }
               - { label: Nadpis sekce, name: title, widget: string }
               - { label: Podnadpis, name: sub, widget: string }
-              - label: "Obsah sekce (HTML)"
+              - label: Obsah sekce
                 name: body
-                widget: code
-                default_language: html
-                allow_language_selection: false
-                output_code_only: true
-                hint: "Technické pole — obsahuje HTML (odstavce, tabulky .spec, boxy .box, obrázky .fig). Upravujte opatrně, zachovejte HTML značky a třídy."
+                widget: markdown
+                hint: "Do textu můžeš kdekoliv vložit obrázek tlačítkem v liště (nahraje se do knihovny médií a zmenší/zkomprimuje automaticky). Stávající tabulky a barevné boxy jsou technické HTML bloky — nejdou upravit vizuálně, jen v režimu „Raw“ (přepínač vpravo nahoře v poli)."
           - label: Zdroje
             name: sources
             widget: list
@@ -145,19 +142,18 @@ collections:
               - { label: "ID (kotva v URL)", name: id, widget: string }
               - { label: Nadpis sekce, name: title, widget: string }
               - { label: Podnadpis, name: sub, widget: string }
-              - label: "Obsah sekce (HTML)"
+              - label: Obsah sekce
                 name: body
-                widget: code
-                default_language: html
-                allow_language_selection: false
-                output_code_only: true
-                hint: "Technické pole — obsahuje HTML (odstavce, tabulka .spec, box .box--fact). Upravujte opatrně, zachovejte HTML značky a třídy."
+                widget: markdown
+                hint: "Do textu můžeš kdekoliv vložit obrázek tlačítkem v liště. Stávající tabulka a barevný box jsou technické HTML bloky — upravuj je jen v režimu „Raw“ (přepínač vpravo nahoře v poli)."
           - label: "Závěrečný box (Mimo dílnu)"
             name: outro
             widget: object
             fields:
               - { label: Popisek boxu, name: label, widget: string }
-              - { label: "Obsah (HTML)", name: body, widget: code, default_language: html, allow_language_selection: false, output_code_only: true }
+              - label: Obsah
+                name: body
+                widget: markdown
 
   - name: navody
     label: Návody a katalogy
@@ -275,13 +271,10 @@ collections:
               - { label: "ID (kotva v URL)", name: id, widget: string }
               - { label: Nadpis sekce, name: title, widget: string }
               - { label: Podnadpis, name: sub, widget: string }
-              - label: "Obsah sekce (HTML)"
+              - label: Obsah sekce
                 name: body
-                widget: code
-                default_language: html
-                allow_language_selection: false
-                output_code_only: true
-                hint: "Technické pole — obsahuje HTML (odstavce, tabulka .spec, box .box--warn/.box--fact, seznam .mist). Upravujte opatrně, zachovejte HTML značky a třídy."
+                widget: markdown
+                hint: "Do textu můžeš kdekoliv vložit obrázek tlačítkem v liště. Stávající tabulka, barevné boxy a seznam jsou technické HTML bloky — upravuj je jen v režimu „Raw“ (přepínač vpravo nahoře v poli)."
           - label: "Závěrečná výzva (CTA)"
             name: cta
             widget: object
