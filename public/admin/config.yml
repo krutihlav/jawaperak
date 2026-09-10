@@ -11,8 +11,15 @@ backend:
   name: github
   branch: main
   repo: krutihlav/jawaperak
-  site_domain: jawaperak.cz
-  base_url: https://jawaperak.cz
+  # Musí přesně odpovídat Homepage URL / Authorization callback URL v GitHub
+  # OAuth App (Settings > Developer settings > OAuth Apps) — ta je
+  # zaregistrovaná na www.jawaperak.cz, ne na holou apex doménu. Při
+  # neshodě GitHub sice přihlášení dokončí, ale Sveltia CMS v okně s
+  # popupem ověřuje původ zprávy proti base_url — při jiné doméně (i jen
+  # www vs. bez www je jiný origin) zprávu tiše zahodí a přihlášení se
+  # zasekne na prázdné stránce bez chyby v konzoli.
+  site_domain: www.jawaperak.cz
+  base_url: https://www.jawaperak.cz
   auth_endpoint: oauth
 
 # Výchozí umístění médií, pokud kolekce/soubor níže nemá vlastní media_folder.
