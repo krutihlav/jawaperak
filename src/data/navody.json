@@ -1,0 +1,24 @@
+{
+  "seoTitle": "Návody a katalogy dílů Jawa Pérák | jawaperak.cz",
+  "seoDescription": "Dobové návody k obsluze a katalogy náhradních dílů pro Jawu 250 a 350 Pérák — vyčištěné a zvětšené skeny, listování funguje i na mobilu.",
+  "title": "Návody a katalogy dílů",
+  "lead": "Dobové tiskoviny ke stroji — návody k obsluze a katalogy náhradních dílů. Skeny čistíme a zvětšujeme, aby šly číst i drobné položky v tabulkách, a dá se v nich listovat rovnou v prohlížeči, i na mobilu. Sbírka postupně roste — přibývat bude průběžně.",
+  "rada250": [
+    {
+      "tt": "Seznam náhradních dílů (1949)",
+      "ds": "Kompletní dobový katalog. Zbrojovka Brno, závod Praha-Nusle II, platí od č. stroje 11–01.",
+      "fl": "71 dvoustran",
+      "href": "/navody/katalog-dilu-jawa-250-1949/",
+      "soon": false
+    }
+  ],
+  "rada350": [
+    {
+      "tt": "Seznam náhradních dílů",
+      "ds": "Připravujeme — jakmile budou skeny hotové, katalog přibude sem.",
+      "fl": "chystáme",
+      "href": "",
+      "soon": true
+    }
+  ]
+}

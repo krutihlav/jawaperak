@@ -1,0 +1,285 @@
+# Sveltia CMS (engine) + astro-decap-cms-oauth (GitHub OAuth backend na /oauth).
+# Editor si otevře /admin, přihlásí se přes GitHub OAuth App a edituje níže
+# definované soubory přímo v repozitáři (commit do větve `branch`).
+#
+# Mimo tuto konfiguraci zůstávají (data ze Supabase, needituje se přes CMS):
+#   - vše pod /perak/ (specifikace strojů, filtrované stránky)
+#   - /registr/ (vlastní schvalovací systém)
+#   - katalog dílů (obrázkový prohlížeč v /navody/katalog-dilu-jawa-250-1949/)
+
+backend:
+  name: github
+  branch: main
+  repo: krutihlav/jawaperak
+  site_domain: jawaperak.cz
+  base_url: https://jawaperak.cz
+  auth_endpoint: oauth
+
+# Výchozí umístění médií, pokud kolekce/soubor níže nemá vlastní media_folder.
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+# Nativní automatické zmenšení + komprese obrázků při uploadu (Sveltia CMS).
+# Každý nahraný rastrový obrázek (jpg/png/gif/…) se převede na WebP, ořízne
+# na max. 2000×2000 px a zkomprimuje na kvalitu 82 — beze změny na straně webu.
+# SVG se jen bezztrátově optimalizuje (bez převodu formátu).
+media_libraries:
+  default:
+    config:
+      max_file_size: 8000000 # 8 MB — tvrdý limit, k tomu se ještě obrázek zmenší/zkomprimuje níže
+      slugify_filename: true
+      transformations:
+        raster_image:
+          format: webp
+          quality: 82
+          width: 2000
+          height: 2000
+        svg:
+          optimize: true
+
+collections:
+  - name: encyklopedie
+    label: Encyklopedie
+    files:
+      - name: hesla
+        label: Hesla a skupiny
+        file: src/data/encyklopedie.json
+        media_folder: "/public/uploads/encyklopedie"
+        public_folder: "/uploads/encyklopedie"
+        fields:
+          - label: Skupiny
+            name: skupiny
+            widget: list
+            summary: "{{nazev}}"
+            fields:
+              - { label: "Klíč", name: klic, widget: select, options: [model, uzel, data, verze] }
+              - { label: Název, name: nazev, widget: string }
+              - { label: Popis, name: popis, widget: text }
+          - label: Hesla (14 stránek)
+            name: encyklopedie
+            widget: list
+            summary: "{{titul}}"
+            fields:
+              - { label: "Odkaz (href)", name: href, widget: string, hint: "Např. /perak/250/" }
+              - { label: Titul, name: titul, widget: string }
+              - { label: Popis, name: popis, widget: text }
+              - { label: Skupina, name: skupina, widget: select, options: [model, uzel, data, verze] }
+              - { label: "Publikováno (hotovo)", name: hotovo, widget: boolean, default: true }
+
+  - name: historie
+    label: Historie
+    files:
+      - name: historie
+        label: "Historie a vývoj (/historie/)"
+        file: src/data/historie.json
+        media_folder: "/public/uploads/encyklopedie"
+        public_folder: "/uploads/encyklopedie"
+        fields:
+          - { label: "SEO titulek", name: seoTitle, widget: string }
+          - { label: "SEO popis", name: seoDescription, widget: text }
+          - { label: "Kicker (nadpis nad H1)", name: kicker, widget: string }
+          - { label: "Kicker — odkaz", name: kickerHref, widget: string }
+          - { label: "Kicker — text za pomlčkou", name: kickerLabel, widget: string }
+          - { label: "Nadpis (H1)", name: title, widget: string }
+          - { label: Úvodní odstavec, name: lead, widget: text }
+          - label: "Metadata pod úvodem"
+            name: meta
+            widget: list
+            summary: "{{label}}: {{value}}"
+            fields:
+              - { label: Popisek, name: label, widget: string }
+              - { label: Hodnota, name: value, widget: string }
+          - label: "Shrnutí (co se tu dozvíte)"
+            name: tldr
+            widget: list
+            field: { label: Bod, name: item, widget: string }
+          - label: Sekce článku
+            name: sections
+            widget: list
+            summary: "{{title}}"
+            fields:
+              - { label: "ID (kotva v URL, bez diakritiky, pomlčky)", name: id, widget: string }
+              - { label: Nadpis sekce, name: title, widget: string }
+              - { label: Podnadpis, name: sub, widget: string }
+              - label: "Obsah sekce (HTML)"
+                name: body
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
+                hint: "Technické pole — obsahuje HTML (odstavce, tabulky .spec, boxy .box, obrázky .fig). Upravujte opatrně, zachovejte HTML značky a třídy."
+          - label: Zdroje
+            name: sources
+            widget: list
+            summary: "{{text}}"
+            fields:
+              - { label: "Text (může obsahovat <cite>/<a>)", name: text, widget: text }
+              - { label: "Razítko spolehlivosti", name: stamp, widget: select, options: [{ label: "kniha", value: kn }, { label: "ověřeno", value: ov }, { label: "odhad", value: od }, { label: "sporné", value: sp }] }
+
+  - name: dilna
+    label: Dílna (o nás)
+    files:
+      - name: dilna
+        label: "Kdo stojí za webem (/dilna/)"
+        file: src/data/dilna.json
+        media_folder: "/public/uploads/dilna"
+        public_folder: "/uploads/dilna"
+        fields:
+          - { label: "SEO titulek", name: seoTitle, widget: string }
+          - { label: "SEO popis", name: seoDescription, widget: text }
+          - { label: Kicker, name: kicker, widget: string }
+          - { label: "Nadpis (H1)", name: title, widget: string }
+          - { label: Úvodní odstavec, name: lead, widget: text }
+          - label: Sekce
+            name: sections
+            widget: list
+            summary: "{{title}}"
+            fields:
+              - { label: "ID (kotva v URL)", name: id, widget: string }
+              - { label: Nadpis sekce, name: title, widget: string }
+              - { label: Podnadpis, name: sub, widget: string }
+              - label: "Obsah sekce (HTML)"
+                name: body
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
+                hint: "Technické pole — obsahuje HTML (odstavce, tabulka .spec, box .box--fact). Upravujte opatrně, zachovejte HTML značky a třídy."
+          - label: "Závěrečný box (Mimo dílnu)"
+            name: outro
+            widget: object
+            fields:
+              - { label: Popisek boxu, name: label, widget: string }
+              - { label: "Obsah (HTML)", name: body, widget: code, default_language: html, allow_language_selection: false, output_code_only: true }
+
+  - name: navody
+    label: Návody a katalogy
+    files:
+      - name: navody
+        label: "Rozcestník (/navody/)"
+        file: src/data/navody.json
+        media_folder: "/public/uploads/navody"
+        public_folder: "/uploads/navody"
+        fields:
+          - { label: "SEO titulek", name: seoTitle, widget: string }
+          - { label: "SEO popis", name: seoDescription, widget: text }
+          - { label: "Nadpis (H1)", name: title, widget: string }
+          - { label: Úvodní odstavec, name: lead, widget: text }
+          - label: "Jawa 250 — položky"
+            name: rada250
+            widget: list
+            summary: "{{tt}}"
+            fields:
+              - { label: Název, name: tt, widget: string }
+              - { label: Popis, name: ds, widget: text }
+              - { label: "Rozsah (např. 71 dvoustran)", name: fl, widget: string }
+              - { label: "Odkaz (href)", name: href, widget: string }
+              - { label: "Chystáme (zatím bez odkazu)", name: soon, widget: boolean, default: false }
+          - label: "Jawa 350 — položky"
+            name: rada350
+            widget: list
+            summary: "{{tt}}"
+            fields:
+              - { label: Název, name: tt, widget: string }
+              - { label: Popis, name: ds, widget: text }
+              - { label: "Rozsah (např. chystáme)", name: fl, widget: string }
+              - { label: "Odkaz (href, prázdné pokud chystáme)", name: href, widget: string, required: false }
+              - { label: "Chystáme (zatím bez odkazu)", name: soon, widget: boolean, default: true }
+
+  - name: sluzby
+    label: Služby a ceník
+    files:
+      - name: cenik
+        label: "Ceník (/sluzby/)"
+        file: src/data/sluzby.json
+        media_folder: "/public/uploads/sluzby"
+        public_folder: "/uploads/sluzby"
+        fields:
+          - { label: "SEO titulek", name: seoTitle, widget: string }
+          - { label: "SEO popis", name: seoDescription, widget: text }
+          - { label: "Nadpis (H1)", name: title, widget: string }
+          - { label: Úvodní odstavec, name: lead, widget: text }
+          - label: "Shrnutí (než začnete číst ceny)"
+            name: tldr
+            widget: list
+            field: { label: Bod, name: item, widget: string }
+          - label: "Hlavní služby (ceník)"
+            name: sluzby
+            widget: list
+            summary: "{{nazev}}: {{od}}–{{do}} Kč"
+            fields:
+              - { label: "ID (interní, beze změny)", name: id, widget: string }
+              - { label: Název služby, name: nazev, widget: string }
+              - { label: Popis, name: popis, widget: text }
+              - { label: "Cena od (Kč)", name: od, widget: number, value_type: int }
+              - { label: "Cena do (Kč)", name: do, widget: number, value_type: int }
+              - { label: "Odhad práce (např. 5–12 h)", name: hodiny, widget: string }
+              - { label: "Kdy to dává smysl", name: kdy, widget: text }
+          - { label: "Text boxu „Jak rozpětí vzniká“", name: faktText, widget: text }
+          - { label: "Úvod k dílčím pracím", name: dilciLead, widget: text }
+          - label: "Dílčí práce (ceník úkonů)"
+            name: dilci
+            widget: list
+            summary: "{{nazev}}: {{od}}–{{do}} Kč"
+            fields:
+              - { label: Úkon, name: nazev, widget: string }
+              - { label: "Cena od (Kč)", name: od, widget: number, value_type: int }
+              - { label: "Cena do (Kč)", name: do, widget: number, value_type: int }
+          - { label: "Prohlídka před koupí — úvod", name: prohlidkaText, widget: text }
+          - { label: "Prohlídka — popisek varování", name: prohlidkaWarnLabel, widget: string }
+          - { label: "Prohlídka — text varování", name: prohlidkaWarnText, widget: text }
+          - { label: "Prohlídka — text k doplnění (cena/rozsah)", name: prohlidkaDoplnit, widget: text }
+          - { label: "Patina — odstavec 1", name: filozofieText1, widget: text }
+          - { label: "Patina — odstavec 2", name: filozofieText2, widget: text }
+          - label: "Poznámka k cenám (patička)"
+            name: zdroje
+            widget: list
+            field: { label: Bod, name: item, widget: text }
+
+      - name: prohlidka-pred-koupi
+        label: "Prohlídka před koupí (/sluzby/prohlidka-pred-koupi/)"
+        file: src/data/prohlidka-pred-koupi.json
+        media_folder: "/public/uploads/sluzby"
+        public_folder: "/uploads/sluzby"
+        fields:
+          - { label: "SEO titulek", name: seoTitle, widget: string }
+          - { label: "SEO popis", name: seoDescription, widget: text }
+          - { label: Kicker, name: kicker, widget: string }
+          - { label: "Kicker — odkaz", name: kickerHref, widget: string }
+          - { label: "Kicker — text za pomlčkou", name: kickerLabel, widget: string }
+          - { label: "Nadpis (H1)", name: title, widget: string }
+          - { label: Úvodní odstavec, name: lead, widget: text }
+          - label: "Metadata pod úvodem"
+            name: meta
+            widget: list
+            summary: "{{label}}: {{value}}"
+            fields:
+              - { label: Popisek, name: label, widget: string }
+              - { label: Hodnota, name: value, widget: string }
+          - label: "Shrnutí (co si odnést)"
+            name: tldr
+            widget: list
+            field: { label: "Bod (může obsahovat <b>)", name: item, widget: text }
+          - label: Sekce článku
+            name: sections
+            widget: list
+            summary: "{{title}}"
+            fields:
+              - { label: "ID (kotva v URL)", name: id, widget: string }
+              - { label: Nadpis sekce, name: title, widget: string }
+              - { label: Podnadpis, name: sub, widget: string }
+              - label: "Obsah sekce (HTML)"
+                name: body
+                widget: code
+                default_language: html
+                allow_language_selection: false
+                output_code_only: true
+                hint: "Technické pole — obsahuje HTML (odstavce, tabulka .spec, box .box--warn/.box--fact, seznam .mist). Upravujte opatrně, zachovejte HTML značky a třídy."
+          - label: "Závěrečná výzva (CTA)"
+            name: cta
+            widget: object
+            fields:
+              - { label: Popisek, name: label, widget: string }
+              - { label: Text, name: text, widget: text }
+              - { label: "Odkaz (href)", name: href, widget: string }
+              - { label: "Text odkazu", name: linkText, widget: string }

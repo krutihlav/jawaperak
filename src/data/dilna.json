@@ -1,0 +1,31 @@
+{
+  "seoTitle": "Kdo stojí za jawaperak.cz — dílna PureBikes | jawaperak.cz",
+  "seoDescription": "Web dělá Adam Kment, samouk a majitel dílny PureBikes v Drahanovicích u Olomouce. Renovacím historických motocyklů se věnuje šest let, se zaměřením na Jawu a ČZ.",
+  "kicker": "Dílna",
+  "title": "Kdo stojí za jawaperak.cz",
+  "lead": "Web dělá jeden člověk — a ten samý člověk stroje, o kterých tu píše, i renovuje. Žádná redakce, žádný tým copywriterů.",
+  "sections": [
+    {
+      "id": "adam",
+      "title": "Adam Kment",
+      "sub": "Od dědova Mustanga k dílně, která je dnes hlavní prací.",
+      "body": "<p>\n  Moji první motorku — Jawu 50 Mustang — mi k patnáctinám pořídil děda\n  a dávali jsme ji dohromady spolu. Byla to láska na celý život, i\n  když jsem si to tenkrát ještě neuvědomoval.\n</p>\n\n<p>\n  Naplno mě to chytlo až později, když jsem se k tomu Mustangovi po\n  letech vrátil a chtěl ho znovu rozjet. Od té chvíle už jsem u\n  motorek zůstal. Renovacím se věnuju šest let a je to moje hlavní\n  práce — jsem samouk, řemeslo jsem si osahal i v jedné renovační\n  dílně, ale nejvíc mě naučily samotné stroje.\n</p>\n\n<div class=\"box box--fact\">\n  <span class=\"lb\">Na čem si zakládám</span>\n  <p>\n    Na první pohled možná nevypadám jako typický podnikatel — do\n    škatulky s dredy asi úplně nezapadám. O to víc si zakládám na\n    tom, na čem opravdu záleží: na osobním přístupu, na rovné řeči\n    o tom, v jakém stavu stroj doopravdy je, a na tom, že co\n    slíbím, to platí. Na bezpečnosti a funkčnosti nikdy neslevím —\n    každý díl, který ode mě odjede, musí spolehlivě sloužit.\n  </p>\n</div>\n\n<p>\n  Dělám to hlavně z lásky k těm strojům — a věřím, že právě proto\n  se o ně dokážu postarat líp, než kdyby šlo jen o další zakázku v\n  pořadí.\n</p>"
+    },
+    {
+      "id": "dilna",
+      "title": "Řemeslo, ne montovna",
+      "sub": "Malá dílna v Drahanovicích, jeden stroj po druhém.",
+      "body": "<p>\n  PureBikes je malá dílna v Drahanovicích na Olomoucku. Motorky tu\n  neprojíždějí linkou — projdou rukama, kus po kuse.\n</p>\n\n<p>\n  Děláme to z lásky k motocyklům a k řemeslu, ne kvůli počtu\n  zakázek. Ať jde o kousek do sbírky, nebo o stroj po dědovi,\n  bereme ho jako svěřený kus historie a tak s ním i zacházíme. A\n  když nějaký díl chybí nebo se nedá sehnat, umíme ho zajistit i\n  vyrobit — aby renovace nestála.\n</p>"
+    },
+    {
+      "id": "stroje",
+      "title": "Stroje, kterým rozumíme",
+      "sub": "Čtyři okruhy, kterým se v dílně věnujeme.",
+      "body": "<p>\n  Pérák je náš hlavní obor, ale zdaleka ne jediný. V dílně se\n  pravidelně setkáváme i s dalšími poválečnými a předválečnými\n  stroji, kde platí stejný přístup: zachovat, co se zachovat dá.\n</p>\n\n<table class=\"spec\">\n  <caption>Značky a okruhy, kterým se dílna věnuje</caption>\n  <thead>\n    <tr><th>Okruh</th><th>Co zahrnuje</th></tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td class=\"rl nw\" data-l=\"Okruh\">Jawa &amp; ČZ</td>\n      <td data-l=\"Co zahrnuje\">České legendy — Pérák, Kývačka, Panelka, Pionýr i skútry Čezeta.</td>\n    </tr>\n    <tr>\n      <td class=\"rl nw\" data-l=\"Okruh\">Předválečné motocykly</td>\n      <td data-l=\"Co zahrnuje\">Vzácné stroje, které vyžadují dobové postupy a trpělivost.</td>\n    </tr>\n    <tr>\n      <td class=\"rl nw\" data-l=\"Okruh\">BMW</td>\n      <td data-l=\"Co zahrnuje\">Německá klasika i moderní stroje — servis a opravy.</td>\n    </tr>\n    <tr>\n      <td class=\"rl nw\" data-l=\"Okruh\">Suzuki · Kawasaki · Honda</td>\n      <td data-l=\"Co zahrnuje\">Japonská klasika sedmdesátých a osmdesátých let.</td>\n    </tr>\n  </tbody>\n</table>\n\n<p class=\"act\">\n  <a href=\"https://purebikes.cz\" target=\"_blank\" rel=\"noopener\">Renovace na PureBikes.cz</a><a href=\"/sluzby/\">Ceník služeb</a>\n</p>"
+    }
+  ],
+  "outro": {
+    "label": "Mimo dílnu",
+    "body": "<p>\n  Volný čas trávím na japonských endurech a motokrosu, vysněnou\n  motorku mám Čechii-Böhmerland. Kus svobody pro mě motorky\n  znamenaly odjakživa, i když za řídítka těch svých usedám čím dál\n  míň — ten čas radši věnuju tomu, aby dobře jezdili druzí. A\n  přesně o to mi jde.\n</p>\n<p>— Adam Kment · PureBikes.cz, Ludéřov u Olomouce</p>"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "seoTitle": "Prohlídka Jawy Pérák před koupí | jawaperak.cz",
+  "seoDescription": "Než koupíte Péráka: zkontrolujeme výrobní čísla, ověříme, jestli k sobě díly patří, a řekneme, co vás po koupi čeká. Na dálku z fotek, nebo osobně u stroje.",
+  "kicker": "Dílna PureBikes",
+  "kickerHref": "/dilna/",
+  "kickerLabel": "Služby",
+  "title": "Prohlídka před koupí",
+  "lead": "Pérák se dnes prodává za částky, u kterých se vyplatí utratit zlomek za to, aby se na stroj předem podíval někdo, kdo ví, kde se u něj lže nejčastěji.",
+  "meta": [
+    {
+      "label": "Dvě úrovně",
+      "value": "na dálku i osobně"
+    },
+    {
+      "label": "Dojezd",
+      "value": "podle domluvy"
+    },
+    {
+      "label": "Cena",
+      "value": "na dotaz"
+    }
+  ],
+  "tldr": [
+    "Ozvěte se <b>před</b> koupí, ne po ní. Po zaplacení se dá zachránit už jen málo.",
+    "Většina sporných strojů nemá vadu v motoru, ale <b>v číslech a v původu dílů</b>. To se pozná zvenku a často i z fotek.",
+    "Výstupem není známka od jedné do pěti, ale <b>soupis toho, co je jisté, co je sporné a co vás bude stát peníze</b>."
+  ],
+  "sections": [
+    {
+      "id": "kdy",
+      "title": "Kdy má smysl se ozvat",
+      "sub": "Nejčastější situace, se kterými za námi lidé chodí.",
+      "body": "<p>\n  Nejtypičtější je inzerát, který vypadá dobře, ale něco na něm sedí\n  divně. Prodávající píše „původní stav\" a na fotkách je stroj, který\n  má rám z jednoho období a plechy z jiného. Nebo je stroj hezký až moc\n  a v popisu chybí jediná zmínka o číslech.\n</p>\n\n<p>\n  Druhá častá situace je dědictví nebo nález ve stodole, kdy majitel\n  sám neví, co má, a potřebuje vědět, jestli má cenu do toho jít.\n  A třetí je stroj z ciziny, u kterého se čísla musí sedět s doklady,\n  jinak z toho bude problém při přihlašování.\n</p>\n\n<div class=\"box box--warn\">\n  <span class=\"lb\">Doklady nejsou důkaz</span>\n  <p>\n    Platný technický průkaz neznamená, že stroj je tím, za co se vydává.\n    Papíry se dají navázat na jiný rám a u historických vozidel se to\n    děje. Doklad říká, co je zapsané. Neříká, co máte před sebou.\n  </p>\n</div>"
+    },
+    {
+      "id": "urovne",
+      "title": "Dvě úrovně",
+      "sub": "První se dá stihnout za večer, druhá znamená, že za strojem přijedeme.",
+      "body": "<p>\n  Ne každý stroj stojí za cestu. Proto to děláme ve dvou krocích:\n  nejdřív se podíváme na fotky a čísla na dálku, a když z toho vyjde,\n  že stroj stojí za pozornost, domluvíme se na osobní prohlídce.\n  Řada lidí skončí u prvního kroku, protože z něj vyplyne, že do toho\n  nemá cenu jít.\n</p>\n\n<table class=\"spec\">\n  <caption>Co která úroveň obnáší</caption>\n  <thead>\n    <tr><th>&nbsp;</th><th>Na dálku</th><th>Osobně u stroje</th></tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td class=\"rl nw\" data-l=\"Údaj\">Co potřebujeme</td>\n      <td data-l=\"Na dálku\">Fotky stroje ze všech stran, ostré fotky výrobních čísel a štítku, fotka dokladů</td>\n      <td data-l=\"Osobně\">Přístup ke stroji a čas prodávajícího</td>\n    </tr>\n    <tr>\n      <td class=\"rl nw\" data-l=\"Údaj\">Co zjistíme</td>\n      <td data-l=\"Na dálku\">Zda čísla dávají smysl, zda k sobě viditelné díly patří obdobím, zda sedí lak a linky</td>\n      <td data-l=\"Osobně\">Totéž, plus stav motoru, podvozku a plechů a stopy po zásazích do čísel</td>\n    </tr>\n    <tr>\n      <td class=\"rl nw\" data-l=\"Údaj\">Co dostanete</td>\n      <td data-l=\"Na dálku\">Písemné shrnutí a doporučení, jestli jet</td>\n      <td data-l=\"Osobně\">Písemný zápis s fotkami a odhad nákladů na to, co stroj potřebuje</td>\n    </tr>\n    <tr>\n      <td class=\"rl nw\" data-l=\"Údaj\">Kdy</td>\n      <td data-l=\"Na dálku\">Zpravidla do několika dnů</td>\n      <td data-l=\"Osobně\">Podle domluvy, dojezd řešíme individuálně</td>\n    </tr>\n    <tr>\n      <td class=\"rl nw\" data-l=\"Údaj\">Cena</td>\n      <td data-l=\"Na dálku\">Na dotaz</td>\n      <td data-l=\"Osobně\">Na dotaz, podle rozsahu a vzdálenosti</td>\n    </tr>\n  </tbody>\n</table>\n\n<p>\n  Když je stroj blízko a domluva rychlá, dá se první krok přeskočit.\n  Ale u strojů přes půl republiky se vyplatí — ušetří cestu tam, kde\n  se dá odpovědět z fotek.\n</p>"
+    },
+    {
+      "id": "co",
+      "title": "Co konkrétně kontrolujeme",
+      "sub": "Pořadí není náhodné. Jde od toho, co se nedá opravit, k tomu, co se dá koupit.",
+      "body": "<p>\n  Nejdřív identita, potom původnost, potom technika. Má to logiku:\n  vadný motor se dá opravit, chybějící díl sehnat, ale stroj, jehož\n  čísla nesedí s doklady, je problém, který se penězi neřeší.\n</p>\n\n<ol class=\"mist\">\n  <li>\n    <div>\n      <b>Čísla a jejich shoda</b>\n      <p>\n        U Péráka nesly rám, motor i štítek stejné číslo. Ověříme, jestli\n        to tak pořád je, jestli sedí s technickým průkazem a jestli formát\n        čísla odpovídá roku, ze kterého má stroj pocházet.\n      </p>\n    </div>\n  </li>\n  <li>\n    <div>\n      <b>Stopy po zásahu do ražby</b>\n      <p>\n        Přeražená čísla jsou u historických motocyklů reálné riziko.\n        Díváme se na tvar a rozteč znaků, na povrch okolo ražby\n        a na to, jestli číslo sedí do řady, do které patří.\n      </p>\n    </div>\n  </li>\n  <li>\n    <div>\n      <b>Jestli k sobě díly patří obdobím</b>\n      <p>\n        Brzdové bubny, spínací skříňka, nádrž, blatníky a stojan se\n        během výroby měnily a u většiny změn známe výrobní číslo.\n        Porovnáme, co na stroji je, s tím, co tam podle čísla být má.\n      </p>\n    </div>\n  </li>\n  <li>\n    <div>\n      <b>Lak, linky a značení</b>\n      <p>\n        Barva a šířka linek se dají porovnat s tovární tabulkou.\n        Nesedící odstín sám o sobě nic nedokazuje, ale v kombinaci\n        s ostatním leccos napoví — a přelakování stojí peníze.\n      </p>\n    </div>\n  </li>\n  <li>\n    <div>\n      <b>Technický stav</b>\n      <p>\n        Kompres, vůle, stav klikového ústrojí, rám a jeho geometrie,\n        koroze pod lakem, elektrika. U dvouválce zvlášť poslech na\n        střední čelo, protože to zní jako něco jiného, než to je.\n      </p>\n    </div>\n  </li>\n  <li>\n    <div>\n      <b>Co bude stát peníze</b>\n      <p>\n        Na závěr odhad, co stroj potřebuje, aby jezdil, a co navíc,\n        aby byl v pořádku i dlouhodobě. Včetně toho, které díly se\n        shánějí špatně.\n      </p>\n    </div>\n  </li>\n</ol>"
+    },
+    {
+      "id": "hranice",
+      "title": "Co prohlídka neumí",
+      "sub": "Radši to řekneme dopředu než potom.",
+      "body": "<p>\n  Prohlídka je názor člověka, který stroji rozumí, ne úřední dokument.\n  Nejsme soudní znalci a náš zápis není znalecký posudek. Neověřujeme\n  stroj vůči tovární evidenci, protože k Péráku se dochovaly jen\n  zlomky výrobních záznamů — u některých značek to jde, u téhle ne.\n</p>\n\n<p>\n  Nerozebíráme cizí stroj. Bez otevření motoru se dá o jeho vnitřku\n  říct jen to, co prozradí kompres, zvuk a vůle. A skrytá vada zůstane\n  skrytou vadou — smyslem prohlídky je snížit riziko, ne ho odstranit.\n</p>\n\n<div class=\"box box--fact\">\n  <span class=\"lb\">Co je a co není důkaz původnosti</span>\n  <p>\n    Vzpomínka pamětníka, dobová černobílá fotka ani nález dílu v jiném\n    provedení nejsou důkaz. Jsou to indicie. Důkaz je shodné výrobní\n    číslo, tovární tabulka nebo shoda dvou nezávislých pramenů.\n    Se stejným měřítkem přistupujeme i k tomu, co vám o stroji řekneme —\n    a když je něco jen odhad, napíšeme to tak.\n  </p>\n</div>"
+    },
+    {
+      "id": "jak",
+      "title": "Jak to probíhá",
+      "sub": "Od prvního mailu k závěru to bývá otázka dnů, ne týdnů.",
+      "body": "<p>\n  Napište, o jaký stroj jde, přiložte odkaz na inzerát nebo fotky\n  a napište, kde stroj stojí a do kdy se potřebujete rozhodnout.\n  Ozveme se s tím, co ještě potřebujeme dofotit, a s cenou.\n</p>\n\n<p>\n  Nejcennější jsou <strong>ostré fotky výrobních čísel</strong> —\n  čísla na rámu, na motoru a na štítku, nafocené zblízka a s dobrým\n  světlem. Bez nich se dá říct málo. Kde je u Péráka hledat, je\n  popsané na stránce o <a href=\"/perak/identifikace/\">výrobních\n  číslech</a>.\n</p>\n\n<p>\n  Pokud z prvního kola vyjde, že stroj stojí za cestu, domluvíme\n  termín u prodávajícího. Po prohlídce dostanete písemný zápis\n  s fotkami a jasné doporučení. To, jestli koupíte, je pak na vás —\n  naším úkolem je, abyste se rozhodovali podle skutečnosti.\n</p>\n\n<div class=\"rel\">\n  <span class=\"t\">Souvisí</span>\n  <a href=\"/perak/identifikace/\">Výrobní čísla a datování</a>\n  <a href=\"/perak/zmeny-v-case/\">Co má mít můj stroj</a>\n  <a href=\"/registr/\">Registr dochovaných strojů</a>\n</div>"
+    }
+  ],
+  "cta": {
+    "label": "Máte vyhlédnutý stroj",
+    "text": "Napište nám dřív, než pošlete peníze. Když z fotek uvidíme, že je něco špatně, řekneme to rovnou.",
+    "href": "/kontakt/",
+    "linkText": "Ozvat se"
+  }
+}
