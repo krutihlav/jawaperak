@@ -23,7 +23,10 @@ export default defineConfig({
     locales: ['cs', 'en'],
     routing: { prefixDefaultLocale: false }
   },
-  integrations: [decapCmsOauth({ decapCMSSrcUrl: SVELTIA_CMS_SRC_URL })],
+  // adminDisabled: true — vlastní /admin stránku máme v src/pages/admin/,
+  // protože potřebuje navíc polyfill pro Uint8Array.prototype.toBase64()
+  // (viz komentář tam), který balíčkem dodaná admin.astro nemá jak vložit.
+  integrations: [decapCmsOauth({ decapCMSSrcUrl: SVELTIA_CMS_SRC_URL, adminDisabled: true })],
   // astro-decap-cms-oauth@0.4.x (poslední verze pro Astro 4.x) registruje
   // svoje astro:env schéma přes updateConfig({ env }) na top-level klíči,
   // ale Astro 4.15 čte schéma jen z `experimental.env.schema` — top-level

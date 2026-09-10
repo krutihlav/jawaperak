@@ -1,0 +1,63 @@
+---
+// Vlastní /admin stránka místo té, kterou by jinak mountoval balíček
+// astro-decap-cms-oauth (viz adminDisabled: true v astro.config.mjs).
+// Důvod: Sveltia CMS interně volá Uint8Array.prototype.toBase64() při
+// kódování obsahu (např. nahraného obrázku) před uploadem na GitHub —
+// je to velmi nová webová funkce (rozšířená v prohlížečích zhruba od
+// začátku 2025). Na starších prohlížečích, které ji nemají (typicky
+// poslední Chrome dostupný pro macOS 10.15 Catalina, tj. Chrome 128),
+// tahle chybí a ukládání s obrázkem spadne na "toBase64 is not a
+// function". Polyfill níže tu chybějící metodu doplní, než se načte
+// samotný Sveltia CMS skript.
+import { PUBLIC_DECAP_CMS_VERSION, PUBLIC_DECAP_CMS_SRC_URL } from 'astro:env/client';
+---
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+    <title>Content Manager</title>
+    <script is:inline>
+      (function () {
+        function fromCharCodeChunked(bytes) {
+          var chunkSize = 0x8000;
+          var binary = '';
+          for (var i = 0; i < bytes.length; i += chunkSize) {
+            binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+          }
+          return binary;
+        }
+        if (!Uint8Array.prototype.toBase64) {
+          Uint8Array.prototype.toBase64 = function () {
+            return btoa(fromCharCodeChunked(this));
+          };
+        }
+        if (!Uint8Array.prototype.setFromBase64) {
+          Uint8Array.prototype.setFromBase64 = function (base64) {
+            var binary = atob(base64);
+            for (var i = 0; i < binary.length; i++) this[i] = binary.charCodeAt(i);
+            return { read: binary.length, written: binary.length };
+          };
+        }
+        if (!Uint8Array.fromBase64) {
+          Uint8Array.fromBase64 = function (base64) {
+            var binary = atob(base64);
+            var bytes = new Uint8Array(binary.length);
+            for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            return bytes;
+          };
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- Skript, který sestaví stránku a pohání Sveltia/Decap CMS -->
+    <script
+      is:inline
+      src={PUBLIC_DECAP_CMS_SRC_URL ? PUBLIC_DECAP_CMS_SRC_URL : `https://unpkg.com/decap-cms@^${PUBLIC_DECAP_CMS_VERSION}/dist/decap-cms.js`}
+    ></script>
+  </body>
+</html>
