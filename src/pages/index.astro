@@ -7,6 +7,9 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 ---
 <Layout title="Pérák — typy, výrobní čísla, technika | jawaperak.cz">
 
+<!-- ============================================================
+     MUZEJNÍ REJSTŘÍK — hero + fakta
+     ============================================================ -->
 <section class="ld-hero">
   {photos.hero.image ? (
     <img class="ld-hero__img" src={photos.hero.image} alt={photos.hero.alt} />
@@ -17,108 +20,160 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   <div class="ld-hero__text">
     <p class="ld-eyebrow">Zbrojovka Ing. F. Janeček — Praha-Nusle II.</p>
     <h1 class="ld-h1">Pérák</h1>
-    <p class="ld-sub">Typová řada, výrobní čísla, technika a díly. <strong>Sepsané z originálních katalogů, knížek obsluhy a strojů, které nám prošly rukama.</strong></p>
+    <p class="ld-sub">Devět let výroby, dva objemy motoru a stroj, který dodnes definuje poválečné motocyklové Československo. <strong>Kompletní historie, technika i registr dochovaných kusů na jednom místě.</strong></p>
   </div>
 </section>
 
-<section class="ld-ident">
-  <div class="ld-ident__text">
-    <p class="ld-label">Co mám za stroj</p>
-    <p class="ld-p">Opište tovární číslo ze štítku nebo z rámu. Řekneme vám rok výroby, provedení a na co si u něj dát pozor.</p>
+<section class="facts">
+  <h2 class="facts__h">V číslech.</h2>
+  <div class="facts__grid">
+    <div class="fnum">
+      <span class="fnum__n">11 · 12 · 18</span>
+      <span class="fnum__l">typová označení</span>
+    </div>
+    <a class="fnum fnum--link" href="/perak/identifikace/#kolik">
+      <span class="fnum__n">128 000+ ks</span>
+      <span class="fnum__l">vyrobeno, typ 11 — dolní mez <span class="stamp od">odhad</span></span>
+    </a>
+    <div class="fnum">
+      <span class="fnum__n">Praha-Nusle</span>
+      <span class="fnum__l">Zbrojovka Ing. F. Janečka</span>
+    </div>
+    <div class="fnum">
+      <span class="fnum__n fnum__n--inf">∞</span>
+      <span class="fnum__l">zážitků</span>
+    </div>
   </div>
-  <div class="ld-ident__ctrl">
-    <div class="ld-row">
-      <div class="ld-seg" role="group" aria-label="Typ stroje">
-        <button type="button" class="ld-seg__btn is-on" data-typ="11">11</button>
-        <button type="button" class="ld-seg__btn" data-typ="12">12</button>
-        <button type="button" class="ld-seg__btn" data-typ="18">18</button>
+</section>
+
+<!-- ============================================================
+     TECHNICKÝ ARCHIV — typová řada, identifikace, údržba, registr
+     ============================================================ -->
+<div class="wrap">
+  <div class="page">
+
+    <section class="sec" id="typova-rada">
+      <div class="sec-h">
+        <span class="sec-n">01</span>
+        <h2>Typová řada</h2>
+        <p class="sub">Dvě kubatury, tři typová označení. Motory ani díly nejsou zaměnitelné.</p>
       </div>
-      <label for="ld-cislo" class="ld-sr">Tovární číslo</label>
-      <input type="text" id="ld-cislo" inputmode="numeric" autocomplete="off" placeholder="tovární číslo, např. 11-12862">
-      <button type="button" class="ld-go" id="ld-go">Určit</button>
-    </div>
-    <div class="ld-out" id="ld-out" aria-live="polite">
-      <div class="ld-out__typ">Vybráno: typ <span id="ld-out-typ">11</span></div>
-      <div class="ld-out__body" id="ld-out-body" hidden>
-        <p class="ld-out__head" id="ld-out-head"></p>
-        <p class="ld-out__desc" id="ld-out-desc"></p>
+
+      <table class="spec">
+        <caption>Přehled typů 11 / 12 / 18</caption>
+        <thead>
+          <tr><th>Typ</th><th>Stroj</th><th>Výroba</th><th>Poznámka</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rl nw" data-l="Typ"><a href="/perak/250/">11</a></td>
+            <td data-l="Stroj">Jawa 250</td>
+            <td class="num nw" data-l="Výroba">1946–1954 <span class="stamp ov">ověřeno</span></td>
+            <td class="q" data-l="Poznámka">Jednoválec 248,5 cm³. Od roku 1950 vyšší výkon a upravené žebrování.</td>
+          </tr>
+          <tr>
+            <td class="rl nw" data-l="Typ"><a href="/perak/350/">12</a></td>
+            <td data-l="Stroj">Jawa 350</td>
+            <td class="num nw" data-l="Výroba">1948–1950 <span class="stamp ov">ověřeno</span></td>
+            <td class="q" data-l="Poznámka">Dvouválec. Sdílí podvozek, ne pohon.</td>
+          </tr>
+          <tr>
+            <td class="rl nw" data-l="Typ"><a href="/perak/350/">18</a></td>
+            <td data-l="Stroj">Jawa 350</td>
+            <td class="num nw" data-l="Výroba">1950–1954 <span class="stamp od">odhad</span></td>
+            <td class="q" data-l="Poznámka">Nástupce typu 12, souběžně s typem 11.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="rel">
+        <span class="t">Souvisí</span>
+        <a href="/perak/identifikace/">Určení podle výrobního čísla</a>
+        <a href="/perak/technicke-udaje/">Technické údaje</a>
       </div>
-    </div>
+    </section>
+
+    <section class="sec" id="identifikace">
+      <div class="sec-h">
+        <span class="sec-n">02</span>
+        <h2>Co mám za stroj</h2>
+        <p class="sub">Opište tovární číslo ze štítku nebo z rámu. Řekneme vám rok výroby, provedení a na co si dát pozor.</p>
+      </div>
+
+      <div class="tool">
+        <div class="tool-h">
+          <span class="t">Určení podle výrobního čísla</span>
+          <span class="s">rychlý odhad — <a href="/perak/identifikace/">plný nástroj v encyklopedii</a></span>
+        </div>
+        <div class="tool-b">
+          <div class="ld-seg" role="group" aria-label="Typ stroje">
+            <button type="button" class="ld-seg__btn is-on" data-typ="11">Typ 11</button>
+            <button type="button" class="ld-seg__btn" data-typ="12">Typ 12</button>
+            <button type="button" class="ld-seg__btn" data-typ="18">Typ 18</button>
+          </div>
+          <div class="tool-row">
+            <label for="ld-cislo" class="ld-sr">Tovární číslo</label>
+            <input type="text" id="ld-cislo" inputmode="numeric" autocomplete="off" placeholder="tovární číslo, např. 11-12862">
+            <button type="button" id="ld-go">Určit</button>
+          </div>
+          <div class="ld-out" id="ld-out" aria-live="polite">
+            <div class="ld-out__typ">Vybráno: typ <span id="ld-out-typ">11</span></div>
+            <div class="ld-out__body" id="ld-out-body" hidden>
+              <p class="ld-out__head" id="ld-out-head"></p>
+              <p class="ld-out__desc" id="ld-out-desc"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="udrzba">
+      <div class="sec-h">
+        <span class="sec-n">03</span>
+        <h2>Obsluha a údržba</h2>
+        <p class="sub">Podle původní knížky obsluhy, přefocené a doplněné o to, co se za osmdesát let ukázalo.</p>
+      </div>
+
+      <div class="spots">
+        {photos.udrzba.map((p) => (
+          <article class="spot">
+            {p.image ? (
+              <div class="im"><img src={p.image} alt={p.alt} loading="lazy" /></div>
+            ) : (
+              <div class="im" aria-hidden="true"><b>{p.placeholderText}</b></div>
+            )}
+            <h4>{p.caption}</h4>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="sec" id="registr">
+      <div class="sec-h">
+        <span class="sec-n">04</span>
+        <h2>Registr strojů</h2>
+        <p class="sub">Kolik Péráků se dochovalo, neví nikdo. Zkoušíme to spočítat.</p>
+      </div>
+
+      <div class="reg" id="ld-registr-grid" aria-live="polite">
+        <div class="reg-skel" aria-hidden="true"></div>
+        <div class="reg-skel" aria-hidden="true"></div>
+        <div class="reg-skel" aria-hidden="true"></div>
+        <div class="reg-skel" aria-hidden="true"></div>
+      </div>
+
+      <div class="reg-cta">
+        <a class="btn" href="/registr/pridat-stroj/">Přidat stroj</a>
+        <a class="reg-cta__more" href="/registr/">Celý registr</a>
+      </div>
+    </section>
+
   </div>
-</section>
+</div>
 
-<section class="ld-typy">
-  <h2 class="ld-h2">Typová řada</h2>
-  <p class="ld-perex">Dvě kubatury, tři typová označení. Motory ani díly nejsou zaměnitelné.</p>
-
-  <div class="ld-table" role="table">
-    <div class="ld-table__row ld-table__row--head" role="row">
-      <span role="columnheader">Typ</span>
-      <span role="columnheader">Stroj</span>
-      <span role="columnheader">Výroba</span>
-      <span role="columnheader">Poznámka</span>
-    </div>
-    <div class="ld-table__row" role="row">
-      <span role="cell" class="ld-table__typ"><a href="/perak/250/">11</a></span>
-      <span role="cell">Jawa 250</span>
-      <span role="cell">1946—1954</span>
-      <span role="cell" class="ld-table__note">Jednoválec 248,5 cm³. Od roku 1950 vyšší výkon a upravené žebrování.</span>
-    </div>
-    <div class="ld-table__row" role="row">
-      <span role="cell" class="ld-table__typ"><a href="/perak/350/">12</a></span>
-      <span role="cell">Jawa 350</span>
-      <span role="cell">1948—1950</span>
-      <span role="cell" class="ld-table__note">Dvouválec. Sdílí podvozek, ne pohon.</span>
-    </div>
-    <div class="ld-table__row ld-table__row--last" role="row">
-      <span role="cell" class="ld-table__typ"><a href="/perak/350/">18</a></span>
-      <span role="cell">Jawa 350</span>
-      <span role="cell">1950—1954</span>
-      <span role="cell" class="ld-table__note">Nástupce typu 12, souběžně s typem 11.</span>
-    </div>
-  </div>
-
-  <div class="ld-links">
-    <a href="/perak/identifikace/">Určení podle výrobního čísla</a>
-    <span class="ld-links__soon">Rozdíly Janeček / Zbrojovka<i>chystáme</i></span>
-  </div>
-</section>
-
-<section class="ld-udrzba">
-  <h2 class="ld-h2">Obsluha a údržba</h2>
-  <p class="ld-perex">Podle původní knížky obsluhy, přefocené a doplněné o to, co se za osmdesát let ukázalo.</p>
-
-  <div class="ld-udrzba__grid">
-    {photos.udrzba.map((p) => (
-      <figure class="ld-udrzba__card">
-        {p.image ? (
-          <img class="ld-udrzba__img" src={p.image} alt={p.alt} />
-        ) : (
-          <div class="ld-udrzba__ph" aria-hidden="true"><span>{p.placeholderText}</span></div>
-        )}
-        <figcaption>{p.caption}</figcaption>
-      </figure>
-    ))}
-  </div>
-</section>
-
-<section class="ld-registr">
-  <h2 class="ld-h2">Registr strojů</h2>
-  <p class="ld-perex">Kolik Péráků se dochovalo, neví nikdo. Zkoušíme to spočítat.</p>
-
-  <div class="ld-registr__grid" id="ld-registr-grid" aria-live="polite">
-    <div class="ld-registr__skel" aria-hidden="true"></div>
-    <div class="ld-registr__skel" aria-hidden="true"></div>
-    <div class="ld-registr__skel" aria-hidden="true"></div>
-    <div class="ld-registr__skel" aria-hidden="true"></div>
-  </div>
-
-  <div class="ld-cta">
-    <a class="ld-cta__solid" href="/registr/pridat-stroj/">Přidat stroj</a>
-    <a class="ld-cta__outline" href="/registr/">Celý registr</a>
-  </div>
-</section>
-
+<!-- ============================================================
+     ZPĚT DO MUZEJNÍHO REJSTŘÍKU — dílna (PureBikes funnel)
+     ============================================================ -->
 <section class="ld-dilna">
   <div class="ld-dilna__inner">
     <div class="ld-dilna__text">
@@ -147,7 +202,7 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
 <script define:vars={{ SUPABASE_URL, SUPABASE_KEY }}>
   // Rychlý odhad roku výroby přímo na homepage — stejná tabulka rozsahů
-  // výrobních čísel jako plný nástroj na /perak/zmeny-v-case/ (odvozeno
+  // výrobních čísel jako plný nástroj na /perak/identifikace/ (odvozeno
   // z ~240 fotografií původních štítků). Pokrývá průběžnou řadu čísel
   // do roku 1951; pro roční řady od 1952 (číslo s dvouciferným rokem
   // na konci) odkazuje na plný nástroj.
@@ -200,7 +255,7 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
       elDesc.textContent = POZNAMKY[typ] || '';
     } else {
       elHead.textContent = 'Mimo rozsah rychlého odhadu';
-      elDesc.textContent = 'Tahle rychlá tabulka platí přibližně do roku 1951. Pro čísla s ročním sufixem od roku 1952 (např. 11-07390-52) použijte kompletní nástroj na stránce Změny v čase.';
+      elDesc.textContent = 'Tahle rychlá tabulka platí přibližně do roku 1951. Pro čísla s ročním sufixem od roku 1952 (např. 11-07390-52) použijte kompletní nástroj na stránce Určení podle výrobního čísla.';
     }
   }
 
@@ -220,21 +275,23 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
       );
       const data = await r.json();
       if (!Array.isArray(data) || data.length === 0) {
-        grid.innerHTML = `<div class="ld-registr__prazdno">
-          <p>Registr se teprve plní. Když přidáte svůj stroj, budete mezi prvními.</p>
-        </div>`;
+        grid.innerHTML = `<p class="reg-prazdno">Registr se teprve plní. Když přidáte svůj stroj, budete mezi prvními.</p>`;
         return;
       }
-      grid.innerHTML = data.map((s) => `
-        <a class="ld-registr__card" href="/registr/stroj/${esc(s.slug)}/">
-          <div class="ld-registr__mono">Typ ${esc(s.typ)}${s.rok_vyroby ? ' · ' + esc(s.rok_vyroby) : ''}</div>
-          ${[s.region, s.zeme].filter(Boolean).length ? `<div class="ld-registr__misto">${esc([s.region, s.zeme].filter(Boolean).join(', '))}</div>` : ''}
-          ${s.cislo_ramu_maskovane ? `<div class="ld-registr__ramc">rám ${esc(s.cislo_ramu_maskovane)}</div>` : ''}
-          <div class="ld-registr__stav">${esc(s.stav)}</div>
-        </a>
-      `).join('');
+      grid.innerHTML = data.map((s) => {
+        const misto = [s.region, s.zeme].filter(Boolean).map(esc).join(', ');
+        const meta = [misto, s.cislo_ramu_maskovane ? `rám ${esc(s.cislo_ramu_maskovane)}` : ''].filter(Boolean).join(' · ');
+        return `
+        <a class="rec" href="/registr/stroj/${esc(s.slug)}/">
+          <span class="rec__l">
+            <span class="rt">Typ ${esc(s.typ)}${s.rok_vyroby ? ' · ' + esc(s.rok_vyroby) : ''}</span>
+            ${meta ? `<span class="rm">${meta}</span>` : ''}
+          </span>
+          <span class="st">${esc(s.stav)}</span>
+        </a>`;
+      }).join('');
     } catch (e) {
-      grid.innerHTML = '<p class="ld-registr__prazdno">Registr se nepodařilo načíst.</p>';
+      grid.innerHTML = '<p class="reg-prazdno">Registr se nepodařilo načíst.</p>';
       console.error(e);
     }
   }
@@ -253,89 +310,51 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
     color:#7A6A50;max-width:26ch;line-height:1.6}
   .ld-hero__scrim{position:absolute;left:0;bottom:0;width:100%;height:70%;
     background:linear-gradient(to top,rgba(20,18,16,.82),transparent);pointer-events:none}
-  .ld-hero__text{position:absolute;left:44px;bottom:40px;max-width:620px;color:var(--paper)}
+  .ld-hero__text{position:absolute;left:44px;bottom:40px;max-width:640px;color:var(--paper)}
   .ld-eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
     opacity:.75;margin:0}
   .ld-h1{font-family:var(--body);font-size:clamp(44px,9vw,82px);line-height:.95;font-weight:400;
     margin:14px 0 16px;text-transform:none;letter-spacing:0}
-  .ld-sub{font-family:var(--body);font-size:17px;line-height:1.6;margin:0;max-width:560px;text-wrap:pretty}
+  .ld-sub{font-family:var(--body);font-size:17px;line-height:1.6;margin:0;max-width:600px;text-wrap:pretty}
 
-  /* --- Určovač --- */
-  .ld-ident{display:grid;grid-template-columns:1fr 1fr;gap:44px;padding:40px 26px;
-    border-bottom:1px solid var(--rule);align-items:center;max-width:1160px;margin:0 auto}
-  .ld-label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--red);margin:0}
-  .ld-p{font-family:var(--body);font-size:15px;line-height:1.65;color:var(--mute);margin:12px 0 0}
-  .ld-row{display:flex;gap:10px;font-family:var(--disp);flex-wrap:wrap}
-  .ld-seg{display:flex;gap:6px;background:var(--paper-2);padding:4px;border-radius:4px}
-  .ld-seg__btn{padding:8px 14px;border:0;border-radius:3px;background:transparent;color:var(--ink);
-    cursor:pointer;font-size:14px;font-family:inherit}
-  .ld-seg__btn.is-on{background:var(--card)}
-  .ld-row input{flex:1;min-width:160px;padding:9px 12px;border:1px solid var(--rule);border-radius:4px;
-    background:var(--card);color:var(--ink);font-size:14px;font-family:inherit}
-  .ld-go{padding:9px 20px;border:0;border-radius:4px;background:var(--red);color:var(--paper);
-    cursor:pointer;font-size:14px;font-family:inherit}
-  .ld-go:hover{background:#75241a}
-  .ld-out{min-height:62px;padding:12px 14px;margin-top:12px;border-left:2px solid var(--red);background:var(--paper-2)}
-  .ld-out__typ{font-family:var(--mono);font-size:13px;color:var(--ink)}
-  .ld-out__head{font-family:var(--disp);font-size:14px;font-weight:600;margin:6px 0 0;color:var(--ink)}
-  .ld-out__desc{font-family:var(--disp);font-size:13px;color:var(--mute-2);margin:3px 0 0}
+  /* --- Pérák v číslech: muzejní rejstřík, vzdušný pás faktů --- */
+  .facts{max-width:1200px;margin:0 auto;padding:64px 26px 72px;text-align:center;
+    border-bottom:3px double var(--ink)}
+  .facts__h{font-family:var(--body);font-weight:400;font-size:clamp(24px,3vw,30px);
+    letter-spacing:0;text-transform:none;color:var(--ink);margin:0}
+  .facts__grid{margin:46px auto 0;max-width:980px;display:grid;grid-template-columns:repeat(4,1fr)}
+  .fnum{padding:0 26px;border-left:1px solid var(--hair);text-decoration:none;color:inherit;background:none}
+  .fnum:first-child{border-left:0}
+  .fnum__n{display:block;font-family:var(--body);font-weight:400;font-size:clamp(24px,2.8vw,32px);
+    line-height:1.1;color:var(--ink);letter-spacing:0}
+  .fnum__n--inf{font-size:clamp(32px,4vw,44px);color:var(--red);line-height:1}
+  .fnum__l{display:block;margin-top:11px;font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;
+    text-transform:uppercase;color:var(--mute-2);line-height:1.55}
+  .fnum--link{transition:opacity .15s}
+  .fnum--link:hover{opacity:.72}
+  .fnum--link:hover .fnum__n{color:var(--red)}
 
-  /* --- sekce společné --- */
-  .ld-typy,.ld-udrzba,.ld-registr{padding:44px 26px;max-width:1160px;margin:0 auto}
-  .ld-udrzba{max-width:none;background:var(--paper-2);border-top:1px solid var(--rule)}
-  .ld-udrzba>*{max-width:1160px;margin-left:auto;margin-right:auto}
-  .ld-h2{font-family:var(--body);font-size:30px;font-weight:400;margin:0;text-transform:none;letter-spacing:0}
-  .ld-perex{font-family:var(--body);font-size:15px;color:var(--mute);margin:8px 0 24px}
+  /* --- Archivní sekce: typová řada, identifikace, údržba, registr --- */
+  .tool-h .s a{color:inherit;text-decoration:underline;text-decoration-color:rgba(232,222,200,.5)}
+  .tool-h .s a:hover{text-decoration-color:currentColor}
 
-  /* --- Typová řada --- */
-  .ld-table{font-family:var(--disp);font-size:14px}
-  .ld-table__row{display:grid;grid-template-columns:70px 130px 150px 1fr}
-  .ld-table__row--head span{padding:10px 12px;border-bottom:1px solid var(--ink);font-family:var(--mono);
-    font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
-  .ld-table__row:not(.ld-table__row--head) span{padding:14px 12px;border-bottom:1px solid var(--hair)}
-  .ld-table__row--last span{border-bottom:0}
-  .ld-table__typ a{font-weight:600;color:var(--ink);text-decoration:none}
-  .ld-table__typ a:hover{color:var(--red)}
-  .ld-table__note{color:var(--mute)}
-  .ld-links{display:flex;gap:22px;flex-wrap:wrap;margin-top:22px;font-family:var(--disp);font-size:14px}
-  .ld-links a{border-bottom:1px solid var(--red);color:var(--red);text-decoration:none}
-  .ld-links__soon{color:var(--rule)}
-  .ld-links__soon i{font-style:normal;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
-    margin-left:7px;font-family:var(--mono)}
+  .spot .im{position:relative;overflow:hidden}
+  .spot .im img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 
-  /* --- Obsluha a údržba --- */
-  .ld-udrzba__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-  .ld-udrzba__card{margin:0;display:flex;flex-direction:column;gap:10px}
-  .ld-udrzba__img{display:block;width:100%;height:200px;object-fit:cover}
-  .ld-udrzba__ph{height:200px;background:repeating-linear-gradient(45deg,#DFD2B4 0 12px,#D8CAAA 12px 24px);
-    border:1px solid #8A7B5E;display:flex;align-items:flex-end;padding:9px}
-  .ld-udrzba__ph span{font-family:var(--disp);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
-    color:#6B5B45;background:rgba(246,243,236,.75);padding:2px 6px}
-  .ld-udrzba__card figcaption{font-family:var(--body);font-style:italic;font-size:14px;color:var(--mute)}
+  .reg{margin-top:24px}
+  .rec__l{display:flex;flex-direction:column;gap:3px}
+  .reg-skel{height:52px;background:var(--card);border-bottom:1px solid var(--hair)}
+  .reg-prazdno{padding:24px 0;color:var(--mute);font-family:var(--body);text-align:center;border-bottom:1px solid var(--hair)}
 
-  /* --- Registr strojů --- */
-  .ld-registr__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;font-family:var(--disp)}
-  .ld-registr__card{display:block;padding:16px;border:1px solid var(--rule);background:var(--card);
-    text-decoration:none;color:inherit;transition:border-color .15s}
-  .ld-registr__card:hover{border-color:var(--red)}
-  .ld-registr__mono{font-family:var(--mono);font-size:12px;color:var(--red)}
-  .ld-registr__misto{font-size:14px;margin-top:8px}
-  .ld-registr__ramc{font-size:13px;color:var(--mute-2)}
-  .ld-registr__stav{font-size:12px;margin-top:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
-  .ld-registr__skel{height:128px;background:var(--paper-2)}
-  .ld-registr__prazdno{grid-column:1/-1;padding:24px;text-align:center;color:var(--mute);font-family:var(--body);
-    border:1px dashed var(--rule)}
-  .ld-cta{display:flex;gap:12px;margin-top:22px;font-family:var(--disp);font-size:14px}
-  .ld-cta__solid{padding:10px 18px;background:var(--ink);color:var(--paper);text-decoration:none}
-  .ld-cta__solid:hover{background:var(--red)}
-  .ld-cta__outline{padding:10px 18px;border:1px solid var(--rule);color:var(--ink);text-decoration:none}
-  .ld-cta__outline:hover{border-color:var(--red);color:var(--red)}
+  .reg-cta{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-top:22px}
+  .reg-cta__more{font-family:var(--disp);font-size:13.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--red);text-decoration:none;border-bottom:1px solid var(--red);padding-bottom:2px}
 
   /* --- Z naší dílny --- */
   .ld-dilna{background:var(--ink);color:#f2efe6}
   .ld-dilna__inner{display:grid;grid-template-columns:1.1fr 1fr;gap:44px;padding:44px 26px;
     max-width:1160px;margin:0 auto;align-items:center}
+  .ld-h2{font-family:var(--body);font-size:30px;font-weight:400;margin:0;text-transform:none;letter-spacing:0}
   .ld-h2--ink{color:#f2efe6}
   .ld-dilna__p{font-family:var(--body);font-size:16px;line-height:1.65;color:#c9c4b8;margin:12px 0 22px;text-wrap:pretty}
   .ld-dilna__link{font-family:var(--disp);font-size:14px;border-bottom:1px solid #f2efe6;color:#f2efe6;text-decoration:none}
@@ -354,34 +373,24 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   .ld-versus__body{flex:1;min-width:200px}
   .ld-versus__link{color:var(--red);border-bottom:1px solid var(--red);text-decoration:none;white-space:nowrap}
 
-  /* --- max-width kontejnery přes celou šíři --- */
-  .ld-hero__text{max-width:calc(1160px - 88px)}
-
   @media (max-width:1239px){
-    .ld-ident,.ld-typy,.ld-udrzba>*,.ld-registr,.ld-versus{padding-left:26px;padding-right:26px}
+    .ld-versus{padding-left:26px;padding-right:26px}
   }
 
   @media (max-width:880px){
     .ld-hero{height:380px}
     .ld-hero__ph{align-items:flex-start;padding-top:26px}
     .ld-hero__text{left:22px;bottom:24px;max-width:calc(100% - 44px)}
-    .ld-ident{grid-template-columns:1fr;gap:22px;padding:28px 22px}
-    .ld-row{flex-direction:column;align-items:stretch}
-    .ld-seg{align-self:flex-start}
-    .ld-go{min-height:44px}
-    .ld-typy,.ld-registr{padding:32px 22px}
-    .ld-udrzba{padding-top:32px;padding-bottom:32px}
-    .ld-udrzba>*{padding-left:22px;padding-right:22px}
-    .ld-udrzba__grid{grid-template-columns:1fr 1fr;gap:14px}
-    .ld-registr__grid{grid-template-columns:1fr 1fr}
+    .facts{padding:52px 22px 60px}
+    .facts__grid{grid-template-columns:1fr 1fr;row-gap:34px;margin-top:38px}
+    .fnum:nth-child(3){border-left:0}
     .ld-dilna__inner{grid-template-columns:1fr;padding:32px 22px}
     .ld-versus{padding:20px 22px;flex-direction:column;align-items:flex-start;gap:8px}
-    .ld-table__row{grid-template-columns:50px 1fr 100px;font-size:13px}
-    .ld-table__row>span:nth-child(4){display:none}
   }
 
   @media (max-width:520px){
-    .ld-udrzba__grid,.ld-registr__grid{grid-template-columns:1fr}
+    .facts__grid{grid-template-columns:1fr;row-gap:28px}
+    .fnum{border-left:0;padding:0}
     .ld-h1{font-size:clamp(38px,15vw,60px)}
   }
 </style>
