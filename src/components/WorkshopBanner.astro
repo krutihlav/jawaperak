@@ -1,0 +1,49 @@
+---
+// src/components/WorkshopBanner.astro
+// Autentická prezentace dílny PureBikes v Drahanovicích u Olomouce
+---
+
+<div class="rounded-2xl border border-neutral-800 bg-[#14171A] text-neutral-100 p-8 sm:p-12 space-y-6 shadow-2xl relative overflow-hidden">
+  <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-red-900/10 rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-3xl space-y-4 relative z-10">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 text-red-400 border border-red-500/20 text-xs font-mono uppercase tracking-widest">
+      <span>Dílna PureBikes • Drahanovice u Olomouce</span>
+    </div>
+
+    <h3 class="text-2xl sm:text-4xl font-serif font-normal leading-tight text-neutral-50">
+      „Historie a patina stroje patří k jeho nejvyšší hodnotě. Kde to jde, zachováváme původní stav — místo aby zmizel pod novým lakem."
+    </h3>
+
+    <p class="text-sm sm:text-base text-neutral-300 font-sans leading-relaxed">
+      Píše Adam Kment. Pomáháme sběratelům a nadšencům s fyzickou prohlídkou Péráka před koupí, ověřením pravosti výrobních čísel a odchylek, šetrnou konzervací patiny po desetiletích spánku ve stodole i výrobou specifických chybějících dílů.
+    </p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+      <div class="bg-neutral-900/80 p-3.5 rounded-xl border border-neutral-800 text-xs font-sans">
+        <span class="text-red-400 font-bold block mb-1">01. Prohlídka před koupí</span>
+        <p class="text-neutral-400 text-[11px] leading-relaxed">Asistence a kontrola originality karterů a rámu před podpisem smlouvy.</p>
+      </div>
+      <div class="bg-neutral-900/80 p-3.5 rounded-xl border border-neutral-800 text-xs font-sans">
+        <span class="text-red-400 font-bold block mb-1">02. Konzervace patiny</span>
+        <p class="text-neutral-400 text-[11px] leading-relaxed">Šetrné chemické čištění a voskování původních linek a červeně ČSN 8850.</p>
+      </div>
+      <div class="bg-neutral-900/80 p-3.5 rounded-xl border border-neutral-800 text-xs font-sans">
+        <span class="text-red-400 font-bold block mb-1">03. Výroba chybějících dílů</span>
+        <p class="text-neutral-400 text-[11px] leading-relaxed">Přesná kusová zámečnická výroba podle originálních výkresů a vzorů.</p>
+      </div>
+    </div>
+
+    <div class="pt-4 flex flex-wrap items-center gap-3">
+      <a
+        href="mailto:adas.kment@gmail.com"
+        class="px-6 py-3 rounded-xl bg-red-700 hover:bg-red-600 text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-lg shadow-red-950/50"
+      >
+        Napsat Adamovi Kmentovi
+      </a>
+      <span class="text-xs font-mono text-neutral-400">
+        adas.kment@gmail.com • Drahanovice
+      </span>
+    </div>
+  </div>
+</div>
