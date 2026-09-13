@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import MuseumHero from '../../components/MuseumHero.astro';
-import { encyklopedie, skupiny } from '../../data/encyklopedie';
+import { encyklopedie, skupiny, hero } from '../../data/encyklopedie';
 ---
 
 <Layout
@@ -12,7 +12,9 @@ import { encyklopedie, skupiny } from '../../data/encyklopedie';
 <MuseumHero
   eyebrow="Pilíř webu"
   title="Encyklopedie Péráku"
-  placeholderText="fotografie — Jawa Pérák, technická dokumentace"
+  image={hero.image}
+  alt={hero.alt}
+  placeholderText={hero.placeholderText}
 >
   Všechno, co o Péráku víme a umíme doložit, na jednom místě. Píšeme to tak,
   aby se to dalo použít v garáži — a u každého tvrzení je vidět, odkud

@@ -15,6 +15,14 @@ export interface EncyStranka {
   hotovo: boolean;
 }
 
+export interface Hero {
+  image: string;
+  alt: string;
+  placeholderText: string;
+}
+
+export const hero: Hero = data.hero as Hero;
+
 export const skupiny: { klic: Skupina; nazev: string; popis: string }[] = data.skupiny as {
   klic: Skupina;
   nazev: string;

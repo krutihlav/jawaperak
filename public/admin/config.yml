@@ -3,7 +3,9 @@
 # definované soubory přímo v repozitáři (commit do větve `branch`).
 #
 # Mimo tuto konfiguraci zůstávají (data ze Supabase, needituje se přes CMS):
-#   - vše pod /perak/ (specifikace strojů, filtrované stránky)
+#   - stránky pod /perak/ generované ze specifikací strojů (např. /perak/250/,
+#     /perak/350/, /perak/riksa/) — samotné texty a fotky u jednotlivých
+#     podstránek /perak/ (rozcestník, motor-12-vs-18/…) jsou v CMS níže
 #   - /registr/ (vlastní schvalovací systém)
 #   - katalog dílů (obrázkový prohlížeč v /navody/katalog-dilu-jawa-250-1949/)
 
@@ -54,6 +56,13 @@ collections:
         media_folder: "/public/uploads/encyklopedie"
         public_folder: "/uploads/encyklopedie"
         fields:
+          - label: "Hlavní fotka nahoře (hero, /perak/)"
+            name: hero
+            widget: object
+            fields:
+              - { label: Fotografie, name: image, widget: image, required: false, hint: "Dokud tu žádná není, zobrazí se placeholder." }
+              - { label: "Alt text (až bude foto nahrané)", name: alt, widget: string, required: false }
+              - { label: "Text v placeholderu", name: placeholderText, widget: string }
           - label: Skupiny
             name: skupiny
             widget: list

@@ -1,4 +1,9 @@
 {
+  "hero": {
+    "image": "",
+    "alt": "",
+    "placeholderText": "fotografie — Jawa Pérák, technická dokumentace"
+  },
   "skupiny": [
     {
       "klic": "model",
