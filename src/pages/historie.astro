@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import RejstrikEncyklopedie from '../components/RejstrikEncyklopedie.astro';
+import MuseumHero from '../components/MuseumHero.astro';
 import data from '../data/historie.json';
 
 const stampLabel: Record<string, string> = {
@@ -12,6 +13,16 @@ const stampLabel: Record<string, string> = {
 ---
 
 <Layout title={data.seoTitle} description={data.seoDescription}>
+
+<MuseumHero
+  eyebrow={`${data.kicker} — ${data.kickerLabel}`}
+  eyebrowHref={data.kickerHref}
+  title={data.title}
+  placeholderText="fotografie — utajený vývoj Peráku za okupace"
+>
+  {data.lead}
+</MuseumHero>
+
   <div class="wrap wrap--art">
     <div class="page">
 
@@ -39,10 +50,6 @@ const stampLabel: Record<string, string> = {
             {data.sections.map((s) => <li><a href={`#${s.id}`}>{s.title}</a></li>)}
           </ol>
         </details>
-
-        <p class="kicker"><a href={data.kickerHref}>{data.kicker}</a> — {data.kickerLabel}</p>
-        <h1>{data.title}</h1>
-        <p class="lead">{data.lead}</p>
 
         <div class="meta">
           {data.meta.map((m) => <span>{m.label} <b>{m.value}</b></span>)}
