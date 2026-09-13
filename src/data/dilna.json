@@ -18,6 +18,12 @@
       "body": "<p>\n  PureBikes je malá dílna v Drahanovicích na Olomoucku. Motorky tu\n  neprojíždějí linkou — projdou rukama, kus po kuse.\n</p>\n\n<p>\n  Děláme to z lásky k motocyklům a k řemeslu, ne kvůli počtu\n  zakázek. Ať jde o kousek do sbírky, nebo o stroj po dědovi,\n  bereme ho jako svěřený kus historie a tak s ním zacházíme. Když\n  díl chybí nebo se nedá sehnat, umíme ho zajistit nebo vyrobit —\n  aby renovace nestála.\n</p>"
     },
     {
+      "id": "praxe",
+      "title": "Co pro majitele Péráků děláme",
+      "sub": "Čtyři věci, se kterými se na nás lidé nejčastěji obracejí — ne vždy jde rovnou o kompletní renovaci.",
+      "body": "<ol class=\"mist\">\n  <li>\n    <div>\n      <b>Asistence při nákupu a ověření originality</b>\n      <p>\n        Než podepíšete kupní smlouvu, zkontrolujeme, jestli si čísla\n        rámu, motoru a štítku odpovídají a jestli k sobě viditelné díly\n        patří obdobím. Podrobně na stránce\n        <a href=\"/sluzby/prohlidka-pred-koupi/\">Prohlídka před koupí</a>.\n      </p>\n    </div>\n  </li>\n  <li>\n    <div>\n      <b>Konzervace patiny, nebo zakázková renovace</b>\n      <p>\n        Kde to jde, patinu zachováváme a jen konzervujeme — místo aby\n        zmizela pod novým lakem. Kde už originál nejde zachránit, děláme\n        špičkovou renovaci na klíč. Obojí má u nás svou cenu i své místo\n        — víc na stránce <a href=\"/sluzby/#filozofie\">Jak přistupujeme\n        k patině</a>.\n      </p>\n    </div>\n  </li>\n  <li id=\"vyroba-dilu\">\n    <div>\n      <b>Výroba a kompletace chybějících dílů</b>\n      <p>\n        U Péráku je běžné, že díl prostě neseženete — vyrobíme ho, nebo\n        zajistíme repliku v odpovídající kvalitě. Platí to i pro\n        drobnosti, které se jinde přehlížejí: závity, nýty, správný\n        profil plechu.\n      </p>\n    </div>\n  </li>\n  <li>\n    <div>\n      <b>Veteránská konzultace</b>\n      <p>\n        Nejste si jistí, jestli stroj vůbec stojí za renovaci, nebo co\n        s ním dál? Napište, poradíme — bez závazku a bez toho, abychom\n        vás tlačili do zakázky, která nedává smysl.\n      </p>\n    </div>\n  </li>\n</ol>\n\n<p class=\"act\"><a href=\"/kontakt/\">Veteránská konzultace — napsat</a></p>"
+    },
+    {
       "id": "stroje",
       "title": "Stroje, kterým rozumíme",
       "sub": "Čtyři okruhy, kterým se v dílně věnujeme.",

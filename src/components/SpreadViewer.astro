@@ -8,16 +8,29 @@ export interface SpreadItem {
   alt: string;
   label: string;
 }
+export interface SpreadGroup {
+  label: string;
+  index: number;
+}
 export interface Props {
   items: SpreadItem[];
   hashPrefix?: string;
+  groups?: SpreadGroup[];
 }
-const { items, hashPrefix = 's' } = Astro.props;
+const { items, hashPrefix = 's', groups = [] } = Astro.props;
 const N = items.length;
 const uid = 'sv' + Math.random().toString(36).slice(2, 8);
 ---
 
 <div class="spread-viewer-wrap" data-hash-prefix={hashPrefix}>
+  {groups.length > 0 && (
+    <nav class="sv-groups" aria-label="Rychlý přechod na konstrukční skupinu">
+      {groups.map((g) => (
+        <button type="button" class="sv-group-btn" data-jump={g.index}>{g.label}</button>
+      ))}
+    </nav>
+  )}
+
   <div class="sv-bar">
     <button class="sv-btn sv-prev" type="button" aria-label="Předchozí strana">‹</button>
     <div class="sv-count" aria-live="polite">
@@ -52,6 +65,7 @@ const uid = 'sv' + Math.random().toString(36).slice(2, 8);
       <input type="number" id={`${uid}-jump`} class="sv-jump-input" min="1" max={N} inputmode="numeric" placeholder="č.">
       <button class="sv-btn sv-jgo" type="button">Přejít</button>
     </div>
+    <a class="sv-btn sv-orig" href={items[0]?.src} target="_blank" rel="noopener" download={false}>Otevřít originál</a>
     <button class="sv-btn sv-ic sv-fs" type="button" aria-label="Celá obrazovka" hidden>⛶</button>
   </div>
 
@@ -99,6 +113,8 @@ const uid = 'sv' + Math.random().toString(36).slice(2, 8);
     var btnFs = root.querySelector('.sv-fs');
     var jumpInput = root.querySelector('.sv-jump-input');
     var btnJump = root.querySelector('.sv-jgo');
+    var linkOrig = root.querySelector('.sv-orig');
+    var groupBtns = Array.prototype.slice.call(root.querySelectorAll('.sv-group-btn'));
 
     var index = 0;
     var ratio = 1.32; // upresni se po nacteni prvniho obrazku
@@ -171,6 +187,12 @@ const uid = 'sv' + Math.random().toString(36).slice(2, 8);
       elLabel.textContent = DATA[index].label ? '(' + DATA[index].label + ')' : '';
       btnPrev.disabled = index === 0;
       btnNext.disabled = index === N - 1;
+      if (linkOrig) linkOrig.setAttribute('href', DATA[index].src);
+      if (groupBtns.length) {
+        var activeIdx = -1;
+        groupBtns.forEach(function (b, i) { if (parseInt(b.dataset.jump, 10) <= index) activeIdx = i; });
+        groupBtns.forEach(function (b, i) { b.classList.toggle('is-on', i === activeIdx); });
+      }
       try { history.replaceState(null, '', '#' + HASH_PREFIX + (index + 1)); } catch (e) {}
     }
 
@@ -178,7 +200,7 @@ const uid = 'sv' + Math.random().toString(36).slice(2, 8);
       scale = 1; tx = 0; ty = 0;
       imgEls.cur.style.transition = 'none';
       imgEls.cur.style.transform = 'translate3d(0,0,0) scale(1)';
-      stage.style.touchAction = 'pan-y';
+      stage.style.touchAction = 'pan-x pan-y pinch-zoom';
       stage.classList.remove('sv-zoomed');
     }
 
@@ -236,7 +258,7 @@ const uid = 'sv' + Math.random().toString(36).slice(2, 8);
     function applyZoomTransform(animate) {
       imgEls.cur.style.transition = animate ? 'transform .28s cubic-bezier(.2,.7,.2,1)' : 'none';
       imgEls.cur.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,0) scale(' + scale.toFixed(3) + ')';
-      stage.style.touchAction = scale > 1.02 ? 'none' : 'pan-y';
+      stage.style.touchAction = scale > 1.02 ? 'none' : 'pan-x pan-y pinch-zoom';
       stage.classList.toggle('sv-zoomed', scale > 1.02);
     }
 
@@ -478,6 +500,10 @@ const uid = 'sv' + Math.random().toString(36).slice(2, 8);
     btnJump.addEventListener('click', doJump);
     jumpInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); doJump(); } });
 
+    groupBtns.forEach(function (b) {
+      b.addEventListener('click', function () { jumpTo(parseInt(b.dataset.jump, 10)); });
+    });
+
     // ---------- fullscreen ----------
     function fsElement() { return document.fullscreenElement || document.webkitFullscreenElement; }
     var canFs = !!(root.requestFullscreen || root.webkitRequestFullscreen);
@@ -529,6 +555,15 @@ const uid = 'sv' + Math.random().toString(36).slice(2, 8);
   <style>
     .spread-viewer-wrap{margin-top:30px;border:2px solid var(--ink);background:#111}
 
+    /* --- rozcestník na konstrukční skupiny --- */
+    .sv-groups{display:flex;flex-wrap:wrap;gap:1px;background:var(--rule);
+      border-bottom:2px solid var(--ink)}
+    .sv-group-btn{flex:1 1 auto;font-family:var(--disp);font-size:11.5px;letter-spacing:.04em;
+      background:var(--paper-2);color:var(--mute);border:0;padding:10px 12px;cursor:pointer;
+      white-space:nowrap;transition:background-color .15s,color .15s}
+    .sv-group-btn:hover{background:var(--card);color:var(--ink)}
+    .sv-group-btn.is-on{background:var(--red);color:var(--paper)}
+
     .sv-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;
       padding:10px 14px;background:var(--ink);color:var(--paper)}
     .sv-btn{font-family:var(--disp);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
@@ -542,7 +577,8 @@ const uid = 'sv' + Math.random().toString(36).slice(2, 8);
     .sv-label{opacity:.7;letter-spacing:.03em;text-transform:none;display:block;margin-top:2px}
 
     .sv-stage{position:relative;overflow:hidden;background:#1c1712;margin:0 auto;
-      touch-action:pan-y;overscroll-behavior:contain;cursor:grab;
+      touch-action:pan-x pan-y pinch-zoom;-webkit-overflow-scrolling:touch;
+      overscroll-behavior:contain;cursor:grab;
       -webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
     .sv-stage:active{cursor:grabbing}
     .sv-stage:focus-visible{outline:2px solid var(--red);outline-offset:-3px}
@@ -576,13 +612,15 @@ const uid = 'sv' + Math.random().toString(36).slice(2, 8);
     .sv-jump-input{width:64px;font-family:var(--disp);font-size:15px;padding:7px 9px;
       border:2px solid var(--ink);background:var(--paper);color:var(--ink)}
     .sv-fs{min-width:40px}
+    .sv-orig{display:inline-block;text-decoration:none;white-space:nowrap}
 
     @media (max-width:640px){
       .sv-bar{padding:9px 10px}
       .sv-btn{padding:7px 11px;font-size:11px}
       .sv-tools{gap:10px}
       .sv-fs{order:1}
-      .sv-jump{order:2;margin-left:0;flex-basis:100%;justify-content:flex-end}
+      .sv-orig{order:2}
+      .sv-jump{order:3;margin-left:0;flex-basis:100%;justify-content:flex-end}
     }
 
     .spread-viewer-wrap:fullscreen,

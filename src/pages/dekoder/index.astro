@@ -1,0 +1,324 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import RejstrikEncyklopedie from '../../components/RejstrikEncyklopedie.astro';
+---
+
+<Layout
+  title="Forenzní dekodér výrobního štítku — Typ 11, 12, 18 | jawaperak.cz"
+  description="Zadejte výrobní číslo Péráku a dekodér z výzkumu Adama Kmenta (PureBikes) určí modelový rok, dobové provedení štítku a upozorní na časté dobové záměny a falzifikáty."
+>
+  <div class="wrap wrap--art">
+    <div class="page">
+
+      <aside class="aside">
+        <div class="aside-in">
+          <p class="aside-lb">Na této stránce</p>
+          <ol id="toc">
+            <li><a href="#nastroj">Dekodér</a></li>
+            <li><a href="#falzifikaty">Časté záměny a falzifikáty</a></li>
+            <li><a href="#zdroj">Odkud data jsou</a></li>
+          </ol>
+          <div class="aside-foot">
+            <p class="t">Značení jistoty</p>
+            <div class="row"><span class="stamp kn">kniha</span></div>
+            <div class="row"><span class="stamp ov">ověřeno</span></div>
+            <div class="row"><span class="stamp od">odhad</span></div>
+            <div class="row"><span class="stamp sp">sporné</span></div>
+          </div>
+        </div>
+      </aside>
+
+      <article class="art">
+
+        <details class="mtoc">
+          <summary><span>Obsah stránky — <span class="cur" id="curSec">Dekodér</span></span></summary>
+          <ol>
+            <li><a href="#nastroj">Dekodér</a></li>
+            <li><a href="#falzifikaty">Časté záměny a falzifikáty</a></li>
+            <li><a href="#zdroj">Odkud data jsou</a></li>
+          </ol>
+        </details>
+
+        <p class="kicker"><a href="/perak/">Encyklopedie</a> — Identifikace a data</p>
+        <h1>Forenzní dekodér výrobního štítku</h1>
+        <p class="lead">
+          Vlastní výzkum dílny PureBikes nad rozsahy výrobních čísel typů 11,
+          12 a 18. Zadejte číslo, dekodér vykreslí dobový štítek a upozorní
+          na místa, kde se u daného ročníku běžně objevují nepůvodní díly.
+        </p>
+
+        <div class="meta">
+          <span>Autor rozsahů <b>Adam Kment, PureBikes</b></span>
+          <span>Pokrývá <b>typ 11, 12, 18</b></span>
+        </div>
+
+        <div class="box box--warn">
+          <span class="lb">Jiná data než tabulka na stránce Výrobní čísla</span>
+          <p>
+            Tenhle dekodér používá <b>vlastní rozsahy z dílenského výzkumu
+            Adama Kmenta</b>, nezávislé na sbírce fotografií štítků použité
+            ve <a href="/perak/identifikace/">stránce o datování podle
+            výrobního čísla</a>. Obě sady se v jednotlivých letech mírně
+            rozcházejí — u typu 11 typicky o nižší tisíce kusů. Než datum
+            použijete jako podklad k dokladům, porovnejte obě tabulky.
+            <span class="stamp sp">sporné</span>
+          </p>
+        </div>
+
+        <section class="sec" id="nastroj">
+          <div class="sec-h">
+            <span class="sec-n">01</span>
+            <h2>Dekodér</h2>
+            <p class="sub">Vyberte typ a zadejte číslo ze štítku nebo z ražby v rámu.</p>
+          </div>
+
+          <div class="tool dek-tool">
+            <div class="tool-h">
+              <span class="t">Dekodér výrobního čísla</span>
+              <span class="s">Typ 11 · 12 · 18</span>
+            </div>
+            <div class="tool-b">
+              <div class="ld-seg" role="group" aria-label="Typ stroje" id="dek-seg">
+                <button type="button" class="ld-seg__btn is-on" data-typ="11">Typ 11</button>
+                <button type="button" class="ld-seg__btn" data-typ="12">Typ 12</button>
+                <button type="button" class="ld-seg__btn" data-typ="18">Typ 18</button>
+              </div>
+              <div class="tool-row">
+                <label for="dek-cislo" class="ld-sr">Výrobní číslo</label>
+                <input type="text" id="dek-cislo" inputmode="numeric" autocomplete="off" placeholder="pořadové číslo, např. 61800">
+                <button type="button" id="dek-go">Dekódovat</button>
+              </div>
+              <p class="tool-hint">Zadejte jen pořadovou část čísla za pomlčkou, typ vyberte přepínačem výše.</p>
+
+              <div class="dek-out" id="dek-out" hidden>
+                <div class="plate" id="dek-plate">
+                  <span class="plate__rivet plate__rivet--tl"></span>
+                  <span class="plate__rivet plate__rivet--tr"></span>
+                  <span class="plate__rivet plate__rivet--bl"></span>
+                  <span class="plate__rivet plate__rivet--br"></span>
+                  <span class="plate__maker" id="plate-maker">Zbrojovka Ing. F. Janeček</span>
+                  <span class="plate__model" id="plate-model">JAWA 250</span>
+                  <span class="plate__num" id="plate-num">11-00000</span>
+                  <span class="plate__year" id="plate-year">1946</span>
+                </div>
+                <div class="dek-info">
+                  <p class="dek-info__yr" id="dek-yr"></p>
+                  <p class="dek-info__note" id="dek-note"></p>
+                  <ul class="dek-info__facts" id="dek-facts"></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="sec" id="falzifikaty">
+          <div class="sec-h">
+            <span class="sec-n">02</span>
+            <h2>Časté dobové záměny a falzifikáty</h2>
+            <p class="sub">Tři místa, kde se u Péráku nejčastěji objeví díl z jiného ročníku nebo typu.</p>
+          </div>
+
+          <div class="box box--warn">
+            <span class="lb">Hlava s dekompresorem na pozdním stroji, nebo bez něj na raném</span>
+            <p>
+              U typu 11 byl dekompresor v hlavě standardem u strojů z let
+              1946–1949 (zhruba do čísla 11-31000). Katalog náhradních dílů
+              z roku 1949 už často zobrazuje hlavu bez dekompresoru. Hlava bez
+              dekompresoru na stroji s číslem z roku 1946 je proto podezřelá
+              — buď byla vyměněna, nebo číslo neodpovídá stroji.
+              <span class="stamp od">odhad</span>
+            </p>
+          </div>
+
+          <div class="box box--warn">
+            <span class="lb">150mm kola na stroji z roku 1951 a později</span>
+            <p>
+              Od výrobního čísla <b class="num">11-61551</b> dostal typ 11
+              velké brzdové bubny 160 mm a zvýšený výkon. Stroj s číslem nad
+              touto hranicí by tedy měl mít 160mm bubny — pokud má menší
+              150mm kola, jde buď o starší kola dosazená během provozu, nebo
+              o přeraženou ražbu. <span class="stamp od">odhad</span>
+            </p>
+          </div>
+
+          <div class="box box--warn">
+            <span class="lb">Záměna bloku motoru typu 12 za typ 18</span>
+            <p>
+              Typ 18 nahradil typ 12 v roce 1950 a sdílí stejný podvozek —
+              proto se do vzácnějšího Ogaru (typ 12) občas dosadí motor typu
+              18, protože díly jsou dostupnější. Kontrolujte razítko typu
+              přímo na klikové skříni, ne jen výrobní štítek na rámu.
+              <span class="stamp od">odhad</span>
+            </p>
+          </div>
+        </section>
+
+        <footer class="src" id="zdroj">
+          <h2>Odkud data jsou</h2>
+          <ol>
+            <li>
+              Rozsahy výrobních čísel typů 11, 12 a 18 podle roku výroby —
+              vlastní výzkum Adama Kmenta, dílna PureBikes, Drahanovice.
+              Nezávislé na sbírce fotografií štítků použité na stránce
+              Výrobní čísla a datování. <span class="stamp od">odhad</span>
+            </li>
+            <li>
+              Zlomové číslo 11-61551 (velké brzdové bubny, zvýšený výkon) —
+              vlastní výzkum, ověřováno proti dobovému servisnímu prospektu.
+              <span class="stamp sp">sporné</span>
+            </li>
+            <li>
+              Barevné provedení a hladké kartery typu 12 „Ogar“ — vlastní
+              pozorování na dochovaných strojích v dílně. <span class="stamp od">odhad</span>
+            </li>
+          </ol>
+        </footer>
+
+        <div class="rel">
+          <span class="t">Souvisí</span>
+          <a href="/perak/identifikace/">Výrobní čísla a datování — plná tabulka</a>
+          <a href="/perak/zmeny-v-case/">Co má mít můj stroj</a>
+          <a href="/sluzby/prohlidka-pred-koupi/">Prohlídka před koupí</a>
+        </div>
+
+        <RejstrikEncyklopedie aktualni="/perak/identifikace/" />
+
+      </article>
+    </div>
+  </div>
+
+  <script is:inline>
+  (function () {
+    // Rozsahy podle bádání Adama Kmenta (PureBikes) — viz box s upozorněním
+    // na stránce, že jde o jinou sadu dat než tabulka na /perak/identifikace/.
+    var RANGES = {
+      '11': [
+        { from: 1,     to: 1200,  rok: '1946',      stitek: 'Zbrojovka Ing. F. Janeček', model: 'JAWA 250',
+          note: 'Dekompresor v hlavě, spínačka FJ v nádrži.', dekomprese: true, brzdy: 150 },
+        { from: 1201,  to: 12500, rok: '1947',      stitek: 'Zbrojovka Ing. F. Janeček', model: 'JAWA 250',
+          note: 'Předúnorový štítek, hlava stále s dekompresorem.', dekomprese: true, brzdy: 150 },
+        { from: 12501, to: 31000, rok: '1948',      stitek: 'Zbrojovka Brno n.p., záv. Janeček', model: 'JAWA 250',
+          note: 'Poválečný přechod výrobce ke Zbrojovce Brno.', dekomprese: true, brzdy: 150 },
+        { from: 31001, to: 53000, rok: '1949',      stitek: 'Zbrojovka Brno n.p.', model: 'JAWA 250',
+          note: 'Podle katalogu ND 1949 už hlava často bez dekompresoru.', dekomprese: false, brzdy: 150 },
+        { from: 53001, to: 61550, rok: '1950',      stitek: 'Zbrojovka Brno n.p.', model: 'JAWA 250',
+          note: 'Ještě malé brzdové bubny 150 mm.', dekomprese: false, brzdy: 150 },
+        { from: 61551, to: 72000, rok: '1950',      stitek: 'Zbrojovka Brno n.p.', model: 'JAWA 250',
+          note: 'Zlomové číslo — od 11-61551 velké bubny 160 mm a výkon zvýšen na 10 k.', dekomprese: false, brzdy: 160, milnik: true },
+        { from: 72001, to: 128000, rok: '1951–1954', stitek: 'Zbrojovka Brno n.p.', model: 'JAWA 250',
+          note: 'Velké bubny 160 mm, souběh s armádními verzemi pro ČSLA.', dekomprese: false, brzdy: 160 },
+      ],
+      '12': [
+        { from: 1, to: 2500, rok: '1948–1950', stitek: 'Jawa, n.p.', model: 'JAWA 350 „OGAR“',
+          note: 'Dvouválec, hladké kartery, šedý lak se zlatou linkou.', dekomprese: false, brzdy: 150 },
+      ],
+      '18': [
+        { from: 1, to: 35000, rok: '1950–1954', stitek: 'Jawa, n.p.', model: 'JAWA 350',
+          note: 'Unifikovaný motor Jawa, velké bubny 160 mm.', dekomprese: false, brzdy: 160 },
+      ],
+    };
+
+    var typ = '11';
+    var seg = document.querySelectorAll('#dek-seg .ld-seg__btn');
+    var elCislo = document.getElementById('dek-cislo');
+    var out = document.getElementById('dek-out');
+    var plate = document.getElementById('dek-plate');
+    var plMaker = document.getElementById('plate-maker');
+    var plModel = document.getElementById('plate-model');
+    var plNum = document.getElementById('plate-num');
+    var plYear = document.getElementById('plate-year');
+    var elYr = document.getElementById('dek-yr');
+    var elNote = document.getElementById('dek-note');
+    var elFacts = document.getElementById('dek-facts');
+
+    seg.forEach(function (b) {
+      b.addEventListener('click', function () {
+        typ = b.dataset.typ;
+        seg.forEach(function (x) { x.classList.toggle('is-on', x === b); });
+      });
+    });
+
+    function najdi(t, n) {
+      var rng = RANGES[t] || [];
+      for (var i = 0; i < rng.length; i++) {
+        if (n >= rng[i].from && n <= rng[i].to) return rng[i];
+      }
+      return null;
+    }
+
+    function dekoduj() {
+      var digits = (elCislo.value || '').replace(/\D/g, '');
+      if (!digits) return;
+      var n = parseInt(digits, 10);
+      var hit = najdi(typ, n);
+      var cisloPlny = typ + '-' + String(n).padStart(5, '0');
+
+      out.hidden = false;
+      plNum.textContent = cisloPlny;
+
+      if (!hit) {
+        plMaker.textContent = 'Mimo doložený rozsah';
+        plModel.textContent = 'JAWA ' + (typ === '11' ? '250' : '350');
+        plYear.textContent = '—';
+        elYr.textContent = 'Mimo doložený rozsah dekodéru';
+        elNote.textContent = 'Číslo ' + cisloPlny + ' neleží v žádném z rozsahů výzkumu PureBikes pro typ ' + typ + '. Může jít o překlep, přeraženou ražbu, nebo o stroj mimo tuto sadu dat.';
+        elFacts.innerHTML = '';
+        return;
+      }
+
+      plMaker.textContent = hit.stitek;
+      plModel.textContent = hit.model;
+      plYear.textContent = hit.rok;
+
+      elYr.textContent = 'Typ ' + typ + ' · ' + cisloPlny + ' — orientačně rok ' + hit.rok;
+      elNote.textContent = hit.note;
+
+      var facts = [];
+      facts.push((hit.dekomprese ? 'Dekompresor v hlavě: standard u tohoto ročníku.' : 'Dekompresor v hlavě: u tohoto ročníku už obvykle chybí.'));
+      facts.push('Brzdové bubny: ' + hit.brzdy + ' mm.');
+      if (hit.milnik) facts.push('Toto je zlomové číslo řady — u sousedních čísel se provedení liší.');
+      elFacts.innerHTML = facts.map(function (f) { return '<li>' + f + '</li>'; }).join('');
+    }
+
+    document.getElementById('dek-go').addEventListener('click', dekoduj);
+    elCislo.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); dekoduj(); } });
+  })();
+  </script>
+
+  <style>
+    .dek-tool .tool-b{padding-top:18px}
+    .dek-out{margin-top:24px;display:grid;grid-template-columns:280px 1fr;gap:28px;align-items:start}
+
+    /* --- vizuál hliníkového štítku se čtyřmi nýty --- */
+    .plate{position:relative;aspect-ratio:3/2;background:
+        linear-gradient(155deg,#DCDEDD 0%,#B9BCBB 32%,#E7E9E8 48%,#AEB1B0 68%,#D6D8D7 100%);
+      border:1px solid #8b8e8d;box-shadow:0 8px 18px rgba(20,19,18,.28), inset 0 0 0 1px rgba(255,255,255,.35);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+      padding:14px 18px;text-align:center}
+    .plate__rivet{position:absolute;width:10px;height:10px;border-radius:50%;
+      background:radial-gradient(circle at 35% 30%,#f3f4f3,#9a9d9c 60%,#6f7271);
+      box-shadow:0 1px 2px rgba(0,0,0,.4)}
+    .plate__rivet--tl{top:8px;left:8px}
+    .plate__rivet--tr{top:8px;right:8px}
+    .plate__rivet--bl{bottom:8px;left:8px}
+    .plate__rivet--br{bottom:8px;right:8px}
+    .plate__maker{font-family:Georgia,serif;font-size:11px;letter-spacing:.03em;color:#2b2b2b;
+      text-shadow:0 1px 0 rgba(255,255,255,.4)}
+    .plate__model{font-family:Georgia,serif;font-weight:700;font-size:16px;letter-spacing:.04em;color:#1c1c1c;
+      text-shadow:0 1px 0 rgba(255,255,255,.4)}
+    .plate__num{font-family:var(--mono);font-weight:500;font-size:19px;letter-spacing:.06em;color:#1c1c1c;
+      font-variant-numeric:tabular-nums;text-shadow:0 1px 0 rgba(255,255,255,.4)}
+    .plate__year{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:#3a3a3a}
+
+    .dek-info__yr{margin:0;font-family:var(--mono);font-size:18px;font-weight:500;color:var(--ink)}
+    .dek-info__note{margin:8px 0 0;font-size:15px;color:var(--mute);line-height:1.5}
+    .dek-info__facts{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:6px}
+    .dek-info__facts li{font-size:14px;color:var(--mute-2);padding-left:14px;position:relative}
+    .dek-info__facts li::before{content:"—";position:absolute;left:0;color:var(--red)}
+
+    @media (max-width:640px){
+      .dek-out{grid-template-columns:1fr}
+      .plate{max-width:280px;margin:0 auto}
+    }
+  </style>
+</Layout>
