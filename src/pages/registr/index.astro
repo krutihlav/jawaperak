@@ -78,15 +78,14 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
           <span class="lb">Proč zakrýváme část čísel</span>
           <p>
             Kompletní výrobní číslo se dá zneužít ke klonování identity —
-            přeražení čísla na jiný, například kradený stroj. Zakrytá část
-            zůstává v databázi a při ověřování se s ní pracuje, jen není
-            veřejně čitelná.
+            přeražením na jiný, třeba kradený stroj. Zakrytá část zůstává
+            v databázi a používá se při ověřování, jen není veřejně čitelná.
           </p>
         </div>
 
         <p>
-          Každý záznam před zveřejněním ručně procházíme. Není to kvůli
-          přísnosti — jen se tím udrží kvalita dat. Neúplný záznam ale vítáme,
+          Každý záznam před zveřejněním ručně zkontrolujeme — ne kvůli
+          přísnosti, ale kvůli kvalitě dat. Neúplný záznam ale vítáme,
           doplnit se dá kdykoli.
         </p>
       </section>

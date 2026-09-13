@@ -65,9 +65,9 @@ const pocetDilu = new Set(zmeny.map((z) => z.dil)).size;
         <p class="kicker"><a href="/perak/">Encyklopedie</a> — Identifikace a data</p>
         <h1>Co má mít můj stroj</h1>
         <p class="lead">
-          Zadejte výrobní číslo a nástroj vám z databáze doložených změn složí
-          seznam dílů, které k tomu číslu podle pramenů patří. U každého dílu
-          zároveň řekne, jak jistá ta informace je.
+          Zadejte výrobní číslo a nástroj z databáze doložených změn složí
+          seznam dílů, které k němu podle pramenů patří — u každého rovnou
+          řekne, jak jistá ta informace je.
         </p>
 
         <div class="meta">
@@ -111,16 +111,16 @@ const pocetDilu = new Set(zmeny.map((z) => z.dil)).size;
           </div>
 
           <p>
-            U každého dílu máme v databázi řadu provedení, jak šla za sebou.
-            U některých změn víme <strong>přesné výrobní číslo</strong>, od kterého
-            platí. U jiných víme jen rok. Nástroj proto pracuje ve dvou režimech
-            a vždy říká, který z nich právě použil.
+            U každého dílu máme v databázi řadu provedení v pořadí, jak šla za
+            sebou. U některých změn víme <strong>přesné výrobní číslo</strong>, od
+            kterého platí, u jiných jen rok. Nástroj proto pracuje ve dvou
+            režimech a vždy uvede, který právě použil.
           </p>
 
           <div class="box box--fact">
             <span class="lb">Když známe výrobní číslo</span>
             <p>
-              Nástroj prostě porovná vaše číslo s tím v databázi. Výsledek je
+              Nástroj prostě porovná vaše číslo s tím v databázi, výsledek je
               spolehlivý — třeba u brzdových bubnů, kde víme, že se od
               <span class="sn">11-61551</span> zvětšily ze 150 na 160 mm.
             </p>
@@ -130,19 +130,20 @@ const pocetDilu = new Set(zmeny.map((z) => z.dil)).size;
             <span class="lb">Když známe jen rok</span>
             <p>
               Pak si nástroj musí rok vašeho stroje nejdřív odhadnout z výrobního
-              čísla. Ten odhad má chybu — <b>klidně rok na obě strany</b>. Takové
-              díly poznáte podle toho, že karta má <b>přerušovaný okraj</b>. Berte
-              je jako vodítko, ne jako jistotu.
+              čísla — odhad má chybu, <b>klidně rok na obě strany</b>. Takové díly
+              poznáte podle <b>přerušovaného okraje</b> karty; berte je jako
+              vodítko, ne jako jistotu.
             </p>
           </div>
 
           <p>
-            Trochu potíží dělá číslování. Do konce roku 1951 běžela jedna
-            průběžná řada, takže vyšší číslo znamená pozdější stroj. Od 1. ledna
-            1952 se ale začalo <strong>každý rok počítat znovu od jedničky</strong>
-            a rok se přidal na konec čísla. Stroj <span class="sn">11-00096-52</span>
-            je proto novější než <span class="sn">11-84109</span>, i když má
-            mnohem nižší číslo. Nástroj s tím počítá.
+            Číslování dělá trochu potíží. Do konce roku 1951 běžela jedna
+            průběžná řada, takže vyšší číslo znamenalo pozdější stroj. Od
+            1. ledna 1952 se ale <strong>každý rok začalo počítat znovu od
+            jedničky</strong> a rok se přidal na konec čísla — stroj
+            <span class="sn">11-00096-52</span> je proto novější než
+            <span class="sn">11-84109</span>, i když má mnohem nižší číslo.
+            Nástroj s tím počítá.
           </p>
 
           <div class="rel">
@@ -169,9 +170,9 @@ const pocetDilu = new Set(zmeny.map((z) => z.dil)).size;
           <div class="box box--warn">
             <span class="lb">Proč se neshoda běžně stává</span>
             <ul>
-              <li>Díly se ve fabrice kombinovaly podle toho, co bylo zrovna na skladě. Změny se nezaváděly ze dne na den.</li>
+              <li>Díly se ve fabrice kombinovaly podle toho, co bylo zrovna na skladě — změny se nezaváděly ze dne na den.</li>
               <li>Spousta dílů se za sedmdesát let vyměnila úplně legitimně — protože dosloužily.</li>
-              <li>Některé výměny se dělaly už tehdy a doporučovaly se. Třeba čtyřpólové dynamo se běžně nahrazovalo šestipólovým.</li>
+              <li>Některé výměny se doporučovaly a dělaly už tehdy — třeba čtyřpólové dynamo se běžně nahrazovalo šestipólovým.</li>
               <li>Většina údajů v databázi má razítko <span class="stamp od">odhad</span>, protože pochází z pozorování konkrétních strojů, ne z továrních záznamů.</li>
             </ul>
           </div>
@@ -461,14 +462,14 @@ const pocetDilu = new Set(zmeny.map((z) => z.dil)).size;
            '<b>rok výroby známe přesně</b>. Zařazení jednotlivých dílů je i tak jen ' +
            'pravděpodobné — proč, píšeme pod výpisem.</div>';
     } else {
-      h += '<div class="zvc-note">Rok jsme <b>odhadli z výrobního čísla</b>, není to údaj ze štítku. ' +
-           'Hranice mezi ročníky jsou rozmazané, protože rok na štítku nemusel být rokem, ' +
+      h += '<div class="zvc-note">Rok jsme <b>odhadli z výrobního čísla</b>, není to údaj ze štítku ' +
+           '— hranice mezi ročníky jsou rozmazané, protože rok na štítku nemusel být rokem, ' +
            'kdy vznikl rám. <b>Počítejte s odchylkou klidně rok na obě strany.</b></div>';
     }
     if(p.bylo10){
-      h += '<div class="zvc-note">Zadali jste číslo začínající <span class="num">10-</span>. ' +
-           'Výrobní čísla ale začínala <b>11- od úplného začátku výroby</b>, bez ohledu na to, ' +
-           'jaké typové označení stroj tehdy nesl. Počítali jsme s typem 11.</div>';
+      h += '<div class="zvc-note">Zadali jste číslo začínající <span class="num">10-</span> ' +
+           '— výrobní čísla ale začínala <b>11- od úplného začátku výroby</b>, bez ohledu na ' +
+           'typové označení, které stroj tehdy nesl. Počítali jsme s typem 11.</div>';
     }
 
     const skupiny = {};
@@ -527,10 +528,10 @@ const pocetDilu = new Set(zmeny.map((z) => z.dil)).size;
     }
 
     h += '<div class="zvc-close"><p class="zvc-t">Jak to číst</p>';
-    h += '<p>Prošli jsme <b>' + celkem + ' ' + sklonuj(celkem,'díl','díly','dílů') + '</b>. ' +
-         'U <b>' + podleCisla + '</b> z nich se dá zařazení opřít o konkrétní výrobní číslo, ' +
-         'takže tomu jde věřit. U zbytku známe jen rok, a ten jsme museli odhadnout — ' +
-         'proto mají karty přerušovaný okraj.</p>';
+    h += '<p>Prošli jsme <b>' + celkem + ' ' + sklonuj(celkem,'díl','díly','dílů') + '</b>, ' +
+         'u <b>' + podleCisla + '</b> z nich se zařazení dá opřít o konkrétní výrobní číslo ' +
+         '— tomu jde věřit. U zbytku známe jen rok, který jsme museli odhadnout, proto mají ' +
+         'karty přerušovaný okraj.</p>';
     h += '<p>Výpis říká, co stroj <b>nejspíš dostal z výroby</b>. Neříká, co na něm dnes musí být. ' +
          'Díly se ve fabrice kombinovaly podle skladu a za sedmdesát let se spousta z nich ' +
          'legitimně vyměnila. <b>Když něco nesedí, ještě to neznamená podvod.</b></p>';
