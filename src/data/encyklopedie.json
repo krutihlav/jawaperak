@@ -84,6 +84,13 @@
       "hotovo": true
     },
     {
+      "href": "/dekoder/",
+      "titul": "Forenzní dekodér štítku",
+      "popis": "Zadejte výrobní číslo typu 11, 12 nebo 18 a dekodér z výzkumu PureBikes vykreslí dobový štítek a upozorní na časté záměny a falzifikáty.",
+      "skupina": "data",
+      "hotovo": true
+    },
+    {
       "href": "/perak/zmeny-v-case/",
       "titul": "Co má mít můj stroj",
       "popis": "Zadáte výrobní číslo a vypadne seznam dílů, které k němu podle databáze změn patří.",

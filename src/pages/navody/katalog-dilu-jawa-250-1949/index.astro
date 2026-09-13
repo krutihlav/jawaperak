@@ -21,6 +21,24 @@ const items = spreads.map((s) => ({
   alt: `Sken katalogu Jawa 250 — ${s.label}`,
   label: s.label,
 }));
+
+// Šest hlavních konstrukčních skupin katalogu — rychlý rozcestník, aby uživatel
+// nemusel listovat 140 stranami po jedné. Rozsahy stran jsou odhadem podle
+// obvyklého členění dobových katalogů ND (motor → karburace → převodovka →
+// rám → kola/brzdy → elektrika PAL); až bude k ruce reálný rejstřík z knihy,
+// je třeba čísla stran ověřit a upravit.
+const skupinyLeftPage = [
+  { label: 'Motor', left: 2 },
+  { label: 'Karburace a filtr', left: 26 },
+  { label: 'Převodovka a spojka', left: 50 },
+  { label: 'Rám a pérování', left: 74 },
+  { label: 'Kola a brzdy', left: 98 },
+  { label: 'Elektrická výzbroj PAL', left: 122 },
+];
+const groups = skupinyLeftPage.map((g) => ({
+  label: g.label,
+  index: 2 + (g.left - 2) / 2,
+}));
 ---
 
 <Layout
@@ -38,7 +56,18 @@ const items = spreads.map((s) => ({
         i drobné položky v tabulkách.
       </p>
 
-      <SpreadViewer items={items} hashPrefix="s" />
+      <SpreadViewer items={items} hashPrefix="s" groups={groups} />
+
+      <div class="box box--warn">
+        <span class="lb">Rozsahy stran u rozcestníku jsou odhad</span>
+        <p>
+          Šest tlačítek nad prohlížečem vede na přibližné začátky
+          konstrukčních skupin — motor, karburace a filtr, převodovka a
+          spojka, rám a pérování, kola a brzdy, elektrická výzbroj PAL.
+          Přesné stránkování bude doplněno po ověření proti rejstříku
+          v tištěném katalogu. <span class="stamp od">odhad</span>
+        </p>
+      </div>
 
       <p class="hint">
         Na mobilu: přibliž štípnutím dvou prstů nebo dvojím poklepáním, po

@@ -1,0 +1,86 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="Kontakt — dílna PureBikes | jawaperak.cz"
+  description="Veteránská konzultace, prohlídka před koupí, renovace nebo výroba chybějícího dílu k Péráku — jak se spojit s Adamem Kmentem a dílnou PureBikes."
+>
+  <div class="wrap">
+    <article class="art">
+
+      <p class="kicker"><a href="/dilna/">Dílna</a> — Kontakt</p>
+      <h1>Spojte se s dílnou</h1>
+      <p class="lead">
+        Ať jde o veteránskou konzultaci, prohlídku před koupí, renovaci
+        nebo chybějící díl — jawaperak.cz i dílnu vede jeden člověk,
+        Adam Kment. Nejrychlejší cesta je přes PureBikes.
+      </p>
+
+      <div class="kontakt-cta">
+        <div>
+          <span class="lb">Dílna PureBikes</span>
+          <p>Drahanovice u Olomouce. Rezervace, poptávky a domluva termínů jdou přes web dílny.</p>
+        </div>
+        <a class="kontakt-btn" href="https://purebikes.cz" target="_blank" rel="noopener">Otevřít PureBikes.cz</a>
+      </div>
+
+      <section id="kdy">
+        <h2>Než napíšete</h2>
+        <p>
+          Odpověď bývá rychlejší, když rovnou napíšete, o jaký stroj jde
+          a co potřebujete — hodí se odkaz na inzerát nebo pár ostrých
+          fotek výrobních čísel. Kde je na Péráku hledat, popisuje stránka
+          o <a href="/perak/identifikace/">výrobních číslech</a>.
+        </p>
+
+        <table class="spec">
+          <caption>Tři nejčastější důvody, proč se lidé ozývají</caption>
+          <thead>
+            <tr><th>Chcete</th><th>Kam se podívat</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rl">Ověřit stroj před koupí</td>
+              <td><a href="/sluzby/prohlidka-pred-koupi/">Prohlídka před koupí</a></td>
+            </tr>
+            <tr>
+              <td class="rl">Renovaci nebo výrobu chybějícího dílu</td>
+              <td><a href="/dilna/#vyroba-dilu">Co pro majitele Péráků děláme</a></td>
+            </tr>
+            <tr>
+              <td class="rl">Zapsat svůj stroj do registru</td>
+              <td><a href="/registr/pridat-stroj/">Přidat stroj</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div class="box box--dilna">
+        <span class="lb">Proč kontakt vede přes PureBikes.cz</span>
+        <p>
+          jawaperak.cz je jednoautorský web bez redakce a bez samostatné
+          podpory — poptávky proto směřujeme na jedno místo, web dílny,
+          aby se neztratily mezi dvěma schránkami.
+        </p>
+      </div>
+
+    </article>
+  </div>
+
+  <style>
+    .kontakt-cta{display:flex;align-items:center;justify-content:space-between;gap:16px;
+      flex-wrap:wrap;border:2px solid var(--ink);padding:18px 22px;margin:26px 0}
+    .kontakt-cta .lb{display:block;font-family:var(--disp);font-weight:500;font-size:11px;
+      letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:6px}
+    .kontakt-cta p{margin:0;font-size:15px;color:var(--mute);max-width:44ch}
+    .kontakt-btn{display:inline-block;background:var(--ink);color:var(--paper);text-decoration:none;
+      font-family:var(--disp);font-weight:500;font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+      padding:12px 20px;white-space:nowrap}
+    .kontakt-btn:hover{background:var(--red)}
+    @media (max-width:640px){
+      .kontakt-cta{flex-direction:column;align-items:stretch}
+      .kontakt-btn{text-align:center}
+    }
+  </style>
+</Layout>

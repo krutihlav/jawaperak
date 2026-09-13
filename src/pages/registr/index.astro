@@ -9,31 +9,33 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   title="Registr dochovaných Péráků | jawaperak.cz"
   description="Veřejná databáze dochovaných motocyklů Jawa 250 a 350 Pérák. Přidejte svůj stroj a pomozte zmapovat, kolik jich přežilo."
 >
-  <div class="wrap">
-    <div class="page">
+  <div class="wrap wrap--wide">
+    <div class="page" style="max-width:none">
     <article class="art">
 
-      <p class="kicker">Registr</p>
-      <h1>Kolik Péráků přežilo?</h1>
-      <p class="lead">
-        Nikdo to neví. Vyráběly se desítky tisíc kusů, dochovala se
-        neznámá část — roztroušená po garážích, stodolách a sbírkách.
-        Tenhle registr to zkouší zmapovat.
-      </p>
+      <div class="art--text">
+        <p class="kicker">Registr</p>
+        <h1>Kolik Péráků přežilo?</h1>
+        <p class="lead">
+          Nikdo to neví. Vyráběly se desítky tisíc kusů, dochovala se
+          neznámá část — roztroušená po garážích, stodolách a sbírkách.
+          Tenhle registr to zkouší zmapovat.
+        </p>
 
-      <div class="stats" id="stats" aria-live="polite">
-        <div class="stat"><span class="stat__n" data-stat="celkem">–</span><span class="stat__l">strojů</span></div>
-        <div class="stat"><span class="stat__n" data-stat="pocet_250">–</span><span class="stat__l">250 ccm</span></div>
-        <div class="stat"><span class="stat__n" data-stat="pocet_350">–</span><span class="stat__l">350 ccm</span></div>
-        <div class="stat"><span class="stat__n" data-stat="pocet_zemi">–</span><span class="stat__l">zemí</span></div>
-      </div>
-
-      <div class="cta-add">
-        <div>
-          <b>Máte Péráka?</b>
-          <span>I nekompletní nebo rozebraný stroj do registru patří.</span>
+        <div class="stats" id="stats" aria-live="polite">
+          <div class="stat"><span class="stat__n" data-stat="celkem">–</span><span class="stat__l">strojů</span></div>
+          <div class="stat"><span class="stat__n" data-stat="pocet_250">–</span><span class="stat__l">250 ccm</span></div>
+          <div class="stat"><span class="stat__n" data-stat="pocet_350">–</span><span class="stat__l">350 ccm</span></div>
+          <div class="stat"><span class="stat__n" data-stat="pocet_zemi">–</span><span class="stat__l">zemí</span></div>
         </div>
-        <a class="btn" href="/registr/pridat-stroj/">Přidat stroj</a>
+
+        <div class="cta-add">
+          <div>
+            <b>Máte Péráka?</b>
+            <span>I nekompletní nebo rozebraný stroj do registru patří.</span>
+          </div>
+          <a class="btn" href="/registr/pridat-stroj/">Přidat stroj</a>
+        </div>
       </div>
 
       <section id="vypis">
@@ -57,7 +59,7 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
         </div>
       </section>
 
-      <section id="jak">
+      <section id="jak" class="art--text">
         <h2>Jak registr funguje</h2>
 
         <table class="spec">
@@ -282,6 +284,8 @@ function skeletony(pocet) {
 </script>
 
 <style is:global>
+  .art--text{max-width:740px}
+
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);
     border:1px solid var(--rule);margin:26px 0}
   .stat{background:var(--paper-2);padding:16px 12px;text-align:center}
@@ -305,20 +309,20 @@ function skeletony(pocet) {
   .chk{font-family:var(--disp);font-size:13px;letter-spacing:.06em;display:flex;
     align-items:center;gap:6px;cursor:pointer}
 
-  .seznam-stroju{display:flex;flex-direction:column;border-top:1px solid var(--rule)}
+  .seznam-stroju{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
 
   .k{display:flex;gap:16px;align-items:stretch;text-decoration:none;color:inherit;
-    padding:16px 6px;border-bottom:1px dashed var(--rule);transition:background-color .15s}
-  .k:hover{background:var(--paper-2)}
-  .k:focus-visible{outline:2px solid var(--red);outline-offset:-2px;background:var(--paper-2)}
+    padding:14px;border:1px solid var(--rule);background:var(--card);transition:border-color .15s,box-shadow .15s}
+  .k:hover{border-color:var(--ink);box-shadow:0 6px 18px rgba(20,19,18,.08)}
+  .k:focus-visible{outline:2px solid var(--red);outline-offset:-2px}
 
   .k__ph{flex:0 0 92px;width:92px;aspect-ratio:1/1;overflow:hidden;border:1px solid var(--rule);
     background:var(--ink)}
   .k__ph img{display:block;width:100%;height:100%;object-fit:cover}
-  .k__ph--prazdno{background:repeating-linear-gradient(45deg,#DFD2B4 0 10px,#D8CAAA 10px 20px);
+  .k__ph--prazdno{background:repeating-linear-gradient(45deg,var(--ph-1) 0 10px,var(--ph-2) 10px 20px);
     display:flex;align-items:center;justify-content:center;text-align:center}
   .k__ph-text{font-family:var(--disp);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;
-    line-height:1.35;color:#7A6A50}
+    line-height:1.35;color:var(--mute-2)}
 
   .k__mid{flex:1;min-width:0}
   .k__top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -332,7 +336,7 @@ function skeletony(pocet) {
   .k__misto{margin:8px 0 0;font-size:14px;color:var(--mute)}
   .k__pribeh{margin:6px 0 0;font-size:14.5px;line-height:1.5}
 
-  .k-skeleton{display:flex;gap:16px;padding:16px 6px;border-bottom:1px dashed var(--rule)}
+  .k-skeleton{display:flex;gap:16px;padding:14px;border:1px solid var(--rule);background:var(--card)}
   .k-skeleton__ph{flex:0 0 92px;width:92px;aspect-ratio:1/1;background:var(--paper-2)}
   .k-skeleton__lines{flex:1;display:flex;flex-direction:column;gap:9px;justify-content:center}
   .k-skeleton__line{height:11px;background:var(--paper-2)}
@@ -340,8 +344,8 @@ function skeletony(pocet) {
     background-size:200% 100%;animation:sk-shimmer 1.6s ease-in-out infinite}
   @keyframes sk-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-  .loading{color:var(--mute);font-size:15px}
-  .prazdno{border:1px dashed var(--rule);border-top:0;padding:30px 24px;text-align:center}
+  .loading{grid-column:1/-1;color:var(--mute);font-size:15px}
+  .prazdno{grid-column:1/-1;border:1px dashed var(--rule);padding:30px 24px;text-align:center}
   .prazdno p{margin:0 0 8px}
   .prazdno .btn{margin-top:12px}
 
