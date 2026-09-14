@@ -22,19 +22,19 @@ import { SERIAL_RANGES } from '../data/perakTechnicalData';
     <div class="flex items-center gap-2">
       <span class="text-xs font-mono text-[var(--mute)]">Zvolte typ:</span>
       <div class="flex rounded-lg border border-[var(--rule)] p-1 bg-[var(--paper-2)]">
-        <button type="button" class="typ-btn px-3 py-1 text-xs font-mono font-bold rounded active-typ bg-[var(--card)] text-[var(--ink)] shadow-sm" data-typ="11">Typ 11 (250 ccm)</button>
-        <button type="button" class="typ-btn px-3 py-1 text-xs font-mono text-[var(--mute)] hover:text-[var(--ink)] rounded" data-typ="12">Typ 12 (350 Ogar)</button>
-        <button type="button" class="typ-btn px-3 py-1 text-xs font-mono text-[var(--mute)] hover:text-[var(--ink)] rounded" data-typ="18">Typ 18 (350 ccm)</button>
+        <button type="button" class="typ-btn appearance-none cursor-pointer border-solid px-3 py-1 text-xs font-mono font-bold rounded active-typ bg-[var(--card)] text-[var(--ink)] shadow-sm" data-typ="11">Typ 11 (250 ccm)</button>
+        <button type="button" class="typ-btn appearance-none cursor-pointer border-solid bg-transparent px-3 py-1 text-xs font-mono text-[var(--mute)] hover:text-[var(--ink)] rounded" data-typ="12">Typ 12 (350 Ogar)</button>
+        <button type="button" class="typ-btn appearance-none cursor-pointer border-solid bg-transparent px-3 py-1 text-xs font-mono text-[var(--mute)] hover:text-[var(--ink)] rounded" data-typ="18">Typ 18 (350 ccm)</button>
       </div>
     </div>
 
     <!-- Presets -->
     <div class="flex flex-wrap items-center gap-2 pt-1">
       <span class="text-xs font-mono text-[var(--mute-2)]">Rychlé vzorky ze sbírek:</span>
-      <button type="button" class="preset-btn text-xs font-mono px-2 py-1 rounded bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)] hover:border-[var(--red)]" data-typ="11" data-num="11-00240">11-00240 (Raný 1946 Janeček)</button>
-      <button type="button" class="preset-btn text-xs font-mono px-2 py-1 rounded bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)] hover:border-[var(--red)]" data-typ="11" data-num="11-61840">11-61840 (Zlomový 1950 160mm)</button>
-      <button type="button" class="preset-btn text-xs font-mono px-2 py-1 rounded bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)] hover:border-[var(--red)]" data-typ="12" data-num="12-00412">12-00412 (Vzácný Ogar 1948)</button>
-      <button type="button" class="preset-btn text-xs font-mono px-2 py-1 rounded bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)] hover:border-[var(--red)]" data-typ="18" data-num="18-09140">18-09140 (Jawa 350 r. 1951)</button>
+      <button type="button" class="preset-btn appearance-none cursor-pointer border-solid text-xs font-mono px-2 py-1 rounded bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)] hover:border-[var(--red)]" data-typ="11" data-num="11-00240">11-00240 (Raný 1946 Janeček)</button>
+      <button type="button" class="preset-btn appearance-none cursor-pointer border-solid text-xs font-mono px-2 py-1 rounded bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)] hover:border-[var(--red)]" data-typ="11" data-num="11-61840">11-61840 (Zlomový 1950 160mm)</button>
+      <button type="button" class="preset-btn appearance-none cursor-pointer border-solid text-xs font-mono px-2 py-1 rounded bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)] hover:border-[var(--red)]" data-typ="12" data-num="12-00412">12-00412 (Vzácný Ogar 1948)</button>
+      <button type="button" class="preset-btn appearance-none cursor-pointer border-solid text-xs font-mono px-2 py-1 rounded bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)] hover:border-[var(--red)]" data-typ="18" data-num="18-09140">18-09140 (Jawa 350 r. 1951)</button>
     </div>
 
     <!-- Live Input Row -->
@@ -44,12 +44,12 @@ import { SERIAL_RANGES } from '../data/perakTechnicalData';
         type="text"
         value="11-61840"
         placeholder="Např. 11-61840 nebo 61840"
-        class="flex-1 px-4 py-3 rounded-xl border border-[var(--rule)] bg-[var(--paper)] text-[var(--ink)] font-mono text-base focus:border-[var(--red)] outline-none"
+        class="appearance-none border-solid flex-1 px-4 py-3 rounded-xl border border-[var(--rule)] bg-[var(--paper)] text-[var(--ink)] font-mono text-base focus:border-[var(--red)] outline-none"
       />
       <button
         id="decode-action"
         type="button"
-        class="px-6 py-3 rounded-xl bg-[var(--red)] hover:bg-[var(--red-hover)] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow"
+        class="appearance-none cursor-pointer border-solid px-6 py-3 rounded-xl bg-[var(--red)] hover:bg-[var(--red-hover)] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow"
       >
         Analyzovat číslo
       </button>
@@ -239,12 +239,12 @@ import { SERIAL_RANGES } from '../data/perakTechnicalData';
     btn.addEventListener('click', (e) => {
       document.querySelectorAll('.typ-btn').forEach(b => {
         b.classList.remove('bg-[var(--card)]', 'text-[var(--ink)]', 'shadow-sm');
-        b.classList.add('text-[var(--mute)]');
+        b.classList.add('text-[var(--mute)]', 'bg-transparent');
       });
       const t = (e.currentTarget as HTMLElement).dataset.typ || '11';
       currentTyp = t;
       (e.currentTarget as HTMLElement).classList.add('bg-[var(--card)]', 'text-[var(--ink)]', 'shadow-sm');
-      (e.currentTarget as HTMLElement).classList.remove('text-[var(--mute)]');
+      (e.currentTarget as HTMLElement).classList.remove('text-[var(--mute)]', 'bg-transparent');
       runDecode();
     });
   });
@@ -258,10 +258,10 @@ import { SERIAL_RANGES } from '../data/perakTechnicalData';
       document.querySelectorAll('.typ-btn').forEach(b => {
         if ((b as HTMLElement).dataset.typ === currentTyp) {
           b.classList.add('bg-[var(--card)]', 'text-[var(--ink)]', 'shadow-sm');
-          b.classList.remove('text-[var(--mute)]');
+          b.classList.remove('text-[var(--mute)]', 'bg-transparent');
         } else {
           b.classList.remove('bg-[var(--card)]', 'text-[var(--ink)]', 'shadow-sm');
-          b.classList.add('text-[var(--mute)]');
+          b.classList.add('text-[var(--mute)]', 'bg-transparent');
         }
       });
       runDecode();
