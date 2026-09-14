@@ -1,0 +1,38 @@
+---
+// src/components/CatalogGroups.astro
+// Rejstřík 6 hlavních konstrukčních skupin originálního katalogu dílů 1949
+import { PARTS_CATALOG_GROUPS } from '../data/perakTechnicalData';
+---
+
+<section class="space-y-6">
+  <div class="flex items-baseline justify-between border-b border-[var(--rule)] pb-4">
+    <div>
+      <span class="text-xs font-mono uppercase tracking-wider text-[var(--red)] font-semibold">Originální katalog náhradních dílů 1949</span>
+      <h2 class="text-2xl sm:text-3xl font-serif text-[var(--ink)] mt-0.5">
+        Konstrukční skupiny a rozkresy součástek
+      </h2>
+    </div>
+    <span class="text-xs font-mono text-[var(--mute)] hidden sm:inline">140 stran, přes 600 součástek</span>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {PARTS_CATALOG_GROUPS.map((group) => (
+      <div class="p-5 rounded-xl border border-[var(--rule)] bg-[var(--card)] space-y-3 hover:border-[var(--red)] transition-all shadow-sm">
+        <div class="flex items-center justify-between text-xs font-mono">
+          <span class="text-[var(--red)] font-bold">{group.pages}</span>
+          <span class="px-2 py-0.5 rounded bg-[var(--paper-2)] text-[var(--mute)] border border-[var(--rule)]">
+            {group.count} položek
+          </span>
+        </div>
+        <h3 class="font-bold text-base text-[var(--ink)]">{group.name}</h3>
+        <div class="flex flex-wrap gap-1.5 pt-1">
+          {group.highlights.map((h) => (
+            <span class="text-[11px] font-sans px-2 py-0.5 rounded bg-[var(--paper)] text-[var(--mute)] border border-[var(--rule)]">
+              {h}
+            </span>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>

@@ -1,0 +1,63 @@
+---
+// src/components/ModelComparator.astro
+// Srovnávací přehled typů 11, 12 a 18 s uvolněnou mřížkou 1200px
+import { PERAK_SPECS } from '../data/perakTechnicalData';
+---
+
+<section class="space-y-6">
+  <div class="flex items-baseline justify-between border-b border-[var(--rule)] pb-4">
+    <div>
+      <span class="text-xs font-mono uppercase tracking-wider text-[var(--red)] font-semibold">Konstrukční přehled</span>
+      <h2 class="text-2xl sm:text-3xl font-serif text-[var(--ink)] mt-0.5">
+        Typová řada — Typ 11 / Typ 12 / Typ 18
+      </h2>
+    </div>
+    <span class="text-xs font-mono text-[var(--mute)] hidden sm:inline">Dva motory, různé podvozky a 9 let vývoje</span>
+  </div>
+
+  <!-- 3-Column Desktop Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+    {PERAK_SPECS.map((spec) => (
+      <div class="p-6 rounded-2xl border border-[var(--rule)] bg-[var(--card)] space-y-4 hover:border-[var(--red)] transition-colors shadow-sm flex flex-col justify-between">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm bg-[var(--paper-2)] text-[var(--red)] font-mono border border-[var(--rule)]">
+              {spec.id.replace('typ-', '')}
+            </span>
+            <span class="text-[11px] font-mono uppercase px-2 py-0.5 rounded border border-[var(--rule)] text-[var(--mute)]">
+              {spec.years}
+            </span>
+          </div>
+
+          <div>
+            <h3 class="font-bold text-lg text-[var(--ink)]">{spec.name}</h3>
+            <span class="text-xs font-mono text-[var(--mute-2)] block mt-0.5">{spec.internalCode}</span>
+          </div>
+
+          <div class="space-y-1.5 text-xs border-t border-[var(--rule)] pt-3 font-sans">
+            <div class="flex justify-between">
+              <span class="text-[var(--mute)]">Zdvihový objem:</span>
+              <span class="font-mono font-medium text-[var(--ink)]">{spec.displacement.split('(')[0]}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-[var(--mute)]">Výkon:</span>
+              <span class="font-mono font-medium text-[var(--ink)]">{spec.power.split('při')[0]}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-[var(--mute)]">Brzdové půlbubny:</span>
+              <span class="font-medium text-[var(--ink)]">{spec.brakes.split('(')[0]}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-[var(--mute)]">Vzácnost:</span>
+              <span class="font-mono font-bold text-[var(--red)]">{'★'.repeat(spec.rarityScore)}{'☆'.repeat(10 - spec.rarityScore)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-[var(--rule)] text-xs text-[var(--mute)] leading-relaxed">
+          <p>{spec.keyDistinctions[0]}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
