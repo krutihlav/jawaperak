@@ -43,34 +43,45 @@ if (SUPABASE_URL && SUPABASE_KEY) {
 >
   <div class="wrap--wide space-y-16 sm:space-y-24">
 
-    <!-- 1. HERO SECTION: Noblesní muzejní otevření -->
-    <section class="rounded-3xl border border-[var(--rule)] bg-[var(--card)] p-8 sm:p-14 shadow-sm relative overflow-hidden">
+    <!-- 1. HERO SECTION: Celoplošné tónované foto -->
+    <section class="rounded-3xl border border-[var(--rule)] bg-[var(--paper)] p-8 sm:p-14 shadow-sm relative overflow-hidden">
+      {/* Celoplošná fotografie */}
+      <img
+        src="/uploads/homepage/jawa_250_pérák_-1951-_in_ntm_prague.webp"
+        alt="Jawa 250 Pérák"
+        class="absolute inset-0 w-full h-full object-cover object-[center_35%] pointer-events-none filter contrast-105 brightness-95"
+        loading="eager"
+        fetchpriority="high"
+      />
+
+      {/* Teplý přechod do barvy papíru */}
+      <div class="absolute inset-0 bg-gradient-to-r from-[var(--paper)] via-[var(--paper)]/90 to-[var(--paper)]/50 pointer-events-none" />
+      <div class="absolute inset-0 bg-gradient-to-t from-[var(--paper)] via-transparent to-transparent pointer-events-none" />
+
+      {/* Původní obsah */}
       <div class="max-w-3xl space-y-4 relative z-10">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--paper-2)] border border-[var(--rule)] text-xs font-mono text-[var(--red)] font-semibold">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--card)]/90 border border-[var(--rule)] text-xs font-mono text-[var(--red)] font-semibold shadow-xs">
           <span>Zbrojovka Ing. F. Janeček • Praha-Nusle II.</span>
         </div>
-
         <h1 class="text-4xl sm:text-6xl font-serif text-[var(--ink)] font-normal leading-tight">
           Jawa Pérák
         </h1>
-
         <p class="text-lg sm:text-xl text-[var(--mute)] font-sans leading-relaxed">
           Devět let výroby, dva objemy motoru a konstrukční zázrak zrozený v utajení za protektorátu.
           Nejúplnější technický archiv, originální katalog náhradních dílů z roku 1949 a nezávislý registr dochovaných kusů.
         </p>
-
         <div class="flex flex-wrap items-center gap-3 pt-4">
           <a href="#modely" class="px-6 py-3 rounded-xl bg-[var(--red)] hover:bg-[var(--red-hover)] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow">
             Prozkoumat typy 11, 12 a 18
           </a>
-          <a href="#dekoder" class="px-6 py-3 rounded-xl border border-[var(--rule)] bg-[var(--paper)] hover:bg-[var(--paper-2)] text-[var(--ink)] text-xs font-bold uppercase tracking-wider transition-colors">
+          <a href="#dekoder" class="px-6 py-3 rounded-xl border border-[var(--rule)] bg-[var(--card)] hover:bg-[var(--paper-2)] text-[var(--ink)] text-xs font-bold uppercase tracking-wider transition-colors shadow-xs">
             Ověřit číslo stroje
           </a>
         </div>
       </div>
 
-      <!-- Key Metrics Counter Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 rounded-2xl border border-[var(--rule)] bg-[var(--paper)] mt-10 text-center font-mono">
+      {/* Key Metrics Counter Grid (původní komponenta) */}
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 rounded-2xl border border-[var(--rule)] bg-[var(--card)]/90 backdrop-blur-xs mt-10 text-center font-mono relative z-10 shadow-xs">
         <div>
           <span class="text-2xl sm:text-3xl font-bold text-[var(--red)] block">128 000+</span>
           <span class="text-[11px] uppercase text-[var(--mute)] mt-0.5 block">Vyrobeno Typu 11</span>
