@@ -2,6 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { sanitizeUploadedImage } from '../../utils/imageSanitizer';
+import { jeSkutecneObrazek } from '../../utils/magicBytes';
 
 // CS-PRIV-001: fotky strojů se nahrávají SEM (server), ne přímo z prohlížeče
 // do Supabase Storage — jedině tak jde před uložením spolehlivě odstranit
@@ -76,9 +77,18 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ chyba: 'Stroj nebyl nalezen, nebo už neceká na schválení.' }, 403);
   }
 
+  const vstup = Buffer.from(await soubor.arrayBuffer());
+
+  // CS-UPL-003: Content-Type z formuláře je jen tvrzení prohlížeče — ověříme
+  // podle skutečného obsahu souboru (magic bytes), než cokoliv dalšího
+  // proběhne. Zachytí to nahrání spustitelného/HTML/SVG souboru přejmenovaného
+  // na .jpg, které by jinak jen podle POVOLENE_TYPY/přípony prošlo.
+  if (!jeSkutecneObrazek(vstup, soubor.type)) {
+    return json({ chyba: 'Obsah souboru neodpovídá jeho deklarovanému typu.' }, 400);
+  }
+
   let sanitizovano: Buffer;
   try {
-    const vstup = Buffer.from(await soubor.arrayBuffer());
     sanitizovano = await sanitizeUploadedImage(vstup);
   } catch {
     return json({ chyba: 'Fotku se nepodařilo zpracovat.' }, 400);
