@@ -14,6 +14,19 @@ const menuEncy = encyklopedie.filter((s) => s.hotovo).slice(0, 7);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content={description}>
+<link rel="canonical" href={Astro.url.href} />
+<meta property="og:site_name" content="Jawa Pérák" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content="website" />
+<meta property="og:url" content={Astro.url.href} />
+<meta property="og:image" content="https://jawaperak.cz/uploads/homepage/jawa_250_pérák_-1951-_in_ntm_prague.webp" />
+<meta property="og:image:alt" content="Jawa 250 Pérák (1951) v NTM Praha" />
+<meta property="og:locale" content="cs_CZ" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content="https://jawaperak.cz/uploads/homepage/jawa_250_pérák_-1951-_in_ntm_prague.webp" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Libre+Baskerville:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
