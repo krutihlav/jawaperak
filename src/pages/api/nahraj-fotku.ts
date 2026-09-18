@@ -2,7 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { sanitizeUploadedImage } from '../../utils/imageSanitizer';
-import { jeSkutecneObrazek } from '../../utils/magicBytes';
+import { validateUploadedBuffer } from '../../utils/uploadValidator';
 
 // CS-PRIV-001: fotky strojů se nahrávají SEM (server), ne přímo z prohlížeče
 // do Supabase Storage — jedině tak jde před uložením spolehlivě odstranit
@@ -80,11 +80,12 @@ export const POST: APIRoute = async ({ request }) => {
   const vstup = Buffer.from(await soubor.arrayBuffer());
 
   // CS-UPL-003: Content-Type z formuláře je jen tvrzení prohlížeče — ověříme
-  // podle skutečného obsahu souboru (magic bytes), než cokoliv dalšího
-  // proběhne. Zachytí to nahrání spustitelného/HTML/SVG souboru přejmenovaného
-  // na .jpg, které by jinak jen podle POVOLENE_TYPY/přípony prošlo.
-  if (!jeSkutecneObrazek(vstup, soubor.type)) {
-    return json({ chyba: 'Obsah souboru neodpovídá jeho deklarovanému typu.' }, 400);
+  // podle skutečného obsahu souboru (magic bytes) a výslovně odmítneme SVG/
+  // HTML/skripty přejmenované na .jpg, než cokoliv dalšího (včetně sharp)
+  // soubor vůbec uvidí.
+  const validace = validateUploadedBuffer(vstup);
+  if (!validace.valid) {
+    return json({ chyba: validace.error ?? 'Nepodporovaný formát souboru.' }, 415);
   }
 
   let sanitizovano: Buffer;
