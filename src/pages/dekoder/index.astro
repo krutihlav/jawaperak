@@ -119,14 +119,14 @@ import RejstrikEncyklopedie from '../../components/RejstrikEncyklopedie.astro';
           </div>
 
           <div class="box box--warn">
-            <span class="lb">Hlava s dekompresorem na pozdním stroji, nebo bez něj na raném</span>
+            <span class="lb">Hlava s dekompresorem na motocyklu Jawa Pérák</span>
             <p>
-              U typu 11 byl dekompresor v hlavě standardem u strojů z let
-              1946–1949 (zhruba do čísla 11-31000). Katalog náhradních dílů
-              z roku 1949 už často zobrazuje hlavu bez dekompresoru. Hlava bez
-              dekompresoru na stroji s číslem z roku 1946 je proto podezřelá
-              — buď byla vyměněna, nebo číslo neodpovídá stroji.
-              <span class="stamp od">odhad</span>
+              Žádný sériový Pérák (ani rané kusy FJ z roku 1946) nikdy neměl
+              dekompresor v hlavě válce! Hlava měla vždy pouze jeden centrální
+              otvor M14 pro svíčku. Hlava se dvěma otvory nebo dekompresorem
+              je buď neodborná dobová kutilská úprava, nebo nepůvodní hlava
+              z jiného motocyklu.
+              <span class="stamp ov">ověřeno</span>
             </p>
           </div>
 
@@ -194,13 +194,13 @@ import RejstrikEncyklopedie from '../../components/RejstrikEncyklopedie.astro';
     var RANGES = {
       '11': [
         { from: 1,     to: 1200,  rok: '1946',      stitek: 'Zbrojovka Ing. F. Janeček', model: 'JAWA 250',
-          note: 'Dekompresor v hlavě, spínačka FJ v nádrži.', dekomprese: true, brzdy: 150 },
+          note: 'Předúnorový štítek, hlava standardně bez dekompresoru.', dekomprese: false, brzdy: 150 },
         { from: 1201,  to: 12500, rok: '1947',      stitek: 'Zbrojovka Ing. F. Janeček', model: 'JAWA 250',
-          note: 'Předúnorový štítek, hlava stále s dekompresorem.', dekomprese: true, brzdy: 150 },
+          note: 'Předúnorový štítek, hlava standardně bez dekompresoru.', dekomprese: false, brzdy: 150 },
         { from: 12501, to: 31000, rok: '1948',      stitek: 'Zbrojovka Brno n.p., záv. Janeček', model: 'JAWA 250',
-          note: 'Poválečný přechod výrobce ke Zbrojovce Brno.', dekomprese: true, brzdy: 150 },
+          note: 'Poválečný přechod výrobce ke Zbrojovce Brno, hlava standardně bez dekompresoru.', dekomprese: false, brzdy: 150 },
         { from: 31001, to: 53000, rok: '1949',      stitek: 'Zbrojovka Brno n.p.', model: 'JAWA 250',
-          note: 'Podle katalogu ND 1949 už hlava často bez dekompresoru.', dekomprese: false, brzdy: 150 },
+          note: 'Hlava standardně bez dekompresoru.', dekomprese: false, brzdy: 150 },
         { from: 53001, to: 61550, rok: '1950',      stitek: 'Zbrojovka Brno n.p.', model: 'JAWA 250',
           note: 'Ještě malé brzdové bubny 150 mm.', dekomprese: false, brzdy: 150 },
         { from: 61551, to: 72000, rok: '1950',      stitek: 'Zbrojovka Brno n.p.', model: 'JAWA 250',
@@ -274,7 +274,7 @@ import RejstrikEncyklopedie from '../../components/RejstrikEncyklopedie.astro';
       elNote.textContent = hit.note;
 
       var facts = [];
-      facts.push((hit.dekomprese ? 'Dekompresor v hlavě: standard u tohoto ročníku.' : 'Dekompresor v hlavě: u tohoto ročníku už obvykle chybí.'));
+      facts.push('Hlava válce: vždy bez dekompresoru, pouze centrální otvor M14 pro svíčku.');
       facts.push('Brzdové bubny: ' + hit.brzdy + ' mm.');
       if (hit.milnik) facts.push('Toto je zlomové číslo řady — u sousedních čísel se provedení liší.');
       elFacts.innerHTML = facts.map(function (f) { return '<li>' + f + '</li>'; }).join('');

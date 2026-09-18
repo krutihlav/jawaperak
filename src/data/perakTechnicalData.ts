@@ -41,7 +41,7 @@ export const PERAK_SPECS: PerakModelSpec[] = [
     rarityScore: 4,
     restorationDifficulty: 'Střední (spotřební díly a repliky jsou v ČR dostupné)',
     keyDistinctions: [
-      'Do roku 1949 dekompresor v hlavě válce a štítek Zbrojovka Ing. F. Janeček.',
+      'Po celou dobu výroby 1946–1954 hlava výhradně bez dekompresoru (pouze centrální otvor M14 pro svíčku), rané stroje štítek Zbrojovka Ing. F. Janeček.',
       'Karburátor Amal 276 (rané kusy) nebo Jikov 2924 s otočnou clonou.',
       'Legendární kryté zadní kluzáky s vinutými pružinami integrované do rámu.',
       'Jednoduchý kolébkový rám svařený ze čtyřhranných ocelových profilů.'
@@ -95,9 +95,9 @@ export const PERAK_SPECS: PerakModelSpec[] = [
 
 export const SERIAL_RANGES: Record<string, SerialRange[]> = {
   '11': [
-    { year: 1946, from: 1, to: 1500, label: 'Nultá / raná série, dekompresor, Zbrojovka Janeček štítek, 150mm brzdy' },
-    { year: 1947, from: 1501, to: 15800, label: 'Standardní poválečná série, dekompresor, karburace Amal/Jikov' },
-    { year: 1948, from: 15801, to: 34900, label: 'Přechodné období znárodnění, postupné mizení dekompresoru' },
+    { year: 1946, from: 1, to: 1500, label: 'Nultá / raná série, štítek Zbrojovka Janeček, 150mm brzdy, hlava bez dekompresoru' },
+    { year: 1947, from: 1501, to: 15800, label: 'Standardní poválečná série, karburace Amal/Jikov, hlava bez dekompresoru' },
+    { year: 1948, from: 15801, to: 34900, label: 'Přechodné období znárodnění, hlava bez dekompresoru' },
     { year: 1949, from: 34901, to: 53800, label: 'Hlava bez dekompresoru, unifikovaná spínačka, 150mm bubny' },
     { year: 1950, from: 53801, to: 73000, label: 'Zlomový milník: od čísla 11-61551 náběh 160mm brzd a výkonu 10 k' },
     { year: 1951, from: 73001, to: 90000, label: 'Pozdní série s 160mm bubny a novým žebrováním válce' },
@@ -172,7 +172,7 @@ export const SAMPLE_REGISTRY = [
     color: 'ČSN 8850 původní lak s patinou',
     region: 'Olomoucký kraj',
     badge: 'Zbrojovka Ing. F. Janeček štítek',
-    notes: 'Raná série č. 128, dekompresor, dochován v původním funkčním stavu.'
+    notes: 'Raná série č. 128, původní hlava bez dekompresoru se svíčkou M14, dochován v původním funkčním stavu.'
   },
   {
     id: 'jp-12-00412',

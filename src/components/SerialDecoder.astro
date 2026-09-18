@@ -110,8 +110,8 @@ import { SERIAL_RANGES } from '../data/perakTechnicalData';
           <span id="plate-brakes-out" class="font-bold text-neutral-900">160 mm (velké žebrované bubny)</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-neutral-600">Dekompresor v hlavě:</span>
-          <span id="plate-decomp-out" class="font-bold text-neutral-900">NE</span>
+          <span class="text-neutral-600">Hlava válce:</span>
+          <span id="plate-decomp-out" class="font-bold text-neutral-900">Vždy bez dekompresoru (1× M14)</span>
         </div>
       </div>
     </div>
@@ -142,9 +142,9 @@ import { SERIAL_RANGES } from '../data/perakTechnicalData';
   // Client-side instant decode script
   const RANGES: Record<string, Array<{ year: number, from: number, to: number, label: string }>> = {
     '11': [
-      { year: 1946, from: 1, to: 1500, label: 'Nultá / raná série, dekompresor, Zbrojovka Janeček štítek, 150mm brzdy' },
-      { year: 1947, from: 1501, to: 15800, label: 'Standardní poválečná série, dekompresor, karburace Amal/Jikov' },
-      { year: 1948, from: 15801, to: 34900, label: 'Přechodné období znárodnění, postupné mizení dekompresoru' },
+      { year: 1946, from: 1, to: 1500, label: 'Nultá / raná série, štítek Zbrojovka Janeček, 150mm brzdy, hlava bez dekompresoru' },
+      { year: 1947, from: 1501, to: 15800, label: 'Standardní poválečná série, karburace Amal/Jikov, hlava bez dekompresoru' },
+      { year: 1948, from: 15801, to: 34900, label: 'Přechodné období znárodnění, hlava bez dekompresoru' },
       { year: 1949, from: 34901, to: 53800, label: 'Hlava bez dekompresoru, unifikovaná spínačka, 150mm bubny' },
       { year: 1950, from: 53801, to: 73000, label: 'Zlomový milník: od čísla 11-61551 náběh 160mm brzd a výkonu 10 k' },
       { year: 1951, from: 73001, to: 90000, label: 'Pozdní série s 160mm bubny a novým žebrováním válce' },
@@ -191,15 +191,15 @@ import { SERIAL_RANGES } from '../data/perakTechnicalData';
     }
 
     let badgeTitle = 'ZBROJOVKA BRNO N.P. — ZÁVOD JANEČEK';
-    let decomp = 'NE';
+    let decomp = 'Vždy bez dekompresoru (1× M14 pro svíčku)';
     let brakes = currentTyp === '11' && (typeof matchedYear === 'number' && matchedYear >= 1950) ? '160 mm (velké bubny)' : '150 mm (malé půlbubny)';
     let alerts = [];
 
     if (currentTyp === '11') {
       if (typeof matchedYear === 'number' && matchedYear <= 1947) {
         badgeTitle = 'ZBROJOVKA ING. F. JANEČEK — PRAHA-NUSLE II.';
-        decomp = 'ANO (původní dekompresor)';
-        alerts.push('Hlava válce: Musí mít dekompresor a páčku. Hlava bez dekompresoru je nepůvodní z 50. let.');
+        decomp = 'Vždy bez dekompresoru (1× M14 pro svíčku)';
+        alerts.push('Hlava válce: Pérák nikdy neměl dekompresor v hlavě. Hlava musí mít pouze jediný centrální otvor se závitem M14 pro svíčku.');
         alerts.push('Spínačka v nádrži musí nést monogram FJ (František Janeček).');
       } else if (typeof matchedYear === 'number' && matchedYear >= 1950) {
         brakes = '160 mm (velké žebrované bubny)';

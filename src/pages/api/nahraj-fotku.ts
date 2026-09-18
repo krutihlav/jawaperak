@@ -39,6 +39,38 @@ async function strojCekaNaSchvaleni(strojId: string): Promise<boolean> {
   return Array.isArray(radky) && radky.length === 1;
 }
 
+const MAX_FOTEK = 6;
+
+async function overLimitFotek(
+  strojId: string,
+  poradi: number
+): Promise<{ ok: true } | { ok: false; chyba: string }> {
+  const r = await fetch(
+    `${SUPABASE_URL}/rest/v1/stroje_fotky?stroj_id=eq.${strojId}&select=poradi`,
+    {
+      headers: {
+        apikey: SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+      },
+    }
+  );
+  if (!r.ok) {
+    return { ok: false, chyba: 'Nepodařilo se ověřit existující fotky.' };
+  }
+  const existujici: Array<{ poradi: number }> = await r.json();
+
+  if (existujici.length >= MAX_FOTEK) {
+    return {
+      ok: false,
+      chyba: `K tomuto stroji již byl nahrán maximální počet fotografií (${MAX_FOTEK}).`,
+    };
+  }
+  if (existujici.some((f) => f.poradi === poradi)) {
+    return { ok: false, chyba: `Fotografie s pořadím ${poradi} již byla nahrána.` };
+  }
+  return { ok: true };
+}
+
 export const POST: APIRoute = async ({ request }) => {
   if (!SERVICE_ROLE_KEY) {
     return json({ chyba: 'Server není nakonfigurovaný pro nahrávání fotek.' }, 500);
@@ -75,6 +107,11 @@ export const POST: APIRoute = async ({ request }) => {
   const povoleno = await strojCekaNaSchvaleni(strojId);
   if (!povoleno) {
     return json({ chyba: 'Stroj nebyl nalezen, nebo už neceká na schválení.' }, 403);
+  }
+
+  const limit = await overLimitFotek(strojId, poradi);
+  if (!limit.ok) {
+    return json({ chyba: limit.chyba }, 400);
   }
 
   const vstup = Buffer.from(await soubor.arrayBuffer());

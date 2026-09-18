@@ -37,6 +37,10 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
       <form id="form-stroj" novalidate>
 
+        <div class="hp-check" style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
+          <input type="text" name="overeni_webu" tabindex="-1" autocomplete="off" />
+        </div>
+
         <fieldset>
           <legend data-i18n="fsStroj">Stroj</legend>
 
@@ -172,6 +176,8 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 </Layout>
 
 <script define:vars={{ SUPABASE_URL, SUPABASE_KEY }}>
+  const _pageLoadedAt = Date.now();
+
   const T = {
     en: {
       h1: 'Add a machine',
@@ -336,6 +342,20 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
     e.preventDefault();
     const d = lang === 'en' ? T.en : CS;
     const fd = new FormData(form);
+
+    // Honeypot: skryté pole vidí a vyplní jen boti, lidský uživatel ne.
+    if (fd.get('overeni_webu')) {
+      msg.textContent = d.okMsg;
+      msg.className = 'msg msg--ok';
+      form.reset();
+      return;
+    }
+
+    if (Date.now() - _pageLoadedAt < 3000) {
+      msg.textContent = 'Formulář byl odeslán příliš rychle. Zkuste to prosím znovu.';
+      msg.className = 'msg msg--err';
+      return;
+    }
 
     if (!fd.get('typ') || !fd.get('stav') || !fd.get('kontakt_email')) {
       msg.textContent = d.reqMsg;
