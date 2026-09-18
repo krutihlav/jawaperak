@@ -3,8 +3,9 @@ import { encyklopedie } from '../data/encyklopedie';
 export interface Props {
   title: string;
   description?: string;
+  noindex?: boolean;
 }
-const { title, description = 'Jawa Pérák — typová řada, výrobní čísla, technika a registr dochovaných strojů.' } = Astro.props;
+const { title, description = 'Jawa Pérák — typová řada, výrobní čísla, technika a registr dochovaných strojů.', noindex = false } = Astro.props;
 const menuEncy = encyklopedie.filter((s) => s.hotovo).slice(0, 7);
 ---
 <!DOCTYPE html>
@@ -14,6 +15,7 @@ const menuEncy = encyklopedie.filter((s) => s.hotovo).slice(0, 7);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content={description}>
+{noindex && <meta name="robots" content="noindex, nofollow" />}
 <link rel="canonical" href={Astro.url.href} />
 <meta property="og:site_name" content="Jawa Pérák" />
 <meta property="og:title" content={title} />

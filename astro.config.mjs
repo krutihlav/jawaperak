@@ -17,6 +17,14 @@ export default defineConfig({
   redirects: {
   '/perak/typ-10-a-typ-11': '/perak/250/',
   '/perak/motor-12-vs-18': '/perak/350/',
+  '/moderace': {
+    status: 301,
+    destination: '/admin',
+  },
+  '/moderace/': {
+    status: 301,
+    destination: '/admin',
+  },
 },
   adapter: vercel(),
   i18n: {
@@ -24,9 +32,11 @@ export default defineConfig({
     locales: ['cs', 'en'],
     routing: { prefixDefaultLocale: false }
   },
-  // adminDisabled: true — vlastní /admin stránku máme v src/pages/admin/,
-  // protože potřebuje navíc polyfill pro Uint8Array.prototype.toBase64()
-  // (viz komentář tam), který balíčkem dodaná admin.astro nemá jak vložit.
+  // adminDisabled: true — vlastní CMS stránku máme v
+  // src/pages/admin/obsah.astro (dashboard moderace registru je na
+  // src/pages/admin/index.astro), protože potřebuje navíc polyfill pro
+  // Uint8Array.prototype.toBase64() (viz komentář tam), který balíčkem
+  // dodaná admin.astro nemá jak vložit.
   integrations: [
     tailwind(),
     decapCmsOauth({ decapCMSSrcUrl: SVELTIA_CMS_SRC_URL, adminDisabled: true }),

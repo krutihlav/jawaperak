@@ -1,63 +1,355 @@
 ---
-// Vlastní /admin stránka místo té, kterou by jinak mountoval balíček
-// astro-decap-cms-oauth (viz adminDisabled: true v astro.config.mjs).
-// Důvod: Sveltia CMS interně volá Uint8Array.prototype.toBase64() při
-// kódování obsahu (např. nahraného obrázku) před uploadem na GitHub —
-// je to velmi nová webová funkce (rozšířená v prohlížečích zhruba od
-// začátku 2025). Na starších prohlížečích, které ji nemají (typicky
-// poslední Chrome dostupný pro macOS 10.15 Catalina, tj. Chrome 128),
-// tahle chybí a ukládání s obrázkem spadne na "toBase64 is not a
-// function". Polyfill níže tu chybějící metodu doplní, než se načte
-// samotný Sveltia CMS skript.
-import { PUBLIC_DECAP_CMS_VERSION, PUBLIC_DECAP_CMS_SRC_URL } from 'astro:env/client';
+// Centrální administrace — sjednocené rozhraní pro moderaci registru
+// (dřív samostatně na /moderace, teď tady) a odkaz na správu obsahu
+// (Sveltia CMS, přesunuto na /admin/obsah, viz ten soubor).
+import Layout from '../../layouts/Layout.astro';
+
+export const prerender = false;
 ---
 
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex" />
-    <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
-    <title>Content Manager</title>
-    <script is:inline>
-      (function () {
-        function fromCharCodeChunked(bytes) {
-          var chunkSize = 0x8000;
-          var binary = '';
-          for (var i = 0; i < bytes.length; i += chunkSize) {
-            binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+<Layout title="Centrální administrace — jawaperak.cz" noindex={true}>
+  <main class="min-h-screen bg-[var(--paper,#FAF8F5)] text-[var(--ink,#141312)] font-serif py-8 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto space-y-6">
+
+      <!-- Hlavička rozhraní & ČSN 8850 identita -->
+      <header class="border-b border-[var(--rule,#E2DDD5)] pb-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 text-xs font-sans tracking-widest text-[var(--red,#8B2014)] uppercase font-semibold">
+              <span>jawaperak.cz</span>
+              <span>·</span>
+              <span>Dílna PureBikes Drahanovice</span>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight text-[var(--ink,#141312)] mt-1">
+              Administrační rozhraní registru a webu
+            </h1>
+          </div>
+
+          <!-- Auth lišta -->
+          <div id="auth-panel" class="flex items-center gap-3 font-sans text-xs">
+            <div id="user-info" class="hidden text-right">
+              <span id="user-email" class="font-medium text-[var(--ink,#141312)] block"></span>
+              <span class="text-[var(--mute,#3E3A33)] text-[11px]">Ověřený správce</span>
+            </div>
+            <button
+              id="btn-logout"
+              class="hidden px-3 py-1.5 rounded-sm bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] text-[var(--ink,#141312)] border border-[var(--rule,#E2DDD5)] transition-colors"
+            >
+              Odhlásit
+            </button>
+          </div>
+        </div>
+
+        <!-- Přepínač záložek -->
+        <nav class="flex items-center gap-4 mt-6 pt-2 border-t border-[var(--rule,#E2DDD5)]/60 font-sans text-sm font-medium">
+          <a
+            href="/admin"
+            class="border-b-2 border-[var(--red,#8B2014)] text-[var(--red,#8B2014)] pb-2 font-semibold flex items-center gap-2"
+          >
+            <span>Moderace registru</span>
+            <span id="badge-pending" class="hidden px-1.5 py-0.5 rounded-full text-[10px] bg-[var(--red,#8B2014)] text-white font-bold">0</span>
+          </a>
+          <a
+            href="/admin/obsah"
+            class="border-b-2 border-transparent text-[var(--mute,#3E3A33)] hover:text-[var(--ink,#141312)] pb-2 flex items-center gap-1.5"
+          >
+            <span>Správa obsahu (Sveltia CMS)</span>
+            <span class="text-[11px] text-[var(--mute,#3E3A33)] opacity-70">↗</span>
+          </a>
+        </nav>
+      </header>
+
+      <!-- Formulář pro přihlášení -->
+      <section id="login-section" class="hidden bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-8 max-w-md mx-auto rounded-sm shadow-xs font-sans">
+        <h2 class="text-lg font-bold font-serif text-[var(--ink,#141312)] mb-2">Přihlášení správce</h2>
+        <p class="text-xs text-[var(--mute,#3E3A33)] mb-4">
+          Zadejte přihlašovací údaje pro přístup k neveřejné moderaci registru motocyklů Jawa Pérák.
+        </p>
+        <form id="form-login" class="space-y-4 text-xs">
+          <div>
+            <label class="block text-[var(--mute,#3E3A33)] uppercase tracking-wider text-[10px] font-semibold mb-1" for="input-email">
+              E-mail správce
+            </label>
+            <input
+              id="input-email"
+              type="email"
+              autocomplete="username"
+              required
+              class="w-full bg-[var(--paper,#FAF8F5)] border border-[var(--rule,#E2DDD5)] px-3 py-2 rounded-sm text-[var(--ink,#141312)] focus:outline-none focus:border-[var(--red,#8B2014)]"
+            />
+          </div>
+          <div>
+            <label class="block text-[var(--mute,#3E3A33)] uppercase tracking-wider text-[10px] font-semibold mb-1" for="input-password">
+              Heslo
+            </label>
+            <input
+              id="input-password"
+              type="password"
+              autocomplete="current-password"
+              required
+              class="w-full bg-[var(--paper,#FAF8F5)] border border-[var(--rule,#E2DDD5)] px-3 py-2 rounded-sm text-[var(--ink,#141312)] focus:outline-none focus:border-[var(--red,#8B2014)]"
+            />
+          </div>
+          <div id="login-error" class="hidden text-[var(--red,#8B2014)] font-medium text-[11px]"></div>
+          <button
+            type="submit"
+            class="w-full bg-[var(--red,#8B2014)] hover:bg-[#6e1910] text-[var(--paper,#FAF8F5)] font-semibold py-2 rounded-sm border border-[var(--gold,#C89D42)] transition-colors"
+          >
+            Přihlásit se
+          </button>
+        </form>
+      </section>
+
+      <!-- Moderace záznamů -->
+      <section id="moderace-section" class="hidden space-y-4">
+        <div class="flex items-center justify-between font-sans text-xs">
+          <div class="text-[var(--mute,#3E3A33)]">
+            Zobrazeny záznamy vyžadující kontrolu před publikací do veřejného registru.
+          </div>
+          <button
+            id="btn-refresh"
+            class="px-3 py-1.5 bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] border border-[var(--rule,#E2DDD5)] rounded-sm text-[var(--ink,#141312)] transition-colors"
+          >
+            Obnovit seznam
+          </button>
+        </div>
+
+        <div id="stroje-container" class="space-y-4">
+          <div class="p-8 text-center bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] text-xs text-[var(--mute,#3E3A33)]">
+            Načítám záznamy ze Supabase...
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    import { createClient } from '@supabase/supabase-js';
+
+    const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+    const loginSection = document.getElementById('login-section');
+    const moderaceSection = document.getElementById('moderace-section');
+    const userInfo = document.getElementById('user-info');
+    const userEmail = document.getElementById('user-email');
+    const btnLogout = document.getElementById('btn-logout');
+    const formLogin = document.getElementById('form-login');
+    const loginError = document.getElementById('login-error');
+    const strojeContainer = document.getElementById('stroje-container');
+    const badgePending = document.getElementById('badge-pending');
+    const btnRefresh = document.getElementById('btn-refresh');
+
+    function escapujHtml(s: string | null | undefined) {
+      return (s ?? '').replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c] as string));
+    }
+
+    function formatDatum(iso: string | null | undefined) {
+      if (!iso) return '—';
+      return new Date(iso).toLocaleDateString('cs-CZ', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    async function initAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        showAuthenticated(session.user.email);
+        loadPendingStroje();
+      } else {
+        showLogin();
+      }
+    }
+
+    function showAuthenticated(email: string | undefined) {
+      loginSection?.classList.add('hidden');
+      moderaceSection?.classList.remove('hidden');
+      userInfo?.classList.remove('hidden');
+      btnLogout?.classList.remove('hidden');
+      if (userEmail) userEmail.textContent = email || 'Správce';
+    }
+
+    function showLogin() {
+      loginSection?.classList.remove('hidden');
+      moderaceSection?.classList.add('hidden');
+      userInfo?.classList.add('hidden');
+      btnLogout?.classList.add('hidden');
+    }
+
+    formLogin?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginError?.classList.add('hidden');
+      const email = (document.getElementById('input-email') as HTMLInputElement).value;
+      const password = (document.getElementById('input-password') as HTMLInputElement).value;
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        if (loginError) {
+          loginError.textContent = 'Nesprávný e-mail nebo heslo.';
+          loginError.classList.remove('hidden');
+        }
+      } else if (data.session) {
+        showAuthenticated(data.session.user.email);
+        loadPendingStroje();
+      }
+    });
+
+    btnLogout?.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      showLogin();
+    });
+
+    btnRefresh?.addEventListener('click', () => {
+      loadPendingStroje();
+    });
+
+    async function loadPendingStroje() {
+      if (!strojeContainer) return;
+      strojeContainer.innerHTML = '<div class="p-8 text-center bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] text-xs text-[var(--mute,#3E3A33)]">Načítám záznamy...</div>';
+
+      const { data: stroje, error } = await supabase
+        .from('stroje')
+        .select('*')
+        .eq('stav_moderace', 'ceka')
+        .order('vytvoreno_at', { ascending: true });
+
+      if (error) {
+        strojeContainer.innerHTML = `<div class="p-4 bg-[var(--paper-2,#F2EFE9)] text-[var(--red,#8B2014)] text-xs border border-[var(--red,#8B2014)]/30">Chyba při načítání: ${escapujHtml(error.message)}</div>`;
+        return;
+      }
+
+      if (!stroje || stroje.length === 0) {
+        badgePending?.classList.add('hidden');
+        strojeContainer.innerHTML = `
+          <div class="bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-12 text-center text-xs text-[var(--mute,#3E3A33)]">
+            <p class="font-serif text-base text-[var(--ink,#141312)] font-bold mb-1">Všechny stroje jsou schváleny</p>
+            <p>V tuto chvíli v registru nečeká žádný nový motocykl na schválení.</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (badgePending) {
+        badgePending.textContent = stroje.length.toString();
+        badgePending.classList.remove('hidden');
+      }
+
+      const itemsHtml = await Promise.all(stroje.map(async (stroj) => {
+        let photoHtml = '';
+        const { data: fotky } = await supabase
+          .from('stroje_fotky')
+          .select('*')
+          .eq('stroj_id', stroj.id)
+          .order('poradi');
+
+        if (fotky && fotky.length > 0) {
+          const podepsane = await Promise.all(fotky.map(async (f: { url: string }) => {
+            const { data } = await supabase.storage
+              .from('stroje-fotky')
+              .createSignedUrl(f.url, 3600);
+            return data?.signedUrl || null;
+          }));
+          const validUrls = podepsane.filter(Boolean) as string[];
+          if (validUrls.length > 0) {
+            photoHtml = `
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-3 border-t border-[var(--rule,#E2DDD5)]">
+                ${validUrls.map((url) => `
+                  <a href="${url}" target="_blank" rel="noopener noreferrer">
+                    <img src="${url}" alt="Foto stroje" class="w-full h-24 object-cover rounded-xs border border-[var(--rule,#E2DDD5)] hover:opacity-90" />
+                  </a>
+                `).join('')}
+              </div>
+            `;
           }
-          return binary;
         }
-        if (!Uint8Array.prototype.toBase64) {
-          Uint8Array.prototype.toBase64 = function () {
-            return btoa(fromCharCodeChunked(this));
-          };
-        }
-        if (!Uint8Array.prototype.setFromBase64) {
-          Uint8Array.prototype.setFromBase64 = function (base64) {
-            var binary = atob(base64);
-            for (var i = 0; i < binary.length; i++) this[i] = binary.charCodeAt(i);
-            return { read: binary.length, written: binary.length };
-          };
-        }
-        if (!Uint8Array.fromBase64) {
-          Uint8Array.fromBase64 = function (base64) {
-            var binary = atob(base64);
-            var bytes = new Uint8Array(binary.length);
-            for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-            return bytes;
-          };
-        }
-      })();
-    </script>
-  </head>
-  <body>
-    <!-- Skript, který sestaví stránku a pohání Sveltia/Decap CMS -->
-    <script
-      is:inline
-      src={PUBLIC_DECAP_CMS_SRC_URL ? PUBLIC_DECAP_CMS_SRC_URL : `https://unpkg.com/decap-cms@^${PUBLIC_DECAP_CMS_VERSION}/dist/decap-cms.js`}
-    ></script>
-  </body>
-</html>
+
+        return `
+          <article class="bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-5 rounded-sm shadow-xs" data-id="${stroj.id}">
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+              <div>
+                <span class="text-xs font-sans font-bold text-[var(--red,#8B2014)]">Typ ${escapujHtml(stroj.typ) || '—'}</span>
+                <h3 class="text-lg font-bold font-serif text-[var(--ink,#141312)]">
+                  Rok ${stroj.rok_vyroby || '—'} · Rám: ${escapujHtml(stroj.cislo_ramu) || '—'} · Motor: ${escapujHtml(stroj.cislo_motoru) || '—'}
+                </h3>
+                <div class="text-xs font-sans text-[var(--mute,#3E3A33)] mt-0.5">
+                  Kontakt: <strong>${escapujHtml(stroj.kontakt_email) || '—'}</strong>
+                  ${stroj.kontakt_telefon ? ` · ${escapujHtml(stroj.kontakt_telefon)}` : ''}
+                  · ${escapujHtml([stroj.region, stroj.zeme].filter(Boolean).join(', ')) || '—'}
+                  · přidáno ${formatDatum(stroj.vytvoreno_at)}
+                </div>
+              </div>
+              <div class="flex items-center gap-2 font-sans text-xs self-start">
+                <button
+                  class="btn-approve px-3 py-1.5 bg-[var(--red,#8B2014)] hover:bg-[#6e1910] text-white rounded-sm font-semibold transition-colors"
+                  data-id="${stroj.id}"
+                >
+                  Schválit do registru
+                </button>
+                <button
+                  class="btn-reject px-3 py-1.5 bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] text-[var(--red,#8B2014)] border border-[var(--rule,#E2DDD5)] rounded-sm transition-colors"
+                  data-id="${stroj.id}"
+                >
+                  Zamítnout
+                </button>
+              </div>
+            </div>
+
+            ${stroj.pribeh ? `
+              <p class="text-xs text-[var(--mute,#3E3A33)] font-serif mt-2 leading-relaxed bg-[var(--paper,#FAF8F5)] p-2.5 border border-[var(--rule,#E2DDD5)] rounded-xs whitespace-pre-wrap">
+                ${escapujHtml(stroj.pribeh)}
+              </p>
+            ` : ''}
+
+            <label class="block mt-3">
+              <span class="block text-[var(--mute,#3E3A33)] uppercase tracking-wider text-[10px] font-semibold font-sans mb-1">
+                Poznámka moderátora (nepovinné, uloží se u zamítnutí)
+              </span>
+              <textarea
+                class="poznamka w-full bg-[var(--paper,#FAF8F5)] border border-[var(--rule,#E2DDD5)] px-2.5 py-2 rounded-sm text-xs font-sans text-[var(--ink,#141312)] focus:outline-none focus:border-[var(--red,#8B2014)]"
+                rows="2"
+              ></textarea>
+            </label>
+
+            ${photoHtml}
+          </article>
+        `;
+      }));
+
+      strojeContainer.innerHTML = itemsHtml.join('');
+
+      document.querySelectorAll('.btn-approve').forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+          const id = (e.currentTarget as HTMLElement).dataset.id;
+          if (confirm('Opravdu chcete tento stroj schválit do veřejného registru?')) {
+            const { error } = await supabase
+              .from('stroje')
+              .update({ stav_moderace: 'schvaleno', schvaleno_at: new Date().toISOString() })
+              .eq('id', id);
+            if (!error) loadPendingStroje();
+            else alert('Chyba: ' + error.message);
+          }
+        });
+      });
+
+      document.querySelectorAll('.btn-reject').forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+          const id = (e.currentTarget as HTMLElement).dataset.id;
+          const karta = (e.currentTarget as HTMLElement).closest('article');
+          const poznamka = (karta?.querySelector('.poznamka') as HTMLTextAreaElement | null)?.value || null;
+          if (confirm('Opravdu chcete tento záznam zamítnout?')) {
+            const { error } = await supabase
+              .from('stroje')
+              .update({ stav_moderace: 'zamitnuto', poznamka_moderatora: poznamka })
+              .eq('id', id);
+            if (!error) loadPendingStroje();
+            else alert('Chyba: ' + error.message);
+          }
+        });
+      });
+    }
+
+    initAuth();
+  </script>
+</Layout>
