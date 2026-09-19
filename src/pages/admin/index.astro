@@ -2,72 +2,98 @@
 // Centrální administrace — sjednocené rozhraní pro moderaci registru
 // (dřív samostatně na /moderace, teď tady) a odkaz na správu obsahu
 // (Sveltia CMS, přesunuto na /admin/obsah, viz ten soubor).
+//
+// Vizuální styl: tiskařský knižní design ČSN 8850 (slonovina #FAF8F5,
+// pérácká červeň #8B2014, zlatá linka #C89D42). Datově je stránka
+// navázaná na skutečné tabulky `stroje` / `stroje_fotky` a číselníky
+// `ciselnik_typ` / `ciselnik_stav` — RLS (private.je_admin()) povoluje
+// přihlášenému správci číst všechny stroje/fotky a aktualizovat
+// stav_moderace, ale ne řádky mazat, proto zamítnutí mění stav místo
+// DELETE (viz rejectStroj níže).
 import Layout from '../../layouts/Layout.astro';
 
 export const prerender = false;
 ---
 
-<Layout title="Centrální administrace — jawaperak.cz" noindex={true}>
-  <main class="min-h-screen bg-[var(--paper,#FAF8F5)] text-[var(--ink,#141312)] font-serif py-8 px-4 sm:px-6">
-    <div class="max-w-6xl mx-auto space-y-6">
+<Layout title="Centrální administrace & moderace — jawaperak.cz" noindex={true}>
+  <div class="min-h-screen bg-paper text-ink font-serif flex flex-col selection:bg-gold/30 selection:text-perak">
 
-      <!-- Hlavička rozhraní & ČSN 8850 identita -->
-      <header class="border-b border-[var(--rule,#E2DDD5)] pb-5">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div class="flex items-center gap-2 text-xs font-sans tracking-widest text-[var(--red,#8B2014)] uppercase font-semibold">
-              <span>jawaperak.cz</span>
-              <span>·</span>
-              <span>Dílna PureBikes Drahanovice</span>
-            </div>
-            <h1 class="text-2xl font-bold tracking-tight text-[var(--ink,#141312)] mt-1">
-              Administrační rozhraní registru a webu
-            </h1>
+    <!-- Heraldická lišta -->
+    <header class="border-b border-rule bg-paper px-6 py-4 sticky top-0 z-30 shadow-sm">
+      <div class="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-sm bg-perak text-paper flex items-center justify-center font-bold text-lg tracking-wider border border-gold flex-shrink-0">
+            JP
           </div>
-
-          <!-- Auth lišta -->
-          <div id="auth-panel" class="flex items-center gap-3 font-sans text-xs">
-            <div id="user-info" class="hidden text-right">
-              <span id="user-email" class="font-medium text-[var(--ink,#141312)] block"></span>
-              <span class="text-[var(--mute,#3E3A33)] text-[11px]">Ověřený správce</span>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xs font-sans tracking-widest text-perak uppercase font-semibold">
+                jawaperak.cz · ČSN 8850
+              </span>
+              <span class="text-[10px] font-sans px-1.5 py-0.5 rounded-sm bg-paper-2 border border-rule text-mute">
+                Astro 4.15 Hybrid
+              </span>
             </div>
-            <button
-              id="btn-logout"
-              class="hidden px-3 py-1.5 rounded-sm bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] text-[var(--ink,#141312)] border border-[var(--rule,#E2DDD5)] transition-colors"
-            >
-              Odhlásit
-            </button>
+            <h1 class="text-xl font-bold tracking-tight text-ink">
+              Centrální administrace &amp; moderace registru
+            </h1>
           </div>
         </div>
 
-        <!-- Přepínač záložek -->
-        <nav class="flex items-center gap-4 mt-6 pt-2 border-t border-[var(--rule,#E2DDD5)]/60 font-sans text-sm font-medium">
-          <a
-            href="/admin"
-            class="border-b-2 border-[var(--red,#8B2014)] text-[var(--red,#8B2014)] pb-2 font-semibold flex items-center gap-2"
+        <!-- Stavový panel přihlášeného správce -->
+        <div id="auth-panel" class="flex items-center gap-3 text-xs font-sans">
+          <div id="user-info" class="text-right hidden sm:block">
+            <div id="user-email" class="font-medium text-ink">Ověřuji relaci…</div>
+            <div class="text-mute text-[11px]">Správce registru &amp; dílny (PureBikes)</div>
+          </div>
+          <div class="h-8 w-px bg-rule hidden sm:block"></div>
+          <button
+            id="btn-logout"
+            class="hidden items-center gap-1 px-3 py-1.5 rounded-sm bg-paper-2 hover:bg-rule text-mute border border-rule transition-colors"
           >
-            <span>Moderace registru</span>
-            <span id="badge-pending" class="hidden px-1.5 py-0.5 rounded-full text-[10px] bg-[var(--red,#8B2014)] text-white font-bold">0</span>
-          </a>
-          <a
-            href="/admin/obsah"
-            class="border-b-2 border-transparent text-[var(--mute,#3E3A33)] hover:text-[var(--ink,#141312)] pb-2 flex items-center gap-1.5"
-          >
-            <span>Správa obsahu (Sveltia CMS)</span>
-            <span class="text-[11px] text-[var(--mute,#3E3A33)] opacity-70">↗</span>
-          </a>
-        </nav>
-      </header>
+            Odhlásit
+          </button>
+        </div>
+      </div>
 
-      <!-- Formulář pro přihlášení -->
-      <section id="login-section" class="hidden bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-8 max-w-md mx-auto rounded-sm shadow-xs font-sans">
-        <h2 class="text-lg font-bold font-serif text-[var(--ink,#141312)] mb-2">Přihlášení správce</h2>
-        <p class="text-xs text-[var(--mute,#3E3A33)] mb-4">
-          Zadejte přihlašovací údaje pro přístup k neveřejné moderaci registru motocyklů Jawa Pérák.
+      <!-- Záložková navigace -->
+      <div class="max-w-6xl mx-auto mt-4 pt-2 border-t border-rule/70 flex items-center gap-2 font-sans text-sm">
+        <a
+          href="/admin"
+          class="inline-flex items-center gap-2 px-4 py-2 border-b-2 border-perak text-perak bg-paper-2/60 font-semibold transition-all"
+        >
+          <span>Moderace registru</span>
+          <span id="badge-pending" class="hidden px-1.5 py-0.5 rounded-sm text-[11px] bg-perak text-paper font-bold">
+            0
+          </span>
+        </a>
+
+        <a
+          href="/admin/obsah"
+          class="inline-flex items-center gap-2 px-4 py-2 border-b-2 border-transparent text-mute hover:text-ink hover:bg-paper-2/40 font-medium transition-all"
+        >
+          <span>Správa obsahu (Sveltia CMS)</span>
+          <span class="text-[10px] text-mute bg-rule px-1.5 py-0.5 rounded-sm">/admin/obsah</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Hlavní obsah -->
+    <main class="flex-1 max-w-6xl mx-auto w-full p-6">
+
+      <!-- Přihlašovací formulář (nepřihlášeným) -->
+      <section id="login-section" class="hidden bg-card border border-rule p-8 max-w-md mx-auto rounded-sm shadow-sm font-sans mt-12">
+        <div class="flex items-center gap-2 text-xs uppercase tracking-widest text-perak font-bold mb-1">
+          <span>Ověření správce dílny</span>
+        </div>
+        <h2 class="text-xl font-bold font-serif text-ink mb-2">Přihlášení do administrace</h2>
+        <p class="text-xs text-mute mb-6 leading-relaxed">
+          Zadejte přihlašovací údaje ke svému Supabase účtu pro přístup ke schvalování motocyklů v neveřejném registru.
         </p>
+
         <form id="form-login" class="space-y-4 text-xs">
           <div>
-            <label class="block text-[var(--mute,#3E3A33)] uppercase tracking-wider text-[10px] font-semibold mb-1" for="input-email">
+            <label class="block text-mute uppercase tracking-wider text-[10px] font-semibold mb-1" for="input-email">
               E-mail správce
             </label>
             <input
@@ -75,11 +101,12 @@ export const prerender = false;
               type="email"
               autocomplete="username"
               required
-              class="w-full bg-[var(--paper,#FAF8F5)] border border-[var(--rule,#E2DDD5)] px-3 py-2 rounded-sm text-[var(--ink,#141312)] focus:outline-none focus:border-[var(--red,#8B2014)]"
+              class="w-full bg-paper border border-rule px-3 py-2 rounded-sm text-ink focus:outline-none focus:border-perak"
+              placeholder="adas.kment@gmail.com"
             />
           </div>
           <div>
-            <label class="block text-[var(--mute,#3E3A33)] uppercase tracking-wider text-[10px] font-semibold mb-1" for="input-password">
+            <label class="block text-mute uppercase tracking-wider text-[10px] font-semibold mb-1" for="input-password">
               Heslo
             </label>
             <input
@@ -87,43 +114,172 @@ export const prerender = false;
               type="password"
               autocomplete="current-password"
               required
-              class="w-full bg-[var(--paper,#FAF8F5)] border border-[var(--rule,#E2DDD5)] px-3 py-2 rounded-sm text-[var(--ink,#141312)] focus:outline-none focus:border-[var(--red,#8B2014)]"
+              class="w-full bg-paper border border-rule px-3 py-2 rounded-sm text-ink focus:outline-none focus:border-perak"
             />
           </div>
-          <div id="login-error" class="hidden text-[var(--red,#8B2014)] font-medium text-[11px]"></div>
+
+          <div id="login-error" class="hidden p-2.5 bg-paper-2 text-perak border border-perak/20 rounded-sm text-[11px] font-medium"></div>
+
           <button
             type="submit"
-            class="w-full bg-[var(--red,#8B2014)] hover:bg-[#6e1910] text-[var(--paper,#FAF8F5)] font-semibold py-2 rounded-sm border border-[var(--gold,#C89D42)] transition-colors"
+            class="w-full bg-perak hover:bg-perak-hover text-paper font-semibold py-2.5 rounded-sm border border-gold transition-colors"
           >
-            Přihlásit se
+            Vstoupit do administrace
           </button>
         </form>
       </section>
 
-      <!-- Moderace záznamů -->
-      <section id="moderace-section" class="hidden space-y-4">
-        <div class="flex items-center justify-between font-sans text-xs">
-          <div class="text-[var(--mute,#3E3A33)]">
-            Zobrazeny záznamy vyžadující kontrolu před publikací do veřejného registru.
+      <!-- Přehled a moderace (přihlášeným) -->
+      <section id="dashboard-section" class="hidden space-y-6">
+
+        <!-- Panel s přehledem a filtry -->
+        <div class="bg-card border border-rule p-5 rounded-sm shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-perak font-sans font-bold">
+              Přehled registru strojů Jawa Pérák
+            </div>
+            <h2 id="summary-title" class="text-lg font-bold text-ink mt-0.5">
+              Načítám přehled…
+            </h2>
+            <p class="text-xs text-mute font-sans mt-1">
+              Fotografie jsou uloženy v privátním Supabase Storage bucketu <code class="bg-paper-2 px-1 py-0.5 rounded-sm text-ink font-mono">stroje-fotky</code>. Náhledy se načítají výhradně přes krátkodobé podepsané URL (signed URLs), nikdy přímo z veřejné cesty.
+            </p>
           </div>
-          <button
-            id="btn-refresh"
-            class="px-3 py-1.5 bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] border border-[var(--rule,#E2DDD5)] rounded-sm text-[var(--ink,#141312)] transition-colors"
-          >
-            Obnovit seznam
-          </button>
+
+          <!-- Filtry -->
+          <div class="flex flex-wrap items-center gap-2 font-sans text-xs">
+            <select
+              id="filter-status"
+              class="bg-paper-2 border border-rule text-ink px-3 py-1.5 rounded-sm focus:outline-none focus:border-perak"
+            >
+              <option value="ceka">Pouze ke schválení</option>
+              <option value="schvaleno">Schválené v registru</option>
+              <option value="zamitnuto">Zamítnuté</option>
+              <option value="all">Všechny záznamy</option>
+            </select>
+
+            <select
+              id="filter-type"
+              class="bg-paper-2 border border-rule text-ink px-3 py-1.5 rounded-sm focus:outline-none focus:border-perak"
+            >
+              <option value="all">Všechny typy</option>
+              <option value="11">Jawa 250 typ 11</option>
+              <option value="12">Jawa 350 typ 12 Ogar</option>
+              <option value="18">Jawa 350 typ 18</option>
+            </select>
+
+            <button
+              id="btn-refresh"
+              class="px-3 py-1.5 bg-paper hover:bg-paper-2 text-ink border border-rule rounded-sm transition-colors"
+              title="Obnovit data"
+            >
+              ↻ Obnovit
+            </button>
+          </div>
         </div>
 
-        <div id="stroje-container" class="space-y-4">
-          <div class="p-8 text-center bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] text-xs text-[var(--mute,#3E3A33)]">
-            Načítám záznamy ze Supabase...
+        <!-- Seznam strojů -->
+        <div id="stroje-list" class="space-y-4">
+          <div class="p-12 text-center bg-card border border-rule text-xs text-mute rounded-sm">
+            Načítám záznamy z databáze…
           </div>
         </div>
       </section>
+    </main>
 
+    <!-- Detailní inspekční modální okno -->
+    <div id="detail-modal" class="hidden fixed inset-0 z-50 bg-ink/60 flex items-center justify-center p-4">
+      <div class="bg-paper border-2 border-perak max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-sm p-6 shadow-2xl relative font-serif">
+        <div class="flex items-start justify-between border-b border-rule pb-3 mb-4">
+          <div>
+            <span class="text-xs font-sans tracking-widest text-perak uppercase font-bold">
+              Technický posudek stroje · ČSN 8850
+            </span>
+            <h3 id="modal-title" class="text-xl font-bold text-ink">Detail stroje</h3>
+          </div>
+          <button id="modal-close-btn" class="text-mute hover:text-ink p-1 font-sans text-sm font-bold flex-shrink-0">
+            ✕ Zavřít
+          </button>
+        </div>
+
+        <!-- Fotogalerie -->
+        <div class="mb-4">
+          <div class="text-xs font-sans text-mute mb-2 flex items-center gap-1 font-medium">
+            Privátní fotodokumentace (bucket <code class="font-mono text-perak">stroje-fotky</code>):
+          </div>
+          <div id="modal-photos" class="grid grid-cols-2 gap-2"></div>
+        </div>
+
+        <!-- Technická karta -->
+        <div class="bg-card border border-rule p-4 rounded-sm text-xs font-sans space-y-3 mb-4">
+          <div class="grid grid-cols-2 gap-3 pb-3 border-b border-rule">
+            <div>
+              <span class="text-mute block text-[10px] uppercase tracking-wider">Výrobní číslo rámu</span>
+              <span id="modal-ram" class="font-mono font-bold text-sm text-ink">—</span>
+            </div>
+            <div>
+              <span class="text-mute block text-[10px] uppercase tracking-wider">Výrobní číslo motoru</span>
+              <span id="modal-motor" class="font-mono font-bold text-sm text-ink">—</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pb-3 border-b border-rule">
+            <div>
+              <span class="text-mute block text-[10px] uppercase tracking-wider">Kontakt (majitel)</span>
+              <span id="modal-kontakt" class="text-ink font-medium">—</span>
+            </div>
+            <div>
+              <span class="text-mute block text-[10px] uppercase tracking-wider">Lokalita</span>
+              <span id="modal-lokalita" class="text-ink">—</span>
+            </div>
+          </div>
+
+          <div>
+            <span class="text-mute block text-[10px] uppercase tracking-wider mb-1">Popis historie a stavu</span>
+            <p id="modal-popis" class="font-serif text-ink leading-relaxed text-sm bg-paper p-3 border border-rule rounded-sm whitespace-pre-wrap">
+              Bez popisu.
+            </p>
+          </div>
+
+          <div class="flex items-start gap-2 p-2 bg-paper-2 border border-rule text-[11px] text-mute rounded-sm">
+            <span>🛡️</span>
+            <span>
+              Záznam pochází z veřejného formuláře <code class="font-mono">/registr/pridat-stroj</code>, který před uložením
+              vynucuje prázdné honeypot pole <code class="font-mono">overeni_webu</code> a časový zámek přes 3&nbsp;s
+              od načtení stránky. Fotografie procházejí serverovým odstraněním EXIF/GPS metadat (sharp) ještě před uložením do bucketu.
+            </span>
+          </div>
+        </div>
+
+        <!-- Akce -->
+        <div id="modal-actions" class="flex items-center justify-end gap-2 pt-2 border-t border-rule font-sans text-xs">
+          <button id="modal-cancel-btn" class="px-4 py-2 border border-rule bg-paper-2 text-mute hover:text-ink rounded-sm transition-colors">
+            Zavřít
+          </button>
+          <button id="modal-reject-btn" class="px-4 py-2 border border-perak/40 bg-paper text-perak hover:bg-perak/5 rounded-sm transition-colors">
+            Zamítnout záznam
+          </button>
+          <button id="modal-approve-btn" class="px-4 py-2 border border-perak bg-perak text-paper hover:bg-perak-hover rounded-sm font-medium transition-colors">
+            Schválit a zapsat do registru
+          </button>
+        </div>
+      </div>
     </div>
-  </main>
 
+    <!-- Patička -->
+    <footer class="border-t border-rule bg-paper-2 py-4 px-6 text-center text-xs font-sans text-mute mt-auto">
+      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+        <span>
+          <strong class="text-ink">jawaperak.cz</strong> — Dílna PureBikes Drahanovice (Adam Kment).
+        </span>
+        <span class="text-[11px]">
+          Tiskařský styl ČSN 8850 · Slonová kost #FAF8F5 · Pérácká červeň #8B2014 · Zlatá linka #C89D42
+        </span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Klientská logika: Supabase Auth, číselníky, filtry, podepsaná URL a inspekční okno -->
   <script>
     import { createClient } from '@supabase/supabase-js';
 
@@ -131,51 +287,138 @@ export const prerender = false;
     const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+    type CiselnikRadek = {
+      hodnota: string;
+      popis_cs: string;
+      popis_en: string | null;
+      poradi: number;
+      objem_ccm?: number | null;
+    };
+
+    type Fotka = { id: string; stroj_id: string; url: string; poradi: number };
+
+    type Stroj = {
+      id: string;
+      typ: string;
+      rok_vyroby: number | null;
+      cislo_ramu: string | null;
+      cislo_motoru: string | null;
+      stav: string;
+      region: string | null;
+      zeme: string | null;
+      pribeh: string | null;
+      kontakt_email: string | null;
+      kontakt_telefon: string | null;
+      stav_moderace: 'ceka' | 'schvaleno' | 'zamitnuto';
+      vytvoreno_at: string;
+      schvaleno_at: string | null;
+    };
+
+    let allStroje: Stroj[] = [];
+    let fotkyByStroj: Record<string, Fotka[]> = {};
+    let ciselnikTyp: CiselnikRadek[] = [];
+    let ciselnikStav: CiselnikRadek[] = [];
+    let currentModalStrojId: string | null = null;
+
     const loginSection = document.getElementById('login-section');
-    const moderaceSection = document.getElementById('moderace-section');
-    const userInfo = document.getElementById('user-info');
+    const dashboardSection = document.getElementById('dashboard-section');
     const userEmail = document.getElementById('user-email');
     const btnLogout = document.getElementById('btn-logout');
     const formLogin = document.getElementById('form-login');
     const loginError = document.getElementById('login-error');
-    const strojeContainer = document.getElementById('stroje-container');
+    const strojeList = document.getElementById('stroje-list');
     const badgePending = document.getElementById('badge-pending');
+    const summaryTitle = document.getElementById('summary-title');
+    const filterStatus = document.getElementById('filter-status') as HTMLSelectElement;
+    const filterType = document.getElementById('filter-type') as HTMLSelectElement;
     const btnRefresh = document.getElementById('btn-refresh');
 
-    function escapujHtml(s: string | null | undefined) {
+    const detailModal = document.getElementById('detail-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalRam = document.getElementById('modal-ram');
+    const modalMotor = document.getElementById('modal-motor');
+    const modalKontakt = document.getElementById('modal-kontakt');
+    const modalLokalita = document.getElementById('modal-lokalita');
+    const modalPopis = document.getElementById('modal-popis');
+    const modalPhotos = document.getElementById('modal-photos');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+    const modalApproveBtn = document.getElementById('modal-approve-btn');
+    const modalRejectBtn = document.getElementById('modal-reject-btn');
+
+    function escapeHtml(s: string | null | undefined): string {
       return (s ?? '').replace(/[&<>"']/g, (c) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       }[c] as string));
     }
 
-    function formatDatum(iso: string | null | undefined) {
-      if (!iso) return '—';
-      return new Date(iso).toLocaleDateString('cs-CZ', { year: 'numeric', month: 'long', day: 'numeric' });
+    function typLabel(hodnota: string): string {
+      const radek = ciselnikTyp.find((r) => r.hodnota === hodnota);
+      const zavod = radek?.objem_ccm && radek.objem_ccm > 300 ? '350' : '250';
+      const ogar = hodnota === '12' ? ' Ogar' : '';
+      return `Jawa ${zavod} typ ${hodnota}${ogar}`;
     }
 
-    async function initAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        showAuthenticated(session.user.email);
-        loadPendingStroje();
-      } else {
+    function stavLabel(hodnota: string): string {
+      return ciselnikStav.find((r) => r.hodnota === hodnota)?.popis_cs ?? hodnota;
+    }
+
+    function fotoSlovo(n: number): string {
+      if (n === 1) return 'fotka';
+      if (n >= 2 && n <= 4) return 'fotky';
+      return 'fotek';
+    }
+
+    function formatDatum(iso: string | null | undefined): string {
+      if (!iso) return '—';
+      return new Date(iso).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    async function init() {
+      // Číselníky jen doplňují popisky (typLabel/stavLabel mají fallback
+      // na syrovou hodnotu) — jejich výpadek nesmí zablokovat přihlášení.
+      await nactiCiselniky();
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          showAuthenticated(session.user.email);
+          loadStroje();
+        } else {
+          showLogin();
+        }
+      } catch (e) {
+        console.error('Ověření relace selhalo', e);
         showLogin();
+      }
+    }
+
+    async function nactiCiselniky() {
+      try {
+        const [{ data: typy }, { data: stavy }] = await Promise.all([
+          supabase.from('ciselnik_typ').select('*').order('poradi'),
+          supabase.from('ciselnik_stav').select('*').order('poradi'),
+        ]);
+        ciselnikTyp = typy ?? [];
+        ciselnikStav = stavy ?? [];
+      } catch (e) {
+        console.error('Číselníky se nepodařilo načíst', e);
       }
     }
 
     function showAuthenticated(email: string | undefined) {
       loginSection?.classList.add('hidden');
-      moderaceSection?.classList.remove('hidden');
-      userInfo?.classList.remove('hidden');
+      dashboardSection?.classList.remove('hidden');
       btnLogout?.classList.remove('hidden');
+      btnLogout?.classList.add('inline-flex');
       if (userEmail) userEmail.textContent = email || 'Správce';
     }
 
     function showLogin() {
       loginSection?.classList.remove('hidden');
-      moderaceSection?.classList.add('hidden');
-      userInfo?.classList.add('hidden');
+      dashboardSection?.classList.add('hidden');
       btnLogout?.classList.add('hidden');
+      btnLogout?.classList.remove('inline-flex');
     }
 
     formLogin?.addEventListener('submit', async (e) => {
@@ -192,7 +435,7 @@ export const prerender = false;
         }
       } else if (data.session) {
         showAuthenticated(data.session.user.email);
-        loadPendingStroje();
+        loadStroje();
       }
     });
 
@@ -201,134 +444,206 @@ export const prerender = false;
       showLogin();
     });
 
-    btnRefresh?.addEventListener('click', () => {
-      loadPendingStroje();
-    });
+    btnRefresh?.addEventListener('click', () => loadStroje());
+    filterStatus?.addEventListener('change', () => renderStroje());
+    filterType?.addEventListener('change', () => renderStroje());
 
-    async function loadPendingStroje() {
-      if (!strojeContainer) return;
-      strojeContainer.innerHTML = '<div class="p-8 text-center bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] text-xs text-[var(--mute,#3E3A33)]">Načítám záznamy...</div>';
+    async function loadStroje() {
+      if (!strojeList) return;
+      strojeList.innerHTML = '<div class="p-12 text-center bg-card border border-rule text-xs text-mute rounded-sm">Načítám záznamy z databáze…</div>';
 
-      const { data: stroje, error } = await supabase
+      const { data, error } = await supabase
         .from('stroje')
         .select('*')
-        .eq('stav_moderace', 'ceka')
-        .order('vytvoreno_at', { ascending: true });
+        .order('vytvoreno_at', { ascending: false });
 
       if (error) {
-        strojeContainer.innerHTML = `<div class="p-4 bg-[var(--paper-2,#F2EFE9)] text-[var(--red,#8B2014)] text-xs border border-[var(--red,#8B2014)]/30">Chyba při načítání: ${escapujHtml(error.message)}</div>`;
+        strojeList.innerHTML = `<div class="p-4 bg-paper-2 text-perak text-xs border border-perak/20 rounded-sm">Chyba při komunikaci s databází: ${escapeHtml(error.message)}</div>`;
         return;
       }
 
-      if (!stroje || stroje.length === 0) {
-        badgePending?.classList.add('hidden');
-        strojeContainer.innerHTML = `
-          <div class="bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-12 text-center text-xs text-[var(--mute,#3E3A33)]">
-            <p class="font-serif text-base text-[var(--ink,#141312)] font-bold mb-1">Všechny stroje jsou schváleny</p>
-            <p>V tuto chvíli v registru nečeká žádný nový motocykl na schválení.</p>
+      allStroje = (data as Stroj[]) ?? [];
+
+      fotkyByStroj = {};
+      const ids = allStroje.map((s) => s.id);
+      if (ids.length > 0) {
+        const { data: fotky } = await supabase
+          .from('stroje_fotky')
+          .select('*')
+          .in('stroj_id', ids)
+          .order('poradi');
+        for (const f of (fotky as Fotka[]) ?? []) {
+          (fotkyByStroj[f.stroj_id] ??= []).push(f);
+        }
+      }
+
+      updateSummary();
+      await renderStroje();
+    }
+
+    function updateSummary() {
+      const pendingCount = allStroje.filter((s) => s.stav_moderace === 'ceka').length;
+
+      if (badgePending) {
+        badgePending.textContent = pendingCount.toString();
+        badgePending.classList.toggle('hidden', pendingCount === 0);
+      }
+
+      if (summaryTitle) {
+        const sloveso = pendingCount === 1 ? 'stroj vyžaduje' : (pendingCount >= 2 && pendingCount <= 4 ? 'stroje vyžadují' : 'strojů vyžaduje');
+        summaryTitle.textContent = `Čekající žádosti o zápis (${pendingCount} ${sloveso} schválení)`;
+      }
+    }
+
+    function statusBadge(stav: Stroj['stav_moderace']): string {
+      if (stav === 'ceka') {
+        return `<span class="ml-auto inline-flex items-center gap-1 text-[11px] font-sans font-semibold text-perak bg-perak/10 border border-perak/30 px-2 py-0.5 rounded-sm">⏳ Ke schválení</span>`;
+      }
+      if (stav === 'schvaleno') {
+        return `<span class="ml-auto inline-flex items-center gap-1 text-[11px] font-sans font-semibold text-[#2E6B32] bg-[#2E6B32]/10 border border-[#2E6B32]/30 px-2 py-0.5 rounded-sm">✓ Schváleno v registru</span>`;
+      }
+      return `<span class="ml-auto inline-flex items-center gap-1 text-[11px] font-sans font-semibold text-mute bg-paper border border-rule px-2 py-0.5 rounded-sm">✕ Zamítnuto</span>`;
+    }
+
+    async function renderStroje() {
+      if (!strojeList) return;
+
+      const statusFilter = filterStatus.value;
+      const typeFilter = filterType.value;
+
+      const filtered = allStroje.filter((s) => {
+        if (statusFilter !== 'all' && s.stav_moderace !== statusFilter) return false;
+        if (typeFilter !== 'all' && s.typ !== typeFilter) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        strojeList.innerHTML = `
+          <div class="bg-card border border-rule p-12 text-center text-xs text-mute rounded-sm">
+            <p class="font-serif text-base text-ink font-bold mb-1">Žádné odpovídající stroje</p>
+            <p>Pro vybraný filtr nebyl v databázi nalezen žádný motocykl.</p>
           </div>
         `;
         return;
       }
 
-      if (badgePending) {
-        badgePending.textContent = stroje.length.toString();
-        badgePending.classList.remove('hidden');
+      // Náhledové fotky se podepisují hromadně jedním voláním, ne stroj po stroji.
+      const nahledoveCesty = filtered
+        .map((s) => fotkyByStroj[s.id]?.[0]?.url)
+        .filter((cesta): cesta is string => Boolean(cesta));
+
+      const nahledyMap: Record<string, string> = {};
+      if (nahledoveCesty.length > 0) {
+        const { data: podepsane } = await supabase.storage.from('stroje-fotky').createSignedUrls(nahledoveCesty, 3600);
+        for (const p of podepsane ?? []) {
+          if (p.signedUrl && p.path) nahledyMap[p.path] = p.signedUrl;
+        }
       }
 
-      const itemsHtml = await Promise.all(stroje.map(async (stroj) => {
-        let photoHtml = '';
-        const { data: fotky } = await supabase
-          .from('stroje_fotky')
-          .select('*')
-          .eq('stroj_id', stroj.id)
-          .order('poradi');
-
-        if (fotky && fotky.length > 0) {
-          const podepsane = await Promise.all(fotky.map(async (f: { url: string }) => {
-            const { data } = await supabase.storage
-              .from('stroje-fotky')
-              .createSignedUrl(f.url, 3600);
-            return data?.signedUrl || null;
-          }));
-          const validUrls = podepsane.filter(Boolean) as string[];
-          if (validUrls.length > 0) {
-            photoHtml = `
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-3 border-t border-[var(--rule,#E2DDD5)]">
-                ${validUrls.map((url) => `
-                  <a href="${url}" target="_blank" rel="noopener noreferrer">
-                    <img src="${url}" alt="Foto stroje" class="w-full h-24 object-cover rounded-xs border border-[var(--rule,#E2DDD5)] hover:opacity-90" />
-                  </a>
-                `).join('')}
-              </div>
-            `;
-          }
-        }
+      strojeList.innerHTML = filtered.map((stroj) => {
+        const fotky = fotkyByStroj[stroj.id] ?? [];
+        const photoCount = fotky.length;
+        const prvniCesta = fotky[0]?.url;
+        const firstPhotoUrl = prvniCesta ? nahledyMap[prvniCesta] : '';
+        const datum = formatDatum(stroj.vytvoreno_at);
+        const lokalita = [stroj.region, stroj.zeme].filter(Boolean).map(escapeHtml).join(', ') || '—';
 
         return `
-          <article class="bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-5 rounded-sm shadow-xs" data-id="${stroj.id}">
-            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
-              <div>
-                <span class="text-xs font-sans font-bold text-[var(--red,#8B2014)]">Typ ${escapujHtml(stroj.typ) || '—'}</span>
-                <h3 class="text-lg font-bold font-serif text-[var(--ink,#141312)]">
-                  Rok ${stroj.rok_vyroby || '—'} · Rám: ${escapujHtml(stroj.cislo_ramu) || '—'} · Motor: ${escapujHtml(stroj.cislo_motoru) || '—'}
-                </h3>
-                <div class="text-xs font-sans text-[var(--mute,#3E3A33)] mt-0.5">
-                  Kontakt: <strong>${escapujHtml(stroj.kontakt_email) || '—'}</strong>
-                  ${stroj.kontakt_telefon ? ` · ${escapujHtml(stroj.kontakt_telefon)}` : ''}
-                  · ${escapujHtml([stroj.region, stroj.zeme].filter(Boolean).join(', ')) || '—'}
-                  · přidáno ${formatDatum(stroj.vytvoreno_at)}
+          <div class="bg-card border border-rule hover:border-gold transition-colors p-5 rounded-sm shadow-sm flex flex-col md:flex-row gap-5 items-start">
+            <div class="w-full md:w-48 h-32 bg-paper-2 border border-rule rounded-sm overflow-hidden flex-shrink-0 relative group">
+              ${firstPhotoUrl ? `
+                <img src="${firstPhotoUrl}" alt="${escapeHtml(typLabel(stroj.typ))}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              ` : `
+                <div class="w-full h-full flex flex-col items-center justify-center text-mute text-xs">
+                  <span class="text-xl mb-1">📷</span>
+                  <span>Bez fotografie</span>
                 </div>
-              </div>
-              <div class="flex items-center gap-2 font-sans text-xs self-start">
-                <button
-                  class="btn-approve px-3 py-1.5 bg-[var(--red,#8B2014)] hover:bg-[#6e1910] text-white rounded-sm font-semibold transition-colors"
-                  data-id="${stroj.id}"
-                >
-                  Schválit do registru
-                </button>
-                <button
-                  class="btn-reject px-3 py-1.5 bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] text-[var(--red,#8B2014)] border border-[var(--rule,#E2DDD5)] rounded-sm transition-colors"
-                  data-id="${stroj.id}"
-                >
-                  Zamítnout
-                </button>
-              </div>
+              `}
+              ${photoCount > 0 ? `
+                <div class="absolute bottom-1 right-1 bg-ink/80 text-paper text-[10px] font-sans px-1.5 py-0.5 rounded-sm">
+                  ${photoCount} ${fotoSlovo(photoCount)}
+                </div>
+              ` : ''}
             </div>
 
-            ${stroj.pribeh ? `
-              <p class="text-xs text-[var(--mute,#3E3A33)] font-serif mt-2 leading-relaxed bg-[var(--paper,#FAF8F5)] p-2.5 border border-[var(--rule,#E2DDD5)] rounded-xs whitespace-pre-wrap">
-                ${escapujHtml(stroj.pribeh)}
+            <div class="flex-1 min-w-0 w-full">
+              <div class="flex flex-wrap items-center gap-2 mb-1">
+                <span class="font-bold text-base text-perak">${escapeHtml(typLabel(stroj.typ))}</span>
+                <span class="text-xs font-sans px-2 py-0.5 bg-paper-2 border border-rule text-mute rounded-sm">
+                  Rok ${stroj.rok_vyroby ?? '—'}
+                </span>
+                <span class="text-xs font-sans px-2 py-0.5 bg-paper border border-gold/40 text-ink rounded-sm">
+                  ${escapeHtml(stavLabel(stroj.stav))}
+                </span>
+                ${statusBadge(stroj.stav_moderace)}
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 py-2 my-2 border-y border-rule/70 text-xs font-sans">
+                <div>
+                  <span class="text-mute block text-[10px] uppercase tracking-wider">Číslo rámu</span>
+                  <span class="font-mono font-bold text-ink">${escapeHtml(stroj.cislo_ramu) || '—'}</span>
+                </div>
+                <div>
+                  <span class="text-mute block text-[10px] uppercase tracking-wider">Číslo motoru</span>
+                  <span class="font-mono font-bold text-ink">${escapeHtml(stroj.cislo_motoru) || '—'}</span>
+                </div>
+                <div>
+                  <span class="text-mute block text-[10px] uppercase tracking-wider">Kontakt / lokalita</span>
+                  <span class="text-ink break-words">${escapeHtml(stroj.kontakt_email) || 'Neuvedeno'} (${lokalita})</span>
+                </div>
+                <div>
+                  <span class="text-mute block text-[10px] uppercase tracking-wider">Podáno</span>
+                  <span class="text-mute">${datum}</span>
+                </div>
+              </div>
+
+              <p class="text-xs text-mute line-clamp-2 leading-relaxed">
+                ${escapeHtml(stroj.pribeh) || 'K tomuto motocyklu nebyl přiložen žádný doplňující text.'}
               </p>
-            ` : ''}
 
-            <label class="block mt-3">
-              <span class="block text-[var(--mute,#3E3A33)] uppercase tracking-wider text-[10px] font-semibold font-sans mb-1">
-                Poznámka moderátora (nepovinné, uloží se u zamítnutí)
-              </span>
-              <textarea
-                class="poznamka w-full bg-[var(--paper,#FAF8F5)] border border-[var(--rule,#E2DDD5)] px-2.5 py-2 rounded-sm text-xs font-sans text-[var(--ink,#141312)] focus:outline-none focus:border-[var(--red,#8B2014)]"
-                rows="2"
-              ></textarea>
-            </label>
+              <div class="mt-3 pt-2 flex flex-wrap items-center gap-2 font-sans text-xs">
+                <button
+                  class="btn-detail inline-flex items-center gap-1.5 px-3 py-1.5 bg-paper-2 hover:bg-rule text-ink border border-rule rounded-sm transition-colors"
+                  data-id="${stroj.id}"
+                >
+                  👁️ Detailní posudek &amp; fotky
+                </button>
 
-            ${photoHtml}
-          </article>
+                ${stroj.stav_moderace !== 'schvaleno' ? `
+                  <button
+                    class="btn-approve inline-flex items-center gap-1.5 px-3 py-1.5 bg-perak hover:bg-perak-hover text-paper border border-perak rounded-sm transition-colors font-medium"
+                    data-id="${stroj.id}"
+                  >
+                    ✓ Schválit do registru
+                  </button>
+                ` : ''}
+                ${stroj.stav_moderace !== 'zamitnuto' ? `
+                  <button
+                    class="btn-reject inline-flex items-center gap-1.5 px-3 py-1.5 bg-paper hover:bg-paper-2 text-perak border border-perak/30 rounded-sm transition-colors"
+                    data-id="${stroj.id}"
+                  >
+                    ✕ Zamítnout
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
         `;
-      }));
+      }).join('');
 
-      strojeContainer.innerHTML = itemsHtml.join('');
+      document.querySelectorAll('.btn-detail').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          const id = (e.currentTarget as HTMLElement).dataset.id;
+          const stroj = allStroje.find((s) => s.id === id);
+          if (stroj) openDetailModal(stroj);
+        });
+      });
 
       document.querySelectorAll('.btn-approve').forEach((btn) => {
         btn.addEventListener('click', async (e) => {
           const id = (e.currentTarget as HTMLElement).dataset.id;
-          if (confirm('Opravdu chcete tento stroj schválit do veřejného registru?')) {
-            const { error } = await supabase
-              .from('stroje')
-              .update({ stav_moderace: 'schvaleno', schvaleno_at: new Date().toISOString() })
-              .eq('id', id);
-            if (!error) loadPendingStroje();
-            else alert('Chyba: ' + error.message);
+          if (id && confirm('Opravdu chcete tento stroj schválit do veřejného registru jawaperak.cz?')) {
+            await approveStroj(id);
           }
         });
       });
@@ -336,20 +651,106 @@ export const prerender = false;
       document.querySelectorAll('.btn-reject').forEach((btn) => {
         btn.addEventListener('click', async (e) => {
           const id = (e.currentTarget as HTMLElement).dataset.id;
-          const karta = (e.currentTarget as HTMLElement).closest('article');
-          const poznamka = (karta?.querySelector('.poznamka') as HTMLTextAreaElement | null)?.value || null;
-          if (confirm('Opravdu chcete tento záznam zamítnout?')) {
-            const { error } = await supabase
-              .from('stroje')
-              .update({ stav_moderace: 'zamitnuto', poznamka_moderatora: poznamka })
-              .eq('id', id);
-            if (!error) loadPendingStroje();
-            else alert('Chyba: ' + error.message);
+          if (id && confirm('Opravdu chcete tento záznam zamítnout? Zůstane uložen se stavem "zamítnuto".')) {
+            await rejectStroj(id);
           }
         });
       });
     }
 
-    initAuth();
+    async function openDetailModal(stroj: Stroj) {
+      currentModalStrojId = stroj.id;
+      if (!detailModal) return;
+
+      if (modalTitle) modalTitle.textContent = `${typLabel(stroj.typ)} (${stroj.rok_vyroby ?? '—'})`;
+      if (modalRam) modalRam.textContent = stroj.cislo_ramu || '—';
+      if (modalMotor) modalMotor.textContent = stroj.cislo_motoru || '—';
+      if (modalKontakt) modalKontakt.textContent = [stroj.kontakt_email, stroj.kontakt_telefon].filter(Boolean).join(' · ') || 'Neuvedeno';
+      if (modalLokalita) modalLokalita.textContent = [stroj.region, stroj.zeme].filter(Boolean).join(', ') || '—';
+      if (modalPopis) modalPopis.textContent = stroj.pribeh || 'Bez přiloženého popisu.';
+
+      if (modalPhotos) {
+        const fotky = fotkyByStroj[stroj.id] ?? [];
+        if (fotky.length > 0) {
+          modalPhotos.innerHTML = '<div class="text-xs text-mute col-span-2 py-4">Generuji podepsané URL pro náhled fotografií…</div>';
+          const { data: podepsane } = await supabase.storage
+            .from('stroje-fotky')
+            .createSignedUrls(fotky.map((f) => f.url), 3600);
+
+          const urls = (podepsane ?? []).filter((p) => p.signedUrl);
+          if (urls.length > 0) {
+            modalPhotos.innerHTML = urls.map((p, i) => `
+              <div class="border border-rule bg-card p-1 rounded-sm">
+                <a href="${p.signedUrl}" target="_blank" rel="noopener noreferrer">
+                  <img src="${p.signedUrl}" alt="Foto stroje" class="w-full h-40 object-cover rounded-sm hover:opacity-90 transition-opacity" />
+                </a>
+                <div class="text-[10px] font-sans text-mute mt-1 px-1">
+                  Fotka #${i + 1} · EXIF/GPS odstraněno (sharp)
+                </div>
+              </div>
+            `).join('');
+          } else {
+            modalPhotos.innerHTML = '<div class="text-xs text-mute col-span-2 py-2">Fotografie se nepodařilo podepsat.</div>';
+          }
+        } else {
+          modalPhotos.innerHTML = '<div class="text-xs text-mute col-span-2 py-2">K tomuto stroji nebyly nahrány žádné fotky.</div>';
+        }
+      }
+
+      if (modalApproveBtn) (modalApproveBtn as HTMLElement).style.display = stroj.stav_moderace === 'schvaleno' ? 'none' : 'inline-flex';
+      if (modalRejectBtn) (modalRejectBtn as HTMLElement).style.display = stroj.stav_moderace === 'zamitnuto' ? 'none' : 'inline-flex';
+
+      detailModal.classList.remove('hidden');
+    }
+
+    function closeDetailModal() {
+      detailModal?.classList.add('hidden');
+      currentModalStrojId = null;
+    }
+
+    modalCloseBtn?.addEventListener('click', closeDetailModal);
+    modalCancelBtn?.addEventListener('click', closeDetailModal);
+
+    modalApproveBtn?.addEventListener('click', async () => {
+      if (currentModalStrojId && confirm('Schválit tento stroj do veřejného registru?')) {
+        await approveStroj(currentModalStrojId);
+        closeDetailModal();
+      }
+    });
+
+    modalRejectBtn?.addEventListener('click', async () => {
+      if (currentModalStrojId && confirm('Zamítnout tento záznam? Zůstane uložen se stavem "zamítnuto".')) {
+        await rejectStroj(currentModalStrojId);
+        closeDetailModal();
+      }
+    });
+
+    async function approveStroj(id: string) {
+      const { error } = await supabase
+        .from('stroje')
+        .update({ stav_moderace: 'schvaleno', schvaleno_at: new Date().toISOString() })
+        .eq('id', id);
+      if (error) {
+        alert('Chyba při schvalování: ' + error.message);
+      } else {
+        await loadStroje();
+      }
+    }
+
+    async function rejectStroj(id: string) {
+      // Řádek se nemaže — RLS admin_moderace_update povoluje jen UPDATE,
+      // ne DELETE, a zamítnuté záznamy tak zůstávají v databázi k dohledání.
+      const { error } = await supabase
+        .from('stroje')
+        .update({ stav_moderace: 'zamitnuto' })
+        .eq('id', id);
+      if (error) {
+        alert('Chyba při zamítání: ' + error.message);
+      } else {
+        await loadStroje();
+      }
+    }
+
+    init();
   </script>
 </Layout>
