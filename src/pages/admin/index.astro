@@ -196,89 +196,241 @@ export const prerender = false;
       </section>
     </main>
 
-    <!-- Detailní inspekční modální okno -->
+    <!-- Detailní inspekční & editační modální okno -->
     <div id="detail-modal" class="hidden fixed inset-0 z-50 bg-ink/60 flex items-center justify-center p-4">
-      <div class="bg-paper border-2 border-perak max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-sm p-6 shadow-2xl relative font-serif">
-        <div class="flex items-start justify-between border-b border-rule pb-3 mb-4">
+      <div class="bg-paper border-2 border-perak max-w-3xl w-full max-h-[92vh] overflow-y-auto rounded-sm p-6 shadow-2xl relative font-serif">
+        <div class="flex items-start justify-between border-b border-rule pb-3 mb-3">
           <div>
             <span class="text-xs font-sans tracking-widest text-perak uppercase font-bold">
-              Technický posudek stroje · ČSN 8850
+              Správa záznamu v registru · ČSN 8850
             </span>
             <h3 id="modal-title" class="text-xl font-bold text-ink">Detail stroje</h3>
           </div>
-          <button id="modal-close-btn" class="jp-btn-secondary flex-shrink-0">
+          <button id="modal-close-btn" class="jp-btn-secondary flex-shrink-0" type="button">
             <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             <span>Zavřít</span>
           </button>
         </div>
 
-        <!-- Fotogalerie -->
-        <div class="mb-4">
-          <div class="text-xs font-sans text-mute mb-2 flex items-center gap-1 font-medium">
-            Privátní fotodokumentace (bucket <code class="font-mono text-perak">stroje-fotky</code>):
-          </div>
-          <div id="modal-photos" class="grid grid-cols-2 gap-2"></div>
-        </div>
-
-        <!-- Technická karta -->
-        <div class="bg-card border border-rule p-4 rounded-sm text-xs font-sans space-y-3 mb-4">
-          <div class="grid grid-cols-2 gap-3 pb-3 border-b border-rule">
-            <div>
-              <span class="text-mute block text-[10px] uppercase tracking-wider">Výrobní číslo rámu</span>
-              <span id="modal-ram" class="font-mono font-bold text-sm text-ink">—</span>
-            </div>
-            <div>
-              <span class="text-mute block text-[10px] uppercase tracking-wider">Výrobní číslo motoru</span>
-              <span id="modal-motor" class="font-mono font-bold text-sm text-ink">—</span>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3 pb-3 border-b border-rule">
-            <div>
-              <span class="text-mute block text-[10px] uppercase tracking-wider">Kontakt (majitel)</span>
-              <span id="modal-kontakt" class="text-ink font-medium">—</span>
-            </div>
-            <div>
-              <span class="text-mute block text-[10px] uppercase tracking-wider">Lokalita</span>
-              <span id="modal-lokalita" class="text-ink">—</span>
-            </div>
-          </div>
-
-          <div>
-            <span class="text-mute block text-[10px] uppercase tracking-wider mb-1">Popis historie a stavu</span>
-            <p id="modal-popis" class="font-serif text-ink leading-relaxed text-sm bg-paper p-3 border border-rule rounded-sm whitespace-pre-wrap">
-              Bez popisu.
-            </p>
-          </div>
-
-          <div class="flex items-start gap-2 p-2 bg-paper-2 border border-rule text-[11px] text-mute rounded-sm">
-            <svg class="w-4 h-4 text-perak flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
-            <span>
-              Záznam pochází z veřejného formuláře <code class="font-mono">/registr/pridat-stroj</code>, který před uložením
-              vynucuje prázdné honeypot pole <code class="font-mono">overeni_webu</code> a časový zámek přes 3&nbsp;s
-              od načtení stránky. Fotografie procházejí serverovým odstraněním EXIF/GPS metadat (sharp) ještě před uložením do bucketu.
-            </span>
-          </div>
-        </div>
-
-        <!-- Akce -->
-        <div id="modal-actions" class="flex items-center justify-end gap-2 pt-3 border-t border-rule">
-          <button id="modal-cancel-btn" class="jp-btn-secondary">
-            <span>Zavřít</span>
+        <!-- Záložky: Posudek vs Úprava -->
+        <div class="flex border-b border-ink mb-4 gap-1">
+          <button id="tab-view-btn" class="jp-tab active" type="button">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span>Technický posudek &amp; fotky</span>
           </button>
-          <button id="modal-reject-btn" class="jp-btn-danger">
-            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span>Zamítnout</span>
-          </button>
-          <button id="modal-approve-btn" class="jp-btn-primary">
-            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span>Schválit do registru</span>
+          <button id="tab-edit-btn" class="jp-tab" type="button">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+            <span>Upravit údaje stroje</span>
           </button>
         </div>
+
+        <!-- PANEL 1: Prohlížení a posudek -->
+        <div id="modal-view-panel">
+          <!-- Fotogalerie -->
+          <div class="mb-4">
+            <div class="text-xs font-sans text-mute mb-2 flex items-center justify-between">
+              <span class="font-medium">Privátní fotodokumentace (bucket <code class="font-mono text-perak">stroje-fotky</code>):</span>
+              <span id="modal-photos-count" class="text-[11px] text-mute font-mono"></span>
+            </div>
+            <div id="modal-photos" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+          </div>
+
+          <!-- Technická karta -->
+          <div class="bg-card border border-rule p-4 rounded-sm text-xs font-sans space-y-3 mb-4">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pb-3 border-b border-rule">
+              <div>
+                <span class="text-mute block text-[10px] uppercase tracking-wider">Výrobní číslo rámu</span>
+                <span id="modal-ram" class="font-mono font-bold text-sm text-ink">—</span>
+              </div>
+              <div>
+                <span class="text-mute block text-[10px] uppercase tracking-wider">Výrobní číslo motoru</span>
+                <span id="modal-motor" class="font-mono font-bold text-sm text-ink">—</span>
+              </div>
+              <div>
+                <span class="text-mute block text-[10px] uppercase tracking-wider">Výrobní fáze</span>
+                <span id="modal-faze" class="font-bold text-ink">—</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pb-3 border-b border-rule">
+              <div>
+                <span class="text-mute block text-[10px] uppercase tracking-wider">Stav dochování</span>
+                <span id="modal-stav" class="text-ink font-medium">—</span>
+              </div>
+              <div>
+                <span class="text-mute block text-[10px] uppercase tracking-wider">Barevné provedení</span>
+                <span id="modal-barva" class="text-ink">—</span>
+              </div>
+              <div>
+                <span class="text-mute block text-[10px] uppercase tracking-wider">Historická SPZ</span>
+                <span id="modal-spz" class="font-mono text-ink">—</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pb-3 border-b border-rule">
+              <div>
+                <span class="text-mute block text-[10px] uppercase tracking-wider">Kontakt (majitel)</span>
+                <span id="modal-kontakt" class="text-ink font-medium break-words">—</span>
+              </div>
+              <div>
+                <span class="text-mute block text-[10px] uppercase tracking-wider">Lokalita</span>
+                <span id="modal-lokalita" class="text-ink">—</span>
+              </div>
+              <div>
+                <span class="text-mute block text-[10px] uppercase tracking-wider">Nabízeno na prodej</span>
+                <span id="modal-prodej" class="text-ink font-medium">—</span>
+              </div>
+            </div>
+
+            <div>
+              <span class="text-mute block text-[10px] uppercase tracking-wider mb-1">Popis historie a stavu</span>
+              <p id="modal-popis" class="font-serif text-ink leading-relaxed text-sm bg-paper p-3 border border-rule rounded-sm whitespace-pre-wrap">
+                Bez popisu.
+              </p>
+            </div>
+
+            <div id="modal-poznamka-wrap" class="hidden">
+              <span class="text-mute block text-[10px] uppercase tracking-wider mb-1">Interní poznámka moderátora / správce</span>
+              <p id="modal-poznamka" class="font-sans text-perak leading-relaxed text-xs bg-perak/5 p-2.5 border border-perak/20 rounded-sm whitespace-pre-wrap">
+              </p>
+            </div>
+
+            <div class="flex items-start gap-2 p-2 bg-paper-2 border border-rule text-[11px] text-mute rounded-sm">
+              <svg class="w-4 h-4 text-perak flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+              <span>
+                Fotografie procházejí serverovým odstraněním EXIF/GPS metadat (sharp) ještě před uložením do bucketu. Čísla rámu a motoru jsou ve veřejném registru anonymizována.
+              </span>
+            </div>
+          </div>
+
+          <!-- Akce posudku -->
+          <div id="modal-actions" class="flex flex-wrap items-center justify-end gap-2 pt-3 border-t border-rule">
+            <button id="modal-cancel-btn" class="jp-btn-secondary" type="button">
+              <span>Zavřít</span>
+            </button>
+            <button id="modal-edit-switch-btn" class="jp-btn-secondary" type="button">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+              <span>Upravit údaje stroje</span>
+            </button>
+            <button id="modal-reject-btn" class="jp-btn-danger" type="button">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Zamítnout</span>
+            </button>
+            <button id="modal-approve-btn" class="jp-btn-primary" type="button">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Schválit do registru</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PANEL 2: Editace stroje -->
+        <div id="modal-edit-panel" class="hidden">
+          <div id="edit-feedback" class="hidden"></div>
+
+          <form id="form-edit-stroj" class="space-y-4 text-xs font-sans">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="jp-label" for="edit-typ">Typ motocyklu *</label>
+                <select id="edit-typ" class="jp-input jp-select w-full" required></select>
+              </div>
+              <div>
+                <label class="jp-label" for="edit-rok">Rok výroby (1946–1956)</label>
+                <input id="edit-rok" type="number" min="1940" max="1960" class="jp-input" placeholder="např. 1950" />
+              </div>
+              <div>
+                <label class="jp-label" for="edit-stav">Stav dochování *</label>
+                <select id="edit-stav" class="jp-input jp-select w-full" required></select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="jp-label" for="edit-faze">Výrobní fáze</label>
+                <select id="edit-faze" class="jp-input jp-select w-full"></select>
+              </div>
+              <div>
+                <label class="jp-label" for="edit-ram">Výrobní číslo rámu</label>
+                <input id="edit-ram" type="text" class="jp-input jp-input-mono" placeholder="např. 11-102934" />
+              </div>
+              <div>
+                <label class="jp-label" for="edit-motor">Výrobní číslo motoru</label>
+                <input id="edit-motor" type="text" class="jp-input jp-input-mono" placeholder="např. 11-103012" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="jp-label" for="edit-barva">Barevné provedení</label>
+                <input id="edit-barva" type="text" class="jp-input" placeholder="Červená ČSN 8850, Khaki..." />
+              </div>
+              <div>
+                <label class="jp-label" for="edit-spz">Historická SPZ</label>
+                <input id="edit-spz" type="text" class="jp-input jp-input-mono" placeholder="např. Č-12345" />
+              </div>
+              <div>
+                <label class="jp-label" for="edit-moderace">Stav schválení v registru *</label>
+                <select id="edit-moderace" class="jp-input jp-select w-full">
+                  <option value="ceka">Ke schválení (čeká)</option>
+                  <option value="schvaleno">Schváleno ve veřejném registru</option>
+                  <option value="zamitnuto">Zamítnuto (neveřejné)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="jp-label" for="edit-zeme">Stát / Země</label>
+                <input id="edit-zeme" type="text" class="jp-input" placeholder="Česká republika, Slovensko..." />
+              </div>
+              <div>
+                <label class="jp-label" for="edit-region">Kraj / Okres / Region</label>
+                <input id="edit-region" type="text" class="jp-input" placeholder="Olomoucký kraj..." />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="jp-label" for="edit-email">Kontaktní e-mail majitele</label>
+                <input id="edit-email" type="email" class="jp-input" placeholder="majitel@email.cz" />
+              </div>
+              <div>
+                <label class="jp-label" for="edit-telefon">Kontaktní telefon majitele</label>
+                <input id="edit-telefon" type="tel" class="jp-input" placeholder="+420 777 123 456" />
+              </div>
+            </div>
+
+            <div class="p-3 bg-card border border-rule rounded-xs">
+              <label class="inline-flex items-center gap-2 cursor-pointer">
+                <input id="edit-prodej" type="checkbox" class="w-4 h-4 text-perak border-rule rounded-xs focus:ring-perak cursor-pointer" />
+                <span class="font-bold text-ink">Tento motocykl je majitelem nabízen na prodej</span>
+              </label>
+            </div>
+
+            <div>
+              <label class="jp-label" for="edit-pribeh">Příběh, historie a technický popis stroje</label>
+              <textarea id="edit-pribeh" rows="4" class="jp-textarea" placeholder="Doložená historie, dochované detaily, poznatky k motocyklu..."></textarea>
+            </div>
+
+            <div>
+              <label class="jp-label" for="edit-poznamka">Interní poznámka moderátora / správce (neveřejné)</label>
+              <textarea id="edit-poznamka" rows="2" class="jp-textarea" placeholder="Poznámka k ověření pravosti, důvod zamítnutí, komunikace s majitelem..."></textarea>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-end gap-2 pt-3 border-t border-rule">
+              <button id="modal-edit-cancel-btn" type="button" class="jp-btn-secondary">
+                <span>Zpět na posudek</span>
+              </button>
+              <button id="modal-edit-save-btn" type="submit" class="jp-btn-primary">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                <span>Uložit změny stroje</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
       </div>
     </div>
-
-    <!-- Patička -->
+        <!-- Patička -->
     <footer class="border-t border-rule bg-paper-2 py-4 px-6 text-center text-xs font-sans text-mute mt-auto">
       <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
         <span>
@@ -316,11 +468,16 @@ export const prerender = false;
       cislo_ramu: string | null;
       cislo_motoru: string | null;
       stav: string;
+      vyrobni_faze: string | null;
+      barva: string | null;
+      spz_historicka: string | null;
       region: string | null;
       zeme: string | null;
       pribeh: string | null;
       kontakt_email: string | null;
       kontakt_telefon: string | null;
+      na_prodej: boolean;
+      poznamka_moderatora?: string | null;
       stav_moderace: 'ceka' | 'schvaleno' | 'zamitnuto';
       vytvoreno_at: string;
       schvaleno_at: string | null;
@@ -330,6 +487,7 @@ export const prerender = false;
     let fotkyByStroj: Record<string, Fotka[]> = {};
     let ciselnikTyp: CiselnikRadek[] = [];
     let ciselnikStav: CiselnikRadek[] = [];
+    let ciselnikFaze: CiselnikRadek[] = [];
     let currentModalStrojId: string | null = null;
 
     const loginSection = document.getElementById('login-section');
@@ -357,6 +515,42 @@ export const prerender = false;
     const modalCancelBtn = document.getElementById('modal-cancel-btn');
     const modalApproveBtn = document.getElementById('modal-approve-btn');
     const modalRejectBtn = document.getElementById('modal-reject-btn');
+
+    const modalFaze = document.getElementById('modal-faze');
+    const modalStav = document.getElementById('modal-stav');
+    const modalBarva = document.getElementById('modal-barva');
+    const modalSpz = document.getElementById('modal-spz');
+    const modalProdej = document.getElementById('modal-prodej');
+    const modalPoznamkaWrap = document.getElementById('modal-poznamka-wrap');
+    const modalPoznamka = document.getElementById('modal-poznamka');
+    const modalPhotosCount = document.getElementById('modal-photos-count');
+    const modalEditSwitchBtn = document.getElementById('modal-edit-switch-btn');
+
+    const tabViewBtn = document.getElementById('tab-view-btn');
+    const tabEditBtn = document.getElementById('tab-edit-btn');
+    const modalViewPanel = document.getElementById('modal-view-panel');
+    const modalEditPanel = document.getElementById('modal-edit-panel');
+
+    const formEditStroj = document.getElementById('form-edit-stroj');
+    const editTyp = document.getElementById('edit-typ') as HTMLSelectElement | null;
+    const editRok = document.getElementById('edit-rok') as HTMLInputElement | null;
+    const editStav = document.getElementById('edit-stav') as HTMLSelectElement | null;
+    const editFaze = document.getElementById('edit-faze') as HTMLSelectElement | null;
+    const editRam = document.getElementById('edit-ram') as HTMLInputElement | null;
+    const editMotor = document.getElementById('edit-motor') as HTMLInputElement | null;
+    const editBarva = document.getElementById('edit-barva') as HTMLInputElement | null;
+    const editSpz = document.getElementById('edit-spz') as HTMLInputElement | null;
+    const editModerace = document.getElementById('edit-moderace') as HTMLSelectElement | null;
+    const editZeme = document.getElementById('edit-zeme') as HTMLInputElement | null;
+    const editRegion = document.getElementById('edit-region') as HTMLInputElement | null;
+    const editEmail = document.getElementById('edit-email') as HTMLInputElement | null;
+    const editTelefon = document.getElementById('edit-telefon') as HTMLInputElement | null;
+    const editProdej = document.getElementById('edit-prodej') as HTMLInputElement | null;
+    const editPribeh = document.getElementById('edit-pribeh') as HTMLTextAreaElement | null;
+    const editPoznamka = document.getElementById('edit-poznamka') as HTMLTextAreaElement | null;
+    const editFeedback = document.getElementById('edit-feedback');
+    const modalEditCancelBtn = document.getElementById('modal-edit-cancel-btn');
+    const modalEditSaveBtn = document.getElementById('modal-edit-save-btn');
 
     function escapeHtml(s: string | null | undefined): string {
       return (s ?? '').replace(/[&<>"']/g, (c) => ({
@@ -407,12 +601,15 @@ export const prerender = false;
 
     async function nactiCiselniky() {
       try {
-        const [{ data: typy }, { data: stavy }] = await Promise.all([
+        const [{ data: typy }, { data: stavy }, { data: faze }] = await Promise.all([
           supabase.from('ciselnik_typ').select('*').order('poradi'),
           supabase.from('ciselnik_stav').select('*').order('poradi'),
+          supabase.from('ciselnik_faze').select('*').order('poradi'),
         ]);
         ciselnikTyp = typy ?? [];
         ciselnikStav = stavy ?? [];
+        ciselnikFaze = faze ?? [];
+        naplnEditSelecty();
       } catch (e) {
         console.error('Číselníky se nepodařilo načíst', e);
       }
@@ -510,6 +707,7 @@ export const prerender = false;
     const ICON_HODINY = '<svg class="w-3 h-3 text-perak flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
     const ICON_SCHVALIT = '<svg class="w-3.5 h-3.5 text-[#C89D42] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
     const ICON_ZAMITNOUT = '<svg class="w-3.5 h-3.5 text-perak flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+    const ICON_EDIT = '<svg class="w-3.5 h-3.5 text-ink flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>';
     const ICON_OKO = '<svg class="w-3.5 h-3.5 text-perak flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>';
     const ICON_FOTOAPARAT = '<svg class="w-6 h-6 text-gold mb-1" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>';
 
@@ -621,26 +819,38 @@ export const prerender = false;
 
               <div class="mt-3 pt-2 flex flex-wrap items-center gap-2 font-sans text-xs">
                 <button
-                  class="btn-detail inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-sans rounded-[2px] bg-paper-2 hover:bg-rule text-ink border border-rule transition-colors"
+                  class="btn-detail jp-btn-secondary"
                   data-id="${stroj.id}"
+                  type="button"
                 >
                   ${ICON_OKO}
-                  <span>Detailní posudek &amp; fotky</span>
+                  <span>Posudek &amp; fotky</span>
+                </button>
+
+                <button
+                  class="btn-edit jp-btn-secondary"
+                  data-id="${stroj.id}"
+                  type="button"
+                >
+                  ${ICON_EDIT}
+                  <span>Upravit údaje</span>
                 </button>
 
                 ${stroj.stav_moderace !== 'schvaleno' ? `
                   <button
-                    class="btn-approve inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-sans rounded-[2px] bg-perak hover:bg-perak-hover text-paper border border-perak transition-colors font-medium"
+                    class="btn-approve jp-btn-primary"
                     data-id="${stroj.id}"
+                    type="button"
                   >
                     ${ICON_SCHVALIT}
-                    <span>Schválit do registru</span>
+                    <span>Schválit</span>
                   </button>
                 ` : ''}
                 ${stroj.stav_moderace !== 'zamitnuto' ? `
                   <button
-                    class="btn-reject inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-sans rounded-[2px] bg-paper hover:bg-paper-2 text-perak border border-perak/30 transition-colors"
+                    class="btn-reject jp-btn-danger"
                     data-id="${stroj.id}"
+                    type="button"
                   >
                     ${ICON_ZAMITNOUT}
                     <span>Zamítnout</span>
@@ -657,6 +867,14 @@ export const prerender = false;
           const id = (e.currentTarget as HTMLElement).dataset.id;
           const stroj = allStroje.find((s) => s.id === id);
           if (stroj) openDetailModal(stroj);
+        });
+      });
+
+      document.querySelectorAll('.btn-edit').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          const id = (e.currentTarget as HTMLElement).dataset.id;
+          const stroj = allStroje.find((s) => s.id === id);
+          if (stroj) openEditModal(stroj);
         });
       });
 
@@ -679,21 +897,104 @@ export const prerender = false;
       });
     }
 
+    function fazeLabel(hodnota: string | null | undefined): string {
+      if (!hodnota) return '—';
+      const radek = ciselnikFaze.find((r) => r.hodnota === hodnota);
+      return radek?.popis_cs ?? hodnota;
+    }
+
+    function naplnEditSelecty() {
+      if (editTyp && editTyp.options.length === 0) {
+        editTyp.innerHTML = ciselnikTyp.map((t) => `<option value="${t.hodnota}">${escapeHtml(typLabel(t.hodnota))}</option>`).join('');
+      }
+      if (editStav && editStav.options.length === 0) {
+        editStav.innerHTML = ciselnikStav.map((s) => `<option value="${s.hodnota}">${escapeHtml(stavLabel(s.hodnota))}</option>`).join('');
+      }
+      if (editFaze && editFaze.options.length === 0) {
+        editFaze.innerHTML = `<option value="">— Neuvedeno / nezjištěno —</option>` +
+          ciselnikFaze.map((f) => `<option value="${f.hodnota}">${escapeHtml(f.popis_cs)}</option>`).join('');
+      }
+    }
+
+    function switchModalTab(tab: 'view' | 'edit') {
+      if (tab === 'view') {
+        tabViewBtn?.classList.add('active');
+        tabEditBtn?.classList.remove('active');
+        modalViewPanel?.classList.remove('hidden');
+        modalEditPanel?.classList.add('hidden');
+      } else {
+        tabEditBtn?.classList.add('active');
+        tabViewBtn?.classList.remove('active');
+        modalEditPanel?.classList.remove('hidden');
+        modalViewPanel?.classList.add('hidden');
+      }
+      if (editFeedback) {
+        editFeedback.classList.add('hidden');
+        editFeedback.textContent = '';
+      }
+    }
+
+    function populateDetailView(stroj: Stroj) {
+      if (modalTitle) modalTitle.textContent = `${typLabel(stroj.typ)} (${stroj.rok_vyroby ?? '—'})`;
+      if (modalRam) modalRam.textContent = stroj.cislo_ramu || '—';
+      if (modalMotor) modalMotor.textContent = stroj.cislo_motoru || '—';
+      if (modalFaze) modalFaze.textContent = fazeLabel(stroj.vyrobni_faze);
+      if (modalStav) modalStav.textContent = stavLabel(stroj.stav);
+      if (modalBarva) modalBarva.textContent = stroj.barva || '—';
+      if (modalSpz) modalSpz.textContent = stroj.spz_historicka || '—';
+      if (modalKontakt) modalKontakt.textContent = [stroj.kontakt_email, stroj.kontakt_telefon].filter(Boolean).join(' · ') || 'Neuvedeno';
+      if (modalLokalita) modalLokalita.textContent = [stroj.region, stroj.zeme].filter(Boolean).join(', ') || '—';
+      if (modalProdej) modalProdej.textContent = stroj.na_prodej ? 'Ano (nabízeno k prodeji)' : 'Ne';
+      if (modalPopis) modalPopis.textContent = stroj.pribeh || 'Bez přiloženého popisu.';
+
+      if (modalPoznamkaWrap && modalPoznamka) {
+        if (stroj.poznamka_moderatora) {
+          modalPoznamka.textContent = stroj.poznamka_moderatora;
+          modalPoznamkaWrap.classList.remove('hidden');
+        } else {
+          modalPoznamkaWrap.classList.add('hidden');
+        }
+      }
+
+      if (modalApproveBtn) (modalApproveBtn as HTMLElement).style.display = stroj.stav_moderace === 'schvaleno' ? 'none' : 'inline-flex';
+      if (modalRejectBtn) (modalRejectBtn as HTMLElement).style.display = stroj.stav_moderace === 'zamitnuto' ? 'none' : 'inline-flex';
+    }
+
+    function populateEditForm(stroj: Stroj) {
+      naplnEditSelecty();
+      if (editTyp) editTyp.value = stroj.typ;
+      if (editRok) editRok.value = stroj.rok_vyroby ? stroj.rok_vyroby.toString() : '';
+      if (editStav) editStav.value = stroj.stav;
+      if (editFaze) editFaze.value = stroj.vyrobni_faze || '';
+      if (editRam) editRam.value = stroj.cislo_ramu || '';
+      if (editMotor) editMotor.value = stroj.cislo_motoru || '';
+      if (editBarva) editBarva.value = stroj.barva || '';
+      if (editSpz) editSpz.value = stroj.spz_historicka || '';
+      if (editModerace) editModerace.value = stroj.stav_moderace;
+      if (editZeme) editZeme.value = stroj.zeme || '';
+      if (editRegion) editRegion.value = stroj.region || '';
+      if (editEmail) editEmail.value = stroj.kontakt_email || '';
+      if (editTelefon) editTelefon.value = stroj.kontakt_telefon || '';
+      if (editProdej) editProdej.checked = !!stroj.na_prodej;
+      if (editPribeh) editPribeh.value = stroj.pribeh || '';
+      if (editPoznamka) editPoznamka.value = stroj.poznamka_moderatora || '';
+    }
+
     async function openDetailModal(stroj: Stroj) {
       currentModalStrojId = stroj.id;
       if (!detailModal) return;
 
-      if (modalTitle) modalTitle.textContent = `${typLabel(stroj.typ)} (${stroj.rok_vyroby ?? '—'})`;
-      if (modalRam) modalRam.textContent = stroj.cislo_ramu || '—';
-      if (modalMotor) modalMotor.textContent = stroj.cislo_motoru || '—';
-      if (modalKontakt) modalKontakt.textContent = [stroj.kontakt_email, stroj.kontakt_telefon].filter(Boolean).join(' · ') || 'Neuvedeno';
-      if (modalLokalita) modalLokalita.textContent = [stroj.region, stroj.zeme].filter(Boolean).join(', ') || '—';
-      if (modalPopis) modalPopis.textContent = stroj.pribeh || 'Bez přiloženého popisu.';
+      populateDetailView(stroj);
+      populateEditForm(stroj);
+      switchModalTab('view');
 
       if (modalPhotos) {
         const fotky = fotkyByStroj[stroj.id] ?? [];
+        if (modalPhotosCount) {
+          modalPhotosCount.textContent = fotky.length > 0 ? `${fotky.length} ${fotoSlovo(fotky.length)}` : '0 fotek';
+        }
         if (fotky.length > 0) {
-          modalPhotos.innerHTML = '<div class="text-xs text-mute col-span-2 py-4">Generuji podepsané URL pro náhled fotografií…</div>';
+          modalPhotos.innerHTML = '<div class="text-xs text-mute col-span-2 sm:col-span-3 py-4">Generuji podepsané URL pro náhled fotografií…</div>';
           const { data: podepsane } = await supabase.storage
             .from('stroje-fotky')
             .createSignedUrls(fotky.map((f) => f.url), 3600);
@@ -703,24 +1004,32 @@ export const prerender = false;
             modalPhotos.innerHTML = urls.map((p, i) => `
               <div class="border border-rule bg-card p-1 rounded-sm">
                 <a href="${p.signedUrl}" target="_blank" rel="noopener noreferrer">
-                  <img src="${p.signedUrl}" alt="Foto stroje" class="w-full h-40 object-cover rounded-sm hover:opacity-90 transition-opacity" />
+                  <img src="${p.signedUrl}" alt="Foto stroje" class="w-full h-36 object-cover rounded-sm hover:opacity-90 transition-opacity" />
                 </a>
-                <div class="text-[10px] font-sans text-mute mt-1 px-1">
-                  Fotka #${i + 1} · EXIF/GPS odstraněno (sharp)
+                <div class="text-[10px] font-sans text-mute mt-1 px-1 flex items-center justify-between">
+                  <span>#${i + 1} · EXIF vyčištěn</span>
+                  <a href="${p.signedUrl}" target="_blank" class="text-perak hover:underline">Otevřít ↗</a>
                 </div>
               </div>
             `).join('');
           } else {
-            modalPhotos.innerHTML = '<div class="text-xs text-mute col-span-2 py-2">Fotografie se nepodařilo podepsat.</div>';
+            modalPhotos.innerHTML = '<div class="text-xs text-mute col-span-2 sm:col-span-3 py-2">Fotografie se nepodařilo podepsat.</div>';
           }
         } else {
-          modalPhotos.innerHTML = '<div class="text-xs text-mute col-span-2 py-2">K tomuto stroji nebyly nahrány žádné fotky.</div>';
+          modalPhotos.innerHTML = '<div class="text-xs text-mute col-span-2 sm:col-span-3 py-2">K tomuto stroji nebyly nahrány žádné fotky.</div>';
         }
       }
 
-      if (modalApproveBtn) (modalApproveBtn as HTMLElement).style.display = stroj.stav_moderace === 'schvaleno' ? 'none' : 'inline-flex';
-      if (modalRejectBtn) (modalRejectBtn as HTMLElement).style.display = stroj.stav_moderace === 'zamitnuto' ? 'none' : 'inline-flex';
+      detailModal.classList.remove('hidden');
+    }
 
+    function openEditModal(stroj: Stroj) {
+      currentModalStrojId = stroj.id;
+      if (!detailModal) return;
+
+      populateDetailView(stroj);
+      populateEditForm(stroj);
+      switchModalTab('edit');
       detailModal.classList.remove('hidden');
     }
 
@@ -745,6 +1054,127 @@ export const prerender = false;
         closeDetailModal();
       }
     });
+
+    tabViewBtn?.addEventListener('click', () => {
+      switchModalTab('view');
+    });
+
+    tabEditBtn?.addEventListener('click', () => {
+      switchModalTab('edit');
+    });
+
+    modalEditSwitchBtn?.addEventListener('click', () => {
+      switchModalTab('edit');
+    });
+
+    modalEditCancelBtn?.addEventListener('click', () => {
+      switchModalTab('view');
+    });
+
+    formEditStroj?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (currentModalStrojId) {
+        await saveStroj(currentModalStrojId);
+      }
+    });
+
+    async function saveStroj(id: string) {
+      const saveBtn = document.getElementById('modal-edit-save-btn') as HTMLButtonElement | null;
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span>Ukládám změny…</span>';
+      }
+      if (editFeedback) {
+        editFeedback.classList.add('hidden');
+        editFeedback.textContent = '';
+      }
+
+      const prevStroj = allStroje.find((s) => s.id === id);
+      const typ = editTyp?.value;
+      const rokVal = editRok?.value;
+      const stav = editStav?.value;
+      const fazeVal = editFaze?.value;
+      const ramVal = editRam?.value.trim();
+      const motorVal = editMotor?.value.trim();
+      const barvaVal = editBarva?.value.trim();
+      const spzVal = editSpz?.value.trim();
+      const moderaceVal = (editModerace?.value || 'ceka') as 'ceka' | 'schvaleno' | 'zamitnuto';
+      const zemeVal = editZeme?.value.trim();
+      const regionVal = editRegion?.value.trim();
+      const emailVal = editEmail?.value.trim();
+      const telefonVal = editTelefon?.value.trim();
+      const prodejVal = editProdej?.checked ?? false;
+      const pribehVal = editPribeh?.value.trim();
+      const poznamkaVal = editPoznamka?.value.trim();
+
+      const payload: Partial<Stroj> & { poznamka_moderatora?: string | null } = {
+        typ,
+        stav,
+        rok_vyroby: rokVal ? parseInt(rokVal, 10) : null,
+        cislo_ramu: ramVal || null,
+        cislo_motoru: motorVal || null,
+        vyrobni_faze: fazeVal || null,
+        barva: barvaVal || null,
+        spz_historicka: spzVal || null,
+        zeme: zemeVal || null,
+        region: regionVal || null,
+        kontakt_email: emailVal || null,
+        kontakt_telefon: telefonVal || null,
+        na_prodej: prodejVal,
+        stav_moderace: moderaceVal,
+        pribeh: pribehVal || null,
+        poznamka_moderatora: poznamkaVal || null,
+      };
+
+      if (moderaceVal === 'schvaleno' && (!prevStroj || prevStroj.stav_moderace !== 'schvaleno')) {
+        payload.schvaleno_at = new Date().toISOString();
+      }
+
+      const { error } = await supabase
+        .from('stroje')
+        .update(payload)
+        .eq('id', id);
+
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = `
+          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          <span>Uložit změny stroje</span>
+        `;
+      }
+
+      if (error) {
+        if (editFeedback) {
+          editFeedback.className = 'p-3 text-xs bg-perak/10 text-perak border border-perak/30 rounded-xs mb-3';
+          editFeedback.textContent = 'Chyba při ukládání: ' + error.message;
+          editFeedback.classList.remove('hidden');
+        } else {
+          alert('Chyba při ukládání: ' + error.message);
+        }
+        return;
+      }
+
+      // Aktualizace v lokálním poli
+      if (prevStroj) {
+        Object.assign(prevStroj, payload);
+      }
+
+      if (editFeedback) {
+        editFeedback.className = 'p-3 text-xs bg-[#2E6B32]/10 text-[#2E6B32] border border-[#2E6B32]/30 rounded-xs mb-3 font-semibold';
+        editFeedback.textContent = '✓ Údaje stroje byly úspěšně uloženy do databáze registru.';
+        editFeedback.classList.remove('hidden');
+      }
+
+      updateSummary();
+      await renderStroje();
+
+      setTimeout(() => {
+        if (prevStroj && currentModalStrojId === id) {
+          populateDetailView(prevStroj);
+          switchModalTab('view');
+        }
+      }, 900);
+    }
 
     async function approveStroj(id: string) {
       const { error } = await supabase
@@ -775,6 +1205,92 @@ export const prerender = false;
     init();
   </script>
   <style is:global>
+    /* --- FORMULÁŘOVÁ POLE PRO EDITACI STROJŮ --- */
+    .jp-input {
+      display: block !important;
+      width: 100% !important;
+      background-color: var(--paper) !important;
+      border: 1px solid var(--rule) !important;
+      border-radius: 0 !important;
+      color: var(--ink) !important;
+      font-family: var(--disp) !important;
+      font-size: 13px !important;
+      padding: 7px 10px !important;
+      line-height: 1.4 !important;
+      outline: none !important;
+      -webkit-appearance: none !important;
+      appearance: none !important;
+      box-sizing: border-box !important;
+      transition: border-color .15s ease !important;
+    }
+    .jp-input:focus {
+      border-color: var(--red) !important;
+    }
+    .jp-input-mono {
+      font-family: var(--mono) !important;
+      letter-spacing: .06em !important;
+      font-weight: 600 !important;
+    }
+    .jp-textarea {
+      display: block !important;
+      width: 100% !important;
+      background-color: var(--paper) !important;
+      border: 1px solid var(--rule) !important;
+      border-radius: 0 !important;
+      color: var(--ink) !important;
+      font-family: var(--body) !important;
+      font-size: 13px !important;
+      padding: 8px 10px !important;
+      line-height: 1.5 !important;
+      outline: none !important;
+      resize: vertical !important;
+      box-sizing: border-box !important;
+      transition: border-color .15s ease !important;
+    }
+    .jp-textarea:focus {
+      border-color: var(--red) !important;
+    }
+    .jp-label {
+      display: block !important;
+      font-family: var(--disp) !important;
+      font-size: 10.5px !important;
+      font-weight: 600 !important;
+      letter-spacing: .12em !important;
+      text-transform: uppercase !important;
+      color: var(--mute) !important;
+      margin-bottom: 4px !important;
+    }
+    .jp-tab {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      padding: 8px 14px !important;
+      font-family: var(--disp) !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      letter-spacing: .11em !important;
+      text-transform: uppercase !important;
+      border: 1px solid var(--rule) !important;
+      border-bottom: none !important;
+      background: var(--paper-2) !important;
+      color: var(--mute) !important;
+      cursor: pointer !important;
+      transition: all .15s ease !important;
+      -webkit-appearance: none !important;
+      appearance: none !important;
+    }
+    .jp-tab:hover {
+      color: var(--ink) !important;
+    }
+    .jp-tab.active {
+      background: var(--paper) !important;
+      color: var(--red) !important;
+      border-color: var(--ink) !important;
+      border-top: 2px solid var(--red) !important;
+      margin-bottom: -1px !important;
+      padding-bottom: 9px !important;
+    }
+
     /* ================================================================
        ČSN 8850 TISKAŘSKÝ STYL — Sjednoceno s design systémem jawaperak.cz
        ================================================================ */

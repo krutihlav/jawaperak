@@ -89,8 +89,12 @@ const menuEncy = encyklopedie.filter((s) => s.hotovo).slice(0, 7);
   --mono:"JetBrains Mono",monospace;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{margin:0;overflow-x:clip;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;overflow-wrap:break-word;word-wrap:break-word}
+h1,h2,h3,h4,h5,h6,p,li,td,th,blockquote,figcaption{overflow-wrap:break-word;word-wrap:break-word}
+img,svg,video,iframe,embed,object{max-width:100%;height:auto}
+table{max-width:100%}
+pre,code{max-width:100%;overflow-x:auto}
 .wrap{max-width:1060px;margin:0 auto;padding:0 26px}
 /* Sirsi obal jen tam, kde vedle textu stoji bocni osnova.
    Textovy sloupec uvnitr zustava stejne siroky a stejne vycentrovany. */
@@ -231,9 +235,33 @@ p{margin:0 0 .9em}
 /* --- dvousloupcová osnova --- */
 .art{max-width:none;min-width:0}
 
-/* Bocni osnova stoji v levem okraji stranky a sloupec textu neposouva. */
-.aside{position:absolute;top:0;bottom:0;left:-214px;width:190px}
-.aside-in{position:sticky;top:24px}
+/* Bocni osnova: umistena v gridu uvnitr kontejneru, zadne pretekani mimo okno */
+.aside{display:none}
+@media (min-width:1024px){
+  .wrap--art .page,
+  .page:has(.aside){
+    display:grid;
+    grid-template-columns:200px minmax(0,1fr);
+    gap:36px;
+    align-items:start;
+  }
+  .aside{
+    display:block;
+    position:relative;
+    width:100%;
+    top:auto;
+    bottom:auto;
+    left:auto;
+  }
+  .aside-in{position:sticky;top:24px}
+}
+@media (min-width:1240px){
+  .wrap--art .page,
+  .page:has(.aside){
+    grid-template-columns:210px minmax(0,1fr);
+    gap:44px;
+  }
+}
 .aside-lb{font-family:var(--disp);font-weight:500;font-size:11px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--mute);margin:0 0 12px;padding-bottom:9px;border-bottom:2px solid var(--ink)}
 .aside ol{list-style:none;margin:0;padding:0;counter-reset:s}
@@ -524,7 +552,7 @@ p{margin:0 0 .9em}
 /* ================================================================
    MOBIL
    ================================================================ */
-@media (max-width:1239px){
+@media (max-width:1023px){
   .aside{display:none}
 
   .mtoc{display:block;position:sticky;top:0;z-index:40;margin:0 -26px 24px;
