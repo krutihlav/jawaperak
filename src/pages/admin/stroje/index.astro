@@ -1,13 +1,14 @@
 ---
-// Centrální administrace — sjednocené rozhraní pro moderaci registru
-// (dřív samostatně na /moderace, teď tady) a odkaz na správu obsahu
-// (Sveltia CMS, přesunuto na /admin/obsah, viz ten soubor).
-import Layout from '../../layouts/Layout.astro';
+// Přehled a správa už zveřejněných strojů (stav_moderace = 'schvaleno').
+// Sesterská stránka k /admin (fronta ke schválení) — stejný auth vzor,
+// navíc filtr nad seznamem a možnost zveřejnění zrušit (vrátí stroj zpět
+// do fronty na /admin) nebo záznam trvale smazat.
+import Layout from '../../../layouts/Layout.astro';
 
 export const prerender = false;
 ---
 
-<Layout title="Centrální administrace — jawaperak.cz" noindex={true}>
+<Layout title="Zveřejněné stroje — administrace — jawaperak.cz" noindex={true}>
   <main class="min-h-screen bg-[var(--paper,#FAF8F5)] text-[var(--ink,#141312)] font-serif py-8 px-4 sm:px-6">
     <div class="max-w-6xl mx-auto space-y-6">
 
@@ -44,14 +45,14 @@ export const prerender = false;
         <nav class="flex items-center gap-4 mt-6 pt-2 border-t border-[var(--rule,#E2DDD5)]/60 font-sans text-sm font-medium">
           <a
             href="/admin"
-            class="border-b-2 border-[var(--red,#8B2014)] text-[var(--red,#8B2014)] pb-2 font-semibold flex items-center gap-2"
+            class="border-b-2 border-transparent text-[var(--mute,#3E3A33)] hover:text-[var(--ink,#141312)] pb-2 flex items-center gap-2"
           >
             <span>Moderace registru</span>
             <span id="badge-pending" class="hidden px-1.5 py-0.5 rounded-full text-[10px] bg-[var(--red,#8B2014)] text-white font-bold">0</span>
           </a>
           <a
             href="/admin/stroje"
-            class="border-b-2 border-transparent text-[var(--mute,#3E3A33)] hover:text-[var(--ink,#141312)] pb-2"
+            class="border-b-2 border-[var(--red,#8B2014)] text-[var(--red,#8B2014)] pb-2 font-semibold"
           >
             Zveřejněné stroje
           </a>
@@ -106,19 +107,67 @@ export const prerender = false;
         </form>
       </section>
 
-      <!-- Moderace záznamů -->
-      <section id="moderace-section" class="hidden space-y-4">
-        <div class="flex items-center justify-between font-sans text-xs">
+      <!-- Seznam zveřejněných strojů -->
+      <section id="stroje-section" class="hidden space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-sans text-xs">
           <div class="text-[var(--mute,#3E3A33)]">
-            Zobrazeny záznamy vyžadující kontrolu před publikací do veřejného registru.
+            Stroje aktuálně viditelné ve veřejném registru na <a href="/registr" target="_blank" class="underline hover:text-[var(--ink,#141312)]">/registr</a>.
           </div>
           <button
             id="btn-refresh"
-            class="px-3 py-1.5 bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] border border-[var(--rule,#E2DDD5)] rounded-sm text-[var(--ink,#141312)] transition-colors"
+            class="px-3 py-1.5 bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] border border-[var(--rule,#E2DDD5)] rounded-sm text-[var(--ink,#141312)] transition-colors self-start sm:self-auto"
           >
             Obnovit seznam
           </button>
         </div>
+
+        <!-- Filtr -->
+        <div class="bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-4 rounded-sm shadow-xs font-sans">
+          <div class="flex flex-wrap items-end gap-3">
+            <div class="flex-1 min-w-[180px]">
+              <label class="block text-[var(--mute,#3E3A33)] uppercase tracking-wider text-[10px] font-semibold mb-1" for="f-hledat">
+                Hledat
+              </label>
+              <input
+                id="f-hledat"
+                type="text"
+                placeholder="Rám, motor, e-mail, kraj…"
+                class="w-full bg-[var(--paper,#FAF8F5)] border border-[var(--rule,#E2DDD5)] px-2.5 py-2 rounded-sm text-xs text-[var(--ink,#141312)] focus:outline-none focus:border-[var(--red,#8B2014)]"
+              />
+            </div>
+            <div>
+              <label class="block text-[var(--mute,#3E3A33)] uppercase tracking-wider text-[10px] font-semibold mb-1" for="f-typ">Typ</label>
+              <select id="f-typ" class="bg-[var(--paper,#FAF8F5)] border border-[var(--rule,#E2DDD5)] px-2.5 py-2 rounded-sm text-xs text-[var(--ink,#141312)] focus:outline-none focus:border-[var(--red,#8B2014)]">
+                <option value="">Všechny</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[var(--mute,#3E3A33)] uppercase tracking-wider text-[10px] font-semibold mb-1" for="f-stav">Stav</label>
+              <select id="f-stav" class="bg-[var(--paper,#FAF8F5)] border border-[var(--rule,#E2DDD5)] px-2.5 py-2 rounded-sm text-xs text-[var(--ink,#141312)] focus:outline-none focus:border-[var(--red,#8B2014)]">
+                <option value="">Všechny</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[var(--mute,#3E3A33)] uppercase tracking-wider text-[10px] font-semibold mb-1" for="f-faze">Výrobní fáze</label>
+              <select id="f-faze" class="bg-[var(--paper,#FAF8F5)] border border-[var(--rule,#E2DDD5)] px-2.5 py-2 rounded-sm text-xs text-[var(--ink,#141312)] focus:outline-none focus:border-[var(--red,#8B2014)]">
+                <option value="">Všechny</option>
+              </select>
+            </div>
+            <label class="flex items-center gap-1.5 text-xs pb-2 cursor-pointer select-none">
+              <input id="f-prodej" type="checkbox" class="accent-[var(--red,#8B2014)]" />
+              Jen na prodej
+            </label>
+            <button
+              id="btn-filtr-reset"
+              type="button"
+              class="px-3 py-2 bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] border border-[var(--rule,#E2DDD5)] rounded-sm text-xs text-[var(--mute,#3E3A33)] transition-colors"
+            >
+              Zrušit filtr
+            </button>
+          </div>
+        </div>
+
+        <div id="pocet-vysledku" class="text-[11px] font-sans text-[var(--mute,#3E3A33)]"></div>
 
         <div id="stroje-container" class="space-y-4">
           <div class="p-8 text-center bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] text-xs text-[var(--mute,#3E3A33)]">
@@ -138,15 +187,27 @@ export const prerender = false;
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
     const loginSection = document.getElementById('login-section');
-    const moderaceSection = document.getElementById('moderace-section');
+    const strojeSection = document.getElementById('stroje-section');
     const userInfo = document.getElementById('user-info');
     const userEmail = document.getElementById('user-email');
     const btnLogout = document.getElementById('btn-logout');
     const formLogin = document.getElementById('form-login');
     const loginError = document.getElementById('login-error');
     const strojeContainer = document.getElementById('stroje-container');
-    const badgePending = document.getElementById('badge-pending');
+    const pocetVysledku = document.getElementById('pocet-vysledku');
     const btnRefresh = document.getElementById('btn-refresh');
+    const btnFiltrReset = document.getElementById('btn-filtr-reset');
+
+    const fHledat = document.getElementById('f-hledat') as HTMLInputElement;
+    const fTyp = document.getElementById('f-typ') as HTMLSelectElement;
+    const fStav = document.getElementById('f-stav') as HTMLSelectElement;
+    const fFaze = document.getElementById('f-faze') as HTMLSelectElement;
+    const fProdej = document.getElementById('f-prodej') as HTMLInputElement;
+
+    let TYP: Record<string, string> = {};
+    let STAV: Record<string, string> = {};
+    let FAZE: Record<string, string> = {};
+    let hledatTimer: ReturnType<typeof setTimeout> | undefined;
 
     function escapujHtml(s: string | null | undefined) {
       return (s ?? '').replace(/[&<>"']/g, (c) => ({
@@ -159,11 +220,44 @@ export const prerender = false;
       return new Date(iso).toLocaleDateString('cs-CZ', { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
+    function naplnSelect(selectEl: HTMLSelectElement, radky: { hodnota: string; popis_cs: string }[]) {
+      for (const r of radky) {
+        const opt = document.createElement('option');
+        opt.value = r.hodnota;
+        opt.textContent = r.popis_cs;
+        selectEl.appendChild(opt);
+      }
+    }
+
+    async function nactiCiselniky() {
+      try {
+        const [rTyp, rStav, rFaze] = await Promise.all([
+          supabase.from('ciselnik_typ').select('*').order('poradi'),
+          supabase.from('ciselnik_stav').select('*').order('poradi'),
+          supabase.from('ciselnik_faze').select('*').order('poradi'),
+        ]);
+        const typy = rTyp.data || [];
+        const stavy = rStav.data || [];
+        const faze = rFaze.data || [];
+
+        TYP = Object.fromEntries(typy.map((r: any) => [r.hodnota, r.popis_cs]));
+        STAV = Object.fromEntries(stavy.map((r: any) => [r.hodnota, r.popis_cs]));
+        FAZE = Object.fromEntries(faze.map((r: any) => [r.hodnota, r.popis_cs]));
+
+        naplnSelect(fTyp, typy);
+        naplnSelect(fStav, stavy);
+        naplnSelect(fFaze, faze);
+      } catch (e) {
+        console.error('Číselníky se nepodařilo načíst', e);
+      }
+    }
+
     async function initAuth() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         showAuthenticated(session.user.email);
-        loadPendingStroje();
+        nactiCiselniky();
+        loadZverejneneStroje();
       } else {
         showLogin();
       }
@@ -171,7 +265,7 @@ export const prerender = false;
 
     function showAuthenticated(email: string | undefined) {
       loginSection?.classList.add('hidden');
-      moderaceSection?.classList.remove('hidden');
+      strojeSection?.classList.remove('hidden');
       userInfo?.classList.remove('hidden');
       btnLogout?.classList.remove('hidden');
       if (userEmail) userEmail.textContent = email || 'Správce';
@@ -179,7 +273,7 @@ export const prerender = false;
 
     function showLogin() {
       loginSection?.classList.remove('hidden');
-      moderaceSection?.classList.add('hidden');
+      strojeSection?.classList.add('hidden');
       userInfo?.classList.add('hidden');
       btnLogout?.classList.add('hidden');
     }
@@ -198,7 +292,8 @@ export const prerender = false;
         }
       } else if (data.session) {
         showAuthenticated(data.session.user.email);
-        loadPendingStroje();
+        nactiCiselniky();
+        loadZverejneneStroje();
       }
     });
 
@@ -207,19 +302,55 @@ export const prerender = false;
       showLogin();
     });
 
-    btnRefresh?.addEventListener('click', () => {
-      loadPendingStroje();
+    btnRefresh?.addEventListener('click', () => loadZverejneneStroje());
+
+    btnFiltrReset?.addEventListener('click', () => {
+      fHledat.value = '';
+      fTyp.value = '';
+      fStav.value = '';
+      fFaze.value = '';
+      fProdej.checked = false;
+      loadZverejneneStroje();
     });
 
-    async function loadPendingStroje() {
+    [fTyp, fStav, fFaze, fProdej].forEach((el) => el.addEventListener('change', () => loadZverejneneStroje()));
+    fHledat.addEventListener('input', () => {
+      clearTimeout(hledatTimer);
+      hledatTimer = setTimeout(() => loadZverejneneStroje(), 350);
+    });
+
+    async function loadZverejneneStroje() {
       if (!strojeContainer) return;
       strojeContainer.innerHTML = '<div class="p-8 text-center bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] text-xs text-[var(--mute,#3E3A33)]">Načítám záznamy...</div>';
+      if (pocetVysledku) pocetVysledku.textContent = '';
 
-      const { data: stroje, error } = await supabase
+      let dotaz = supabase
         .from('stroje')
         .select('*')
-        .eq('stav_moderace', 'ceka')
-        .order('vytvoreno_at', { ascending: true });
+        .eq('stav_moderace', 'schvaleno')
+        .order('schvaleno_at', { ascending: false });
+
+      if (fTyp.value) dotaz = dotaz.eq('typ', fTyp.value);
+      if (fStav.value) dotaz = dotaz.eq('stav', fStav.value);
+      if (fFaze.value) dotaz = dotaz.eq('vyrobni_faze', fFaze.value);
+      if (fProdej.checked) dotaz = dotaz.eq('na_prodej', true);
+
+      const hledat = fHledat.value.trim().replace(/[,()%]/g, '');
+      if (hledat) {
+        const vzor = `%${hledat}%`;
+        dotaz = dotaz.or(
+          [
+            `cislo_ramu.ilike.${vzor}`,
+            `cislo_motoru.ilike.${vzor}`,
+            `kontakt_email.ilike.${vzor}`,
+            `region.ilike.${vzor}`,
+            `zeme.ilike.${vzor}`,
+            `spz_historicka.ilike.${vzor}`,
+          ].join(',')
+        );
+      }
+
+      const { data: stroje, error } = await dotaz;
 
       if (error) {
         strojeContainer.innerHTML = `<div class="p-4 bg-[var(--paper-2,#F2EFE9)] text-[var(--red,#8B2014)] text-xs border border-[var(--red,#8B2014)]/30">Chyba při načítání: ${escapujHtml(error.message)}</div>`;
@@ -227,19 +358,17 @@ export const prerender = false;
       }
 
       if (!stroje || stroje.length === 0) {
-        badgePending?.classList.add('hidden');
         strojeContainer.innerHTML = `
           <div class="bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-12 text-center text-xs text-[var(--mute,#3E3A33)]">
-            <p class="font-serif text-base text-[var(--ink,#141312)] font-bold mb-1">Všechny stroje jsou schváleny</p>
-            <p>V tuto chvíli v registru nečeká žádný nový motocykl na schválení.</p>
+            <p class="font-serif text-base text-[var(--ink,#141312)] font-bold mb-1">Žádný stroj neodpovídá filtru</p>
+            <p>Zkuste filtr zúžit nebo zrušit.</p>
           </div>
         `;
         return;
       }
 
-      if (badgePending) {
-        badgePending.textContent = stroje.length.toString();
-        badgePending.classList.remove('hidden');
+      if (pocetVysledku) {
+        pocetVysledku.textContent = `Zobrazeno ${stroje.length} ${stroje.length === 1 ? 'stroj' : stroje.length < 5 ? 'stroje' : 'strojů'}.`;
       }
 
       const itemsHtml = await Promise.all(stroje.map(async (stroj) => {
@@ -271,33 +400,46 @@ export const prerender = false;
           }
         }
 
+        const stavTag = stroj.stav ? (STAV[stroj.stav] || escapujHtml(stroj.stav)) : null;
+        const fazeTag = stroj.vyrobni_faze ? (FAZE[stroj.vyrobni_faze] || escapujHtml(stroj.vyrobni_faze)) : null;
+
         return `
           <article class="bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-5 rounded-sm shadow-xs" data-id="${stroj.id}">
             <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
               <div>
-                <span class="text-xs font-sans font-bold text-[var(--red,#8B2014)]">Typ ${escapujHtml(stroj.typ) || '—'}</span>
+                <span class="text-xs font-sans font-bold text-[var(--red,#8B2014)]">${escapujHtml(TYP[stroj.typ] || ('Typ ' + stroj.typ))}</span>
                 <h3 class="text-lg font-bold font-serif text-[var(--ink,#141312)]">
                   Rok ${stroj.rok_vyroby || '—'} · Rám: ${escapujHtml(stroj.cislo_ramu) || '—'} · Motor: ${escapujHtml(stroj.cislo_motoru) || '—'}
                 </h3>
-                <div class="text-xs font-sans text-[var(--mute,#3E3A33)] mt-0.5">
-                  Kontakt: <strong>${escapujHtml(stroj.kontakt_email) || '—'}</strong>
-                  ${stroj.kontakt_telefon ? ` · ${escapujHtml(stroj.kontakt_telefon)}` : ''}
-                  · ${escapujHtml([stroj.region, stroj.zeme].filter(Boolean).join(', ')) || '—'}
-                  · přidáno ${formatDatum(stroj.vytvoreno_at)}
+                <div class="text-xs font-sans text-[var(--mute,#3E3A33)] mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                  <span>Kontakt: <strong>${escapujHtml(stroj.kontakt_email) || '—'}</strong>${stroj.kontakt_telefon ? ` · ${escapujHtml(stroj.kontakt_telefon)}` : ''}</span>
+                  <span>· ${escapujHtml([stroj.region, stroj.zeme].filter(Boolean).join(', ')) || '—'}</span>
+                  <span>· zveřejněno ${formatDatum(stroj.schvaleno_at)}</span>
+                  ${stavTag ? `<span class="px-1.5 py-0.5 rounded-full border border-[var(--rule,#E2DDD5)] text-[10px] uppercase tracking-wide">${stavTag}</span>` : ''}
+                  ${fazeTag ? `<span class="px-1.5 py-0.5 rounded-full border border-[var(--rule,#E2DDD5)] text-[10px] uppercase tracking-wide">${fazeTag}</span>` : ''}
+                  ${stroj.na_prodej ? `<span class="px-1.5 py-0.5 rounded-full bg-[var(--red,#8B2014)]/10 border border-[var(--red,#8B2014)]/30 text-[var(--red,#8B2014)] text-[10px] uppercase tracking-wide font-semibold">Na prodej</span>` : ''}
                 </div>
               </div>
-              <div class="flex items-center gap-2 font-sans text-xs self-start">
+              <div class="flex flex-wrap items-center gap-2 font-sans text-xs self-start">
+                <a
+                  href="/registr/stroj/${escapujHtml(stroj.slug) || ''}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="px-3 py-1.5 bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] border border-[var(--rule,#E2DDD5)] rounded-sm text-[var(--ink,#141312)] transition-colors"
+                >
+                  Zobrazit veřejně ↗
+                </a>
                 <button
-                  class="btn-approve px-3 py-1.5 bg-[var(--red,#8B2014)] hover:bg-[#6e1910] text-white rounded-sm font-semibold transition-colors"
+                  class="btn-unpublish px-3 py-1.5 bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] text-[var(--red,#8B2014)] border border-[var(--rule,#E2DDD5)] rounded-sm transition-colors"
                   data-id="${stroj.id}"
                 >
-                  Schválit do registru
+                  Zrušit zveřejnění
                 </button>
                 <button
-                  class="btn-reject px-3 py-1.5 bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] text-[var(--red,#8B2014)] border border-[var(--rule,#E2DDD5)] rounded-sm transition-colors"
+                  class="btn-delete px-3 py-1.5 bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--red,#8B2014)] hover:text-white text-[var(--red,#8B2014)] border border-[var(--rule,#E2DDD5)] rounded-sm transition-colors"
                   data-id="${stroj.id}"
                 >
-                  Zamítnout
+                  Smazat trvale
                 </button>
               </div>
             </div>
@@ -308,16 +450,6 @@ export const prerender = false;
               </p>
             ` : ''}
 
-            <label class="block mt-3">
-              <span class="block text-[var(--mute,#3E3A33)] uppercase tracking-wider text-[10px] font-semibold font-sans mb-1">
-                Poznámka moderátora (nepovinné, uloží se u zamítnutí)
-              </span>
-              <textarea
-                class="poznamka w-full bg-[var(--paper,#FAF8F5)] border border-[var(--rule,#E2DDD5)] px-2.5 py-2 rounded-sm text-xs font-sans text-[var(--ink,#141312)] focus:outline-none focus:border-[var(--red,#8B2014)]"
-                rows="2"
-              ></textarea>
-            </label>
-
             ${photoHtml}
           </article>
         `;
@@ -325,31 +457,29 @@ export const prerender = false;
 
       strojeContainer.innerHTML = itemsHtml.join('');
 
-      document.querySelectorAll('.btn-approve').forEach((btn) => {
+      document.querySelectorAll('.btn-unpublish').forEach((btn) => {
         btn.addEventListener('click', async (e) => {
           const id = (e.currentTarget as HTMLElement).dataset.id;
-          if (confirm('Opravdu chcete tento stroj schválit do veřejného registru?')) {
+          if (confirm('Opravdu chcete zrušit zveřejnění tohoto stroje? Vrátí se zpět do fronty ke schválení a zmizí z veřejného registru.')) {
             const { error } = await supabase
               .from('stroje')
-              .update({ stav_moderace: 'schvaleno', schvaleno_at: new Date().toISOString() })
+              .update({ stav_moderace: 'ceka', schvaleno_at: null })
               .eq('id', id);
-            if (!error) loadPendingStroje();
+            if (!error) loadZverejneneStroje();
             else alert('Chyba: ' + error.message);
           }
         });
       });
 
-      document.querySelectorAll('.btn-reject').forEach((btn) => {
+      document.querySelectorAll('.btn-delete').forEach((btn) => {
         btn.addEventListener('click', async (e) => {
           const id = (e.currentTarget as HTMLElement).dataset.id;
-          const karta = (e.currentTarget as HTMLElement).closest('article');
-          const poznamka = (karta?.querySelector('.poznamka') as HTMLTextAreaElement | null)?.value || null;
-          if (confirm('Opravdu chcete tento záznam zamítnout?')) {
+          if (confirm('Opravdu chcete tento záznam trvale smazat? Tuto akci nelze vzít zpět.')) {
             const { error } = await supabase
               .from('stroje')
-              .update({ stav_moderace: 'zamitnuto', poznamka_moderatora: poznamka })
+              .delete()
               .eq('id', id);
-            if (!error) loadPendingStroje();
+            if (!error) loadZverejneneStroje();
             else alert('Chyba: ' + error.message);
           }
         });
