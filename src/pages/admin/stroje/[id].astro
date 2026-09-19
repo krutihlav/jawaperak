@@ -1,0 +1,631 @@
+---
+// Kompletní editace jednoho záznamu stroje v registru — dostupná z fronty
+// ke schválení (/admin) i ze seznamu zveřejněných strojů (/admin/stroje),
+// oba mají odkaz "Upravit" na /admin/stroje/{id}. Mění jen data samotného
+// stroje a jeho fotky; přepínání stav_moderace (schválit/zamítnout/zrušit
+// zveřejnění/smazat) zůstává na těch dvou seznamech, aby se logika
+// neduplikovala na dvou místech.
+import Layout from '../../../layouts/Layout.astro';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+---
+
+<Layout title="Upravit stroj — administrace — jawaperak.cz" noindex={true}>
+  <main class="min-h-screen bg-[var(--paper,#FAF8F5)] text-[var(--ink,#141312)] font-serif py-8 px-4 sm:px-6">
+    <div class="max-w-4xl mx-auto space-y-6">
+
+      <!-- Hlavička rozhraní & ČSN 8850 identita -->
+      <header class="border-b border-[var(--rule,#E2DDD5)] pb-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 text-xs font-sans tracking-widest text-[var(--red,#8B2014)] uppercase font-semibold">
+              <span>jawaperak.cz</span>
+              <span>·</span>
+              <span>Dílna PureBikes Drahanovice</span>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight text-[var(--ink,#141312)] mt-1">
+              Úprava záznamu stroje
+            </h1>
+          </div>
+
+          <!-- Auth lišta -->
+          <div id="auth-panel" class="flex items-center gap-3 font-sans text-xs">
+            <div id="user-info" class="hidden text-right">
+              <span id="user-email" class="font-medium text-[var(--ink,#141312)] block"></span>
+              <span class="text-[var(--mute,#3E3A33)] text-[11px]">Ověřený správce</span>
+            </div>
+            <button
+              id="btn-logout"
+              class="hidden px-3 py-1.5 rounded-sm bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] text-[var(--ink,#141312)] border border-[var(--rule,#E2DDD5)] transition-colors"
+            >
+              Odhlásit
+            </button>
+          </div>
+        </div>
+
+        <!-- Přepínač záložek -->
+        <nav class="flex items-center gap-4 mt-6 pt-2 border-t border-[var(--rule,#E2DDD5)]/60 font-sans text-sm font-medium">
+          <a
+            href="/admin"
+            class="border-b-2 border-transparent text-[var(--mute,#3E3A33)] hover:text-[var(--ink,#141312)] pb-2 flex items-center gap-2"
+          >
+            <span>Moderace registru</span>
+            <span id="badge-pending" class="hidden px-1.5 py-0.5 rounded-full text-[10px] bg-[var(--red,#8B2014)] text-white font-bold">0</span>
+          </a>
+          <a
+            href="/admin/stroje"
+            class="border-b-2 border-transparent text-[var(--mute,#3E3A33)] hover:text-[var(--ink,#141312)] pb-2"
+          >
+            Zveřejněné stroje
+          </a>
+          <a
+            href="/admin/obsah"
+            class="border-b-2 border-transparent text-[var(--mute,#3E3A33)] hover:text-[var(--ink,#141312)] pb-2 flex items-center gap-1.5"
+          >
+            <span>Správa obsahu (Sveltia CMS)</span>
+            <span class="text-[11px] text-[var(--mute,#3E3A33)] opacity-70">↗</span>
+          </a>
+        </nav>
+      </header>
+
+      <!-- Formulář pro přihlášení -->
+      <section id="login-section" class="hidden bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-8 max-w-md mx-auto rounded-sm shadow-xs font-sans">
+        <h2 class="text-lg font-bold font-serif text-[var(--ink,#141312)] mb-2">Přihlášení správce</h2>
+        <p class="text-xs text-[var(--mute,#3E3A33)] mb-4">
+          Zadejte přihlašovací údaje pro přístup k neveřejné administraci registru motocyklů Jawa Pérák.
+        </p>
+        <form id="form-login" class="space-y-4 text-xs">
+          <div>
+            <label class="block text-[var(--mute,#3E3A33)] uppercase tracking-wider text-[10px] font-semibold mb-1" for="input-email">
+              E-mail správce
+            </label>
+            <input
+              id="input-email"
+              type="email"
+              autocomplete="username"
+              required
+              class="w-full bg-[var(--paper,#FAF8F5)] border border-[var(--rule,#E2DDD5)] px-3 py-2 rounded-sm text-[var(--ink,#141312)] focus:outline-none focus:border-[var(--red,#8B2014)]"
+            />
+          </div>
+          <div>
+            <label class="block text-[var(--mute,#3E3A33)] uppercase tracking-wider text-[10px] font-semibold mb-1" for="input-password">
+              Heslo
+            </label>
+            <input
+              id="input-password"
+              type="password"
+              autocomplete="current-password"
+              required
+              class="w-full bg-[var(--paper,#FAF8F5)] border border-[var(--rule,#E2DDD5)] px-3 py-2 rounded-sm text-[var(--ink,#141312)] focus:outline-none focus:border-[var(--red,#8B2014)]"
+            />
+          </div>
+          <div id="login-error" class="hidden text-[var(--red,#8B2014)] font-medium text-[11px]"></div>
+          <button
+            type="submit"
+            class="w-full bg-[var(--red,#8B2014)] hover:bg-[#6e1910] text-[var(--paper,#FAF8F5)] font-semibold py-2 rounded-sm border border-[var(--gold,#C89D42)] transition-colors"
+          >
+            Přihlásit se
+          </button>
+        </form>
+      </section>
+
+      <!-- Editační formulář -->
+      <section id="edit-section" class="hidden space-y-4 font-sans" data-stroj-id={id}>
+
+        <div id="edit-stav" class="flex flex-wrap items-center gap-2 text-xs"></div>
+
+        <div id="nacitani" class="p-8 text-center bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] text-xs text-[var(--mute,#3E3A33)]">
+          Načítám záznam...
+        </div>
+
+        <div id="chyba-nenalezen" class="hidden p-8 text-center bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] text-xs text-[var(--red,#8B2014)]">
+          Tento záznam se nepodařilo najít.
+        </div>
+
+        <form id="form-uprava" class="hidden space-y-5" novalidate>
+
+          <fieldset class="bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-5 rounded-sm shadow-xs">
+            <legend class="text-[11px] uppercase tracking-widest font-semibold text-[var(--red,#8B2014)] px-1.5">Stroj</legend>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Typ *</span>
+                <select name="typ" id="sel-typ" required class="fld"><option value="">—</option></select>
+              </label>
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Rok výroby</span>
+                <input type="number" name="rok_vyroby" min="1946" max="1954" class="fld" />
+              </label>
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Výrobní číslo rámu</span>
+                <input type="text" name="cislo_ramu" autocomplete="off" class="fld" />
+              </label>
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Výrobní číslo motoru</span>
+                <input type="text" name="cislo_motoru" autocomplete="off" class="fld" />
+              </label>
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Výrobní fáze</span>
+                <select name="vyrobni_faze" id="sel-faze" class="fld"><option value="">—</option></select>
+              </label>
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Stav *</span>
+                <select name="stav" id="sel-stav" required class="fld"><option value="">—</option></select>
+              </label>
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Barva</span>
+                <input type="text" name="barva" class="fld" />
+              </label>
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Historická SPZ</span>
+                <input type="text" name="spz_historicka" class="fld" />
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-5 rounded-sm shadow-xs">
+            <legend class="text-[11px] uppercase tracking-widest font-semibold text-[var(--red,#8B2014)] px-1.5">Fotografie</legend>
+            <div id="foto-existujici" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+            <p id="foto-prazdno" class="text-xs text-[var(--mute,#3E3A33)] mt-1">K tomuto stroji zatím nejsou žádné fotky.</p>
+
+            <div class="mt-4 pt-4 border-t border-[var(--rule,#E2DDD5)]">
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Přidat fotky (JPG, PNG, WebP, max. 8&nbsp;MB, do 6 fotek celkem)</span>
+                <input type="file" id="input-fotky" accept="image/jpeg,image/png,image/webp" multiple class="fld" />
+              </label>
+              <div id="foto-nahled" class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2"></div>
+              <p class="text-xs mt-2" id="foto-msg" role="status"></p>
+            </div>
+          </fieldset>
+
+          <fieldset class="bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-5 rounded-sm shadow-xs">
+            <legend class="text-[11px] uppercase tracking-widest font-semibold text-[var(--red,#8B2014)] px-1.5">Kde stroj je</legend>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Země</span>
+                <input type="text" name="zeme" class="fld" />
+              </label>
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Kraj / region</span>
+                <input type="text" name="region" class="fld" />
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-5 rounded-sm shadow-xs">
+            <legend class="text-[11px] uppercase tracking-widest font-semibold text-[var(--red,#8B2014)] px-1.5">Příběh stroje</legend>
+            <label class="flex flex-col gap-1.5 mb-3">
+              <span class="lbl">Česky</span>
+              <textarea name="pribeh" rows="5" class="fld"></textarea>
+            </label>
+            <label class="flex flex-col gap-1.5">
+              <span class="lbl">Anglicky (nepovinné)</span>
+              <textarea name="pribeh_en" rows="3" class="fld"></textarea>
+            </label>
+          </fieldset>
+
+          <fieldset class="bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-5 rounded-sm shadow-xs">
+            <legend class="text-[11px] uppercase tracking-widest font-semibold text-[var(--red,#8B2014)] px-1.5">Kontakt (nikdy veřejně)</legend>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">E-mail *</span>
+                <input type="email" name="kontakt_email" required class="fld" />
+              </label>
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Telefon</span>
+                <input type="tel" name="kontakt_telefon" class="fld" />
+              </label>
+            </div>
+            <label class="flex items-start gap-2 mt-3 cursor-pointer">
+              <input type="checkbox" name="na_prodej" class="mt-0.5 accent-[var(--red,#8B2014)]" />
+              <span class="text-xs">Stroj je na prodej</span>
+            </label>
+            <label class="flex items-start gap-2 mt-2 cursor-pointer">
+              <input type="checkbox" name="souhlas_kontakt" class="mt-0.5 accent-[var(--red,#8B2014)]" />
+              <span class="text-xs">Majitel souhlasí, aby ho zájemci mohli kontaktovat přes formulář</span>
+            </label>
+          </fieldset>
+
+          <fieldset class="bg-[var(--card,#FFFFFF)] border border-[var(--rule,#E2DDD5)] p-5 rounded-sm shadow-xs">
+            <legend class="text-[11px] uppercase tracking-widest font-semibold text-[var(--red,#8B2014)] px-1.5">Evidence</legend>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Renovoval (jméno / dílna)</span>
+                <input type="text" name="renovoval" class="fld" />
+              </label>
+              <label class="flex flex-col gap-1.5">
+                <span class="lbl">Odkaz na renovátora</span>
+                <input type="text" name="renovoval_odkaz" placeholder="https://…" class="fld" />
+              </label>
+            </div>
+            <label class="flex flex-col gap-1.5 mt-3">
+              <span class="lbl">Poznámka moderátora (interní, nikdy veřejná)</span>
+              <textarea name="poznamka_moderatora" rows="2" class="fld"></textarea>
+            </label>
+          </fieldset>
+
+          <div id="meta-info" class="text-[11px] text-[var(--mute,#3E3A33)] font-mono"></div>
+
+          <div class="flex items-center gap-4 flex-wrap sticky bottom-4">
+            <button
+              type="submit"
+              class="px-5 py-2.5 bg-[var(--red,#8B2014)] hover:bg-[#6e1910] text-white font-semibold rounded-sm border border-[var(--ink,#141312)] transition-colors"
+            >
+              Uložit změny
+            </button>
+            <a href="/admin/stroje" class="px-4 py-2.5 bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] border border-[var(--rule,#E2DDD5)] rounded-sm text-[var(--ink,#141312)] transition-colors">
+              Zpět bez uložení
+            </a>
+            <p id="msg-uprava" class="text-xs" role="status"></p>
+          </div>
+        </form>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    import { createClient } from '@supabase/supabase-js';
+
+    const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+    const strojId = (document.getElementById('edit-section') as HTMLElement)?.dataset.strojId || '';
+
+    const loginSection = document.getElementById('login-section');
+    const editSection = document.getElementById('edit-section');
+    const userInfo = document.getElementById('user-info');
+    const userEmail = document.getElementById('user-email');
+    const btnLogout = document.getElementById('btn-logout');
+    const formLogin = document.getElementById('form-login');
+    const loginError = document.getElementById('login-error');
+
+    const nacitani = document.getElementById('nacitani') as HTMLElement;
+    const chybaNenalezen = document.getElementById('chyba-nenalezen') as HTMLElement;
+    const formUprava = document.getElementById('form-uprava') as HTMLFormElement;
+    const editStav = document.getElementById('edit-stav') as HTMLElement;
+    const metaInfo = document.getElementById('meta-info') as HTMLElement;
+    const msgUprava = document.getElementById('msg-uprava') as HTMLElement;
+
+    const fotoExistujici = document.getElementById('foto-existujici') as HTMLElement;
+    const fotoPrazdno = document.getElementById('foto-prazdno') as HTMLElement;
+    const inputFotky = document.getElementById('input-fotky') as HTMLInputElement;
+    const fotoNahled = document.getElementById('foto-nahled') as HTMLElement;
+    const fotoMsg = document.getElementById('foto-msg') as HTMLElement;
+
+    // Přístup k pojmenovaným polím formuláře — přes querySelector s typovaným
+    // castem, ne přes form.jmenoPole (to TS nezná bez ručního rozhraní).
+    function pole(nazev: string) {
+      return formUprava.querySelector(`[name="${nazev}"]`) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+    }
+    function poleChk(nazev: string) {
+      return formUprava.querySelector(`[name="${nazev}"]`) as HTMLInputElement;
+    }
+
+    const STAV_MODERACE_POPIS: Record<string, string> = {
+      ceka: 'Čeká na schválení', schvaleno: 'Zveřejněno', zamitnuto: 'Zamítnuto'
+    };
+
+    function esc(s: string | null | undefined) {
+      return (s ?? '').toString().replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c] as string));
+    }
+
+    function formatDatum(iso: string | null | undefined) {
+      if (!iso) return '—';
+      return new Date(iso).toLocaleString('cs-CZ');
+    }
+
+    function naplnSelect(selectEl: HTMLSelectElement, radky: { hodnota: string; popis_cs: string }[]) {
+      for (const r of radky) {
+        const opt = document.createElement('option');
+        opt.value = r.hodnota;
+        opt.textContent = r.popis_cs;
+        selectEl.appendChild(opt);
+      }
+    }
+
+    async function initAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        showAuthenticated(session.user.email);
+        init();
+      } else {
+        showLogin();
+      }
+    }
+
+    function showAuthenticated(email: string | undefined) {
+      loginSection?.classList.add('hidden');
+      editSection?.classList.remove('hidden');
+      userInfo?.classList.remove('hidden');
+      btnLogout?.classList.remove('hidden');
+      if (userEmail) userEmail.textContent = email || 'Správce';
+    }
+
+    function showLogin() {
+      loginSection?.classList.remove('hidden');
+      editSection?.classList.add('hidden');
+      userInfo?.classList.add('hidden');
+      btnLogout?.classList.add('hidden');
+    }
+
+    formLogin?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginError?.classList.add('hidden');
+      const email = (document.getElementById('input-email') as HTMLInputElement).value;
+      const password = (document.getElementById('input-password') as HTMLInputElement).value;
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        if (loginError) {
+          loginError.textContent = 'Nesprávný e-mail nebo heslo.';
+          loginError.classList.remove('hidden');
+        }
+      } else if (data.session) {
+        showAuthenticated(data.session.user.email);
+        init();
+      }
+    });
+
+    btnLogout?.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      showLogin();
+    });
+
+    async function nactiCiselniky() {
+      const [rTyp, rStav, rFaze] = await Promise.all([
+        supabase.from('ciselnik_typ').select('*').order('poradi'),
+        supabase.from('ciselnik_stav').select('*').order('poradi'),
+        supabase.from('ciselnik_faze').select('*').order('poradi'),
+      ]);
+      const typy = rTyp.data || [];
+      const stavy = rStav.data || [];
+      const faze = rFaze.data || [];
+      naplnSelect(document.getElementById('sel-typ') as HTMLSelectElement, typy);
+      naplnSelect(document.getElementById('sel-stav') as HTMLSelectElement, stavy);
+      naplnSelect(document.getElementById('sel-faze') as HTMLSelectElement, faze);
+    }
+
+    type Stroj = Record<string, any>;
+
+    async function vykresliFotky(stroj: Stroj) {
+      const { data: fotky } = await supabase
+        .from('stroje_fotky')
+        .select('*')
+        .eq('stroj_id', stroj.id)
+        .order('poradi');
+
+      fotoExistujici.innerHTML = '';
+      if (!fotky || fotky.length === 0) {
+        fotoPrazdno.classList.remove('hidden');
+        return;
+      }
+      fotoPrazdno.classList.add('hidden');
+
+      for (const f of fotky) {
+        const { data } = await supabase.storage.from('stroje-fotky').createSignedUrl(f.url, 3600);
+        const div = document.createElement('div');
+        div.className = 'relative';
+        div.innerHTML = `
+          <img src="${data?.signedUrl || ''}" alt="Foto stroje" class="w-full h-24 object-cover rounded-xs border border-[var(--rule,#E2DDD5)]" />
+          <button type="button" data-fotka-id="${f.id}" data-cesta="${esc(f.url)}"
+            class="btn-smaz-fotku absolute top-1 right-1 bg-[var(--red,#8B2014)] text-white text-[10px] font-bold w-5 h-5 rounded-full leading-none flex items-center justify-center hover:bg-[#6e1910]"
+            title="Smazat fotku" aria-label="Smazat fotku">✕</button>
+        `;
+        fotoExistujici.appendChild(div);
+      }
+
+      document.querySelectorAll('.btn-smaz-fotku').forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+          const el = e.currentTarget as HTMLElement;
+          const fotkaId = el.dataset.fotkaId as string;
+          const cesta = el.dataset.cesta as string;
+          if (!confirm('Smazat tuto fotku?')) return;
+          const { error: chybaStorage } = await supabase.storage.from('stroje-fotky').remove([cesta]);
+          const { error: chybaRadek } = await supabase.from('stroje_fotky').delete().eq('id', fotkaId);
+          if (chybaStorage || chybaRadek) {
+            alert('Fotku se nepodařilo smazat: ' + (chybaStorage?.message || chybaRadek?.message));
+            return;
+          }
+          vykresliFotky(stroj);
+        });
+      });
+    }
+
+    let vybraneNoveFotky: File[] = [];
+    const MAX_FOTEK = 6;
+    const MAX_VELIKOST = 8 * 1024 * 1024;
+    const POVOLENE_TYPY = ['image/jpeg', 'image/png', 'image/webp'];
+
+    inputFotky?.addEventListener('change', () => {
+      fotoMsg.textContent = '';
+      fotoNahled.innerHTML = '';
+      const soubory = Array.from(inputFotky.files || []);
+      for (const s of soubory) {
+        if (!POVOLENE_TYPY.includes(s.type)) {
+          fotoMsg.textContent = 'Povolené jsou jen soubory JPG, PNG nebo WebP.';
+          fotoMsg.className = 'text-xs mt-2 text-[var(--red,#8B2014)] font-semibold';
+          inputFotky.value = '';
+          vybraneNoveFotky = [];
+          return;
+        }
+        if (s.size > MAX_VELIKOST) {
+          fotoMsg.textContent = 'Každá fotka musí být do 8 MB.';
+          fotoMsg.className = 'text-xs mt-2 text-[var(--red,#8B2014)] font-semibold';
+          inputFotky.value = '';
+          vybraneNoveFotky = [];
+          return;
+        }
+      }
+      vybraneNoveFotky = soubory;
+      for (const s of soubory) {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(s);
+        img.className = 'w-full h-24 object-cover rounded-xs border border-[var(--rule,#E2DDD5)]';
+        fotoNahled.appendChild(img);
+      }
+    });
+
+    async function nahrajNoveFotky(stroj: Stroj, accessToken: string | undefined) {
+      if (vybraneNoveFotky.length === 0) return true;
+
+      const { data: existujici } = await supabase.from('stroje_fotky').select('poradi').eq('stroj_id', stroj.id);
+      const obsazena = new Set((existujici || []).map((r: { poradi: number }) => r.poradi));
+      const volna: number[] = [];
+      for (let i = 0; i < MAX_FOTEK && volna.length < vybraneNoveFotky.length; i++) {
+        if (!obsazena.has(i)) volna.push(i);
+      }
+      if (volna.length < vybraneNoveFotky.length) {
+        fotoMsg.textContent = `K tomuto stroji je nahráno moc fotek, volných míst je jen ${volna.length}.`;
+        fotoMsg.className = 'text-xs mt-2 text-[var(--red,#8B2014)] font-semibold';
+        return false;
+      }
+
+      let vseOk = true;
+      for (let i = 0; i < vybraneNoveFotky.length; i++) {
+        const fd = new FormData();
+        fd.append('strojId', stroj.id);
+        fd.append('poradi', String(volna[i]));
+        fd.append('soubor', vybraneNoveFotky[i]);
+        try {
+          const r = await fetch('/api/nahraj-fotku', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${accessToken}` },
+            body: fd,
+          });
+          if (!r.ok) throw new Error(await r.text());
+        } catch (chyba) {
+          console.error('Nahrání fotky selhalo', chyba);
+          vseOk = false;
+        }
+      }
+      vybraneNoveFotky = [];
+      inputFotky.value = '';
+      fotoNahled.innerHTML = '';
+      return vseOk;
+    }
+
+    function naplnFormular(stroj: Stroj) {
+      pole('typ').value = stroj.typ || '';
+      pole('rok_vyroby').value = stroj.rok_vyroby ?? '';
+      pole('cislo_ramu').value = stroj.cislo_ramu || '';
+      pole('cislo_motoru').value = stroj.cislo_motoru || '';
+      pole('vyrobni_faze').value = stroj.vyrobni_faze || '';
+      pole('stav').value = stroj.stav || '';
+      pole('barva').value = stroj.barva || '';
+      pole('spz_historicka').value = stroj.spz_historicka || '';
+      pole('zeme').value = stroj.zeme || '';
+      pole('region').value = stroj.region || '';
+      pole('pribeh').value = stroj.pribeh || '';
+      pole('pribeh_en').value = stroj.pribeh_en || '';
+      pole('kontakt_email').value = stroj.kontakt_email || '';
+      pole('kontakt_telefon').value = stroj.kontakt_telefon || '';
+      poleChk('na_prodej').checked = !!stroj.na_prodej;
+      poleChk('souhlas_kontakt').checked = !!stroj.souhlas_kontakt;
+      pole('renovoval').value = stroj.renovoval || '';
+      pole('renovoval_odkaz').value = stroj.renovoval_odkaz || '';
+      pole('poznamka_moderatora').value = stroj.poznamka_moderatora || '';
+
+      const stavModeraceLabel = STAV_MODERACE_POPIS[stroj.stav_moderace] || stroj.stav_moderace || '—';
+      editStav.innerHTML = `
+        <span class="px-2 py-1 rounded-full border border-[var(--rule,#E2DDD5)] font-semibold uppercase tracking-wide text-[10px]">${esc(stavModeraceLabel)}</span>
+        ${stroj.slug ? `<a href="/registr/stroj/${esc(stroj.slug)}" target="_blank" rel="noopener noreferrer" class="text-[var(--mute,#3E3A33)] underline hover:text-[var(--ink,#141312)]">Zobrazit veřejně ↗</a>` : ''}
+      `;
+      metaInfo.textContent = `ID: ${stroj.id} · vytvořeno ${formatDatum(stroj.vytvoreno_at)} · schváleno ${formatDatum(stroj.schvaleno_at)}`;
+    }
+
+    let aktualniStroj: Stroj | null = null;
+
+    async function init() {
+      nacitani.classList.remove('hidden');
+      chybaNenalezen.classList.add('hidden');
+      formUprava.classList.add('hidden');
+
+      if (!strojId) {
+        nacitani.classList.add('hidden');
+        chybaNenalezen.classList.remove('hidden');
+        return;
+      }
+
+      await nactiCiselniky();
+
+      const { data: stroj, error } = await supabase.from('stroje').select('*').eq('id', strojId).single();
+      if (error || !stroj) {
+        nacitani.classList.add('hidden');
+        chybaNenalezen.classList.remove('hidden');
+        return;
+      }
+
+      aktualniStroj = stroj;
+      naplnFormular(stroj);
+      await vykresliFotky(stroj);
+
+      nacitani.classList.add('hidden');
+      formUprava.classList.remove('hidden');
+    }
+
+    formUprava?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!aktualniStroj) return;
+      msgUprava.textContent = 'Ukládám…';
+      msgUprava.className = 'text-xs';
+
+      if (!pole('typ').value || !pole('stav').value || !pole('kontakt_email').value) {
+        msgUprava.textContent = 'Vyplňte prosím povinná pole (typ, stav, e-mail).';
+        msgUprava.className = 'text-xs text-[var(--red,#8B2014)] font-semibold';
+        return;
+      }
+
+      const zmeny = {
+        typ: pole('typ').value,
+        rok_vyroby: pole('rok_vyroby').value ? Number(pole('rok_vyroby').value) : null,
+        cislo_ramu: pole('cislo_ramu').value || null,
+        cislo_motoru: pole('cislo_motoru').value || null,
+        vyrobni_faze: pole('vyrobni_faze').value || null,
+        stav: pole('stav').value,
+        barva: pole('barva').value || null,
+        spz_historicka: pole('spz_historicka').value || null,
+        zeme: pole('zeme').value || null,
+        region: pole('region').value || null,
+        pribeh: pole('pribeh').value || null,
+        pribeh_en: pole('pribeh_en').value || null,
+        kontakt_email: pole('kontakt_email').value,
+        kontakt_telefon: pole('kontakt_telefon').value || null,
+        na_prodej: poleChk('na_prodej').checked,
+        souhlas_kontakt: poleChk('souhlas_kontakt').checked,
+        renovoval: pole('renovoval').value || null,
+        renovoval_odkaz: pole('renovoval_odkaz').value || null,
+        poznamka_moderatora: pole('poznamka_moderatora').value || null,
+      };
+
+      const { error } = await supabase.from('stroje').update(zmeny).eq('id', aktualniStroj.id);
+      if (error) {
+        msgUprava.textContent = 'Chyba při ukládání: ' + error.message;
+        msgUprava.className = 'text-xs text-[var(--red,#8B2014)] font-semibold';
+        return;
+      }
+
+      const { data: { session } } = await supabase.auth.getSession();
+      const fotkyOk = await nahrajNoveFotky(aktualniStroj, session?.access_token);
+      await vykresliFotky(aktualniStroj);
+
+      msgUprava.textContent = fotkyOk ? 'Uloženo.' : 'Uloženo, ale některé fotky se nepodařilo nahrát.';
+      msgUprava.className = fotkyOk
+        ? 'text-xs text-[#2E6B32] font-semibold'
+        : 'text-xs text-[var(--red,#8B2014)] font-semibold';
+    });
+
+    initAuth();
+  </script>
+
+  <style>
+    .lbl{font-family:var(--font-sans,inherit);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute,#3E3A33)}
+    .fld{font-size:14px;background:var(--paper,#FAF8F5);border:1px solid var(--rule,#E2DDD5);color:var(--ink,#141312);
+      padding:8px 10px;width:100%;box-sizing:border-box;border-radius:2px}
+    .fld:focus{outline:none;border-color:var(--red,#8B2014)}
+    textarea.fld{resize:vertical}
+  </style>
+</Layout>

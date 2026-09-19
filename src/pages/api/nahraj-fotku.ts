@@ -9,8 +9,12 @@ import { validateUploadedBuffer } from '../../utils/uploadValidator';
 // EXIF/GPS metadata (sharp běží jen v Node, ne v prohlížeči). Endpoint navíc
 // službu-klíčem ověří, že cílový stroj skutečně čeká na schválení (stejné
 // pravidlo, jaké by jinak vynucovalo RLS pro anon roli), aby nešlo nahrávat
-// fotky k cizímu/neexistujícímu/už schválenému záznamu.
+// fotky k cizímu/neexistujícímu/už schválenému záznamu. Výjimka: přihlášený
+// správce (Authorization: Bearer <access_token> z jeho Supabase Auth session,
+// ověřený proti /auth/v1/user) smí nahrávat fotky k libovolnému existujícímu
+// stroji bez ohledu na stav_moderace — používá to editace v /admin/stroje.
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 const SERVICE_ROLE_KEY = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const MAX_VELIKOST = 8 * 1024 * 1024; // 8 MB, musí odpovídat limitu ve formuláři/bucketu
@@ -37,6 +41,31 @@ async function strojCekaNaSchvaleni(strojId: string): Promise<boolean> {
   if (!r.ok) return false;
   const radky = await r.json();
   return Array.isArray(radky) && radky.length === 1;
+}
+
+async function strojExistuje(strojId: string): Promise<boolean> {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/stroje?id=eq.${strojId}&select=id`, {
+    headers: {
+      apikey: SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+    },
+  });
+  if (!r.ok) return false;
+  const radky = await r.json();
+  return Array.isArray(radky) && radky.length === 1;
+}
+
+async function overSpravce(authHlavicka: string | null): Promise<boolean> {
+  if (!authHlavicka?.startsWith('Bearer ')) return false;
+  const token = authHlavicka.slice('Bearer '.length);
+  if (!token) return false;
+  const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return r.ok;
 }
 
 const MAX_FOTEK = 6;
@@ -104,7 +133,10 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ chyba: 'Nepovolený typ souboru.' }, 400);
   }
 
-  const povoleno = await strojCekaNaSchvaleni(strojId);
+  const jeSpravce = await overSpravce(request.headers.get('authorization'));
+  const povoleno = jeSpravce
+    ? await strojExistuje(strojId)
+    : await strojCekaNaSchvaleni(strojId);
   if (!povoleno) {
     return json({ chyba: 'Stroj nebyl nalezen, nebo už neceká na schválení.' }, 403);
   }

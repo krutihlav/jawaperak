@@ -287,6 +287,12 @@ export const prerender = false;
                 </div>
               </div>
               <div class="flex items-center gap-2 font-sans text-xs self-start">
+                <a
+                  href="/admin/stroje/${stroj.id}"
+                  class="px-3 py-1.5 bg-[var(--paper-2,#F2EFE9)] hover:bg-[var(--rule,#E2DDD5)] border border-[var(--rule,#E2DDD5)] rounded-sm text-[var(--ink,#141312)] transition-colors"
+                >
+                  Upravit
+                </a>
                 <button
                   class="btn-approve px-3 py-1.5 bg-[var(--red,#8B2014)] hover:bg-[#6e1910] text-white rounded-sm font-semibold transition-colors"
                   data-id="${stroj.id}"
