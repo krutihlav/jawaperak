@@ -2,7 +2,8 @@
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import { encyklopedie } from '../data/encyklopedie';
 import LanguageSwitcher from '../components/LanguageSwitcher.astro';
-import { hasNoEnEquivalent } from '../utils/i18nEquivalence';
+import { hasNoEnEquivalent } from '../i18n/utils';
+import CookieConsent from '../components/CookieConsent.astro';
 
 export interface BreadcrumbItem {
   name: string;
@@ -886,6 +887,8 @@ body{line-height:1.6}
     </div>
   </div>
 </footer>
+
+<CookieConsent />
 
 <script is:inline>
 (function () {

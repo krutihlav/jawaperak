@@ -1,0 +1,24 @@
+---
+---
+<div id="cookie-consent" hidden style="position:fixed;bottom:0;left:0;right:0;z-index:1000;padding:0.75rem 1rem;background:#1a1a1a;color:#fff;display:flex;gap:1rem;align-items:center;justify-content:center;flex-wrap:wrap;font-size:0.85rem;">
+  <span>Používáme jednu cookie, která si pamatuje zvolený jazyk stránky.</span>
+  <button id="cookie-accept" style="padding:0.3rem 0.8rem;">Souhlasím</button>
+  <button id="cookie-reject" style="padding:0.3rem 0.8rem;background:transparent;color:#fff;border:1px solid #fff;">Odmítnout</button>
+</div>
+<script is:inline>
+(function () {
+  var KEY = 'cookie_consent';
+  var banner = document.getElementById('cookie-consent');
+  var stored = localStorage.getItem(KEY);
+  if (!stored) banner?.removeAttribute('hidden');
+
+  document.getElementById('cookie-accept')?.addEventListener('click', function () {
+    localStorage.setItem(KEY, 'accepted');
+    banner?.setAttribute('hidden', '');
+  });
+  document.getElementById('cookie-reject')?.addEventListener('click', function () {
+    localStorage.setItem(KEY, 'rejected');
+    banner?.setAttribute('hidden', '');
+  });
+})();
+</script>

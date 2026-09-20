@@ -1,6 +1,6 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n';
-import { hasNoEnEquivalent } from '../utils/i18nEquivalence';
+import { hasNoEnEquivalent } from '../i18n/utils';
 
 export interface Props {
   class?: string;
@@ -14,5 +14,8 @@ const path = Astro.url.pathname.replace(/^\/en(\/|$)/, '/');
 const targetUrl = hasNoEnEquivalent(currentLocale, Astro.url.pathname)
   ? getRelativeLocaleUrl('en', '/')
   : getRelativeLocaleUrl(targetLocale, path);
+// Cookie `locale` zapisuje jen tenhle klik (viz middleware.ts) — a jen
+// pokud uživatel dřív odsouhlasil cookie lištu (CookieConsent.astro).
+const setCookieJs = `if (localStorage.getItem('cookie_consent') === 'accepted') { document.cookie = 'locale=${targetLocale}; path=/; max-age=31536000; SameSite=Lax'; }`;
 ---
-<a class={className} href={targetUrl}>{currentLocale === 'cs' ? 'English' : 'Česky'}</a>
+<a class={className} href={targetUrl} onclick={setCookieJs}>{currentLocale === 'cs' ? 'English' : 'Česky'}</a>
