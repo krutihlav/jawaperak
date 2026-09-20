@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+const locale = Astro.currentLocale ?? 'cs';
 ---
 
 <Layout
@@ -97,12 +98,15 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   </div>
 </Layout>
 
-<script define:vars={{ SUPABASE_URL, SUPABASE_KEY }}>
+<script define:vars={{ SUPABASE_URL, SUPABASE_KEY, locale }}>
   const H = { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY };
   const box = document.getElementById('vysledky');
 
   // Popisky typu/stavu/fáze se NAČÍTAJÍ z číselníkových tabulek v Supabase,
   // ne z kopie natvrdo psané tady — jinak se to časem rozejde (viz historie projektu).
+  // Jazyk popisku určuje `locale` (Astro.currentLocale předaný z frontmatteru).
+  const popis = (radek) => (locale === 'en' ? (radek.popis_en || radek.popis_cs) : radek.popis_cs);
+
   let TYP = {};
   let STAV = {};
   let FAZE = {};
@@ -164,7 +168,7 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
     for (const r of radky) {
       const opt = document.createElement('option');
       opt.value = r.hodnota;
-      opt.textContent = r.popis_cs;
+      opt.textContent = popis(r);
       selectEl.appendChild(opt);
     }
   }
@@ -178,9 +182,9 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
       ]);
       const [typy, stavy, faze] = await Promise.all([rTyp.json(), rStav.json(), rFaze.json()]);
 
-      TYP = Object.fromEntries(typy.map((r) => [r.hodnota, r.popis_cs]));
-      STAV = Object.fromEntries(stavy.map((r) => [r.hodnota, r.popis_cs]));
-      FAZE = Object.fromEntries(faze.map((r) => [r.hodnota, r.popis_cs]));
+      TYP = Object.fromEntries(typy.map((r) => [r.hodnota, popis(r)]));
+      STAV = Object.fromEntries(stavy.map((r) => [r.hodnota, popis(r)]));
+      FAZE = Object.fromEntries(faze.map((r) => [r.hodnota, popis(r)]));
 
       naplnSelect(document.getElementById('f-typ'), typy);
       naplnSelect(document.getElementById('f-stav'), stavy);

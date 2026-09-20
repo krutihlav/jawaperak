@@ -12,6 +12,7 @@ const SERVICE_ROLE_KEY = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
 const H = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
 
 const { slug } = Astro.params;
+const locale = Astro.currentLocale ?? 'cs';
 
 async function nacti(cesta) {
   const r = await fetch(`${SUPABASE_URL}/rest/v1/${cesta}`, { headers: H });
@@ -65,7 +66,8 @@ const radekTyp = stroj ? ciselnikTyp.find((t) => t.hodnota === stroj.typ) : null
 
 function popis(seznam, hodnota) {
   const r = seznam.find((x) => x.hodnota === hodnota);
-  return r ? r.popis_cs : (hodnota ?? '—');
+  if (!r) return hodnota ?? '—';
+  return locale === 'en' ? (r.popis_en || r.popis_cs) : r.popis_cs;
 }
 
 // "Jiné záznamy" — volný dodatek jako na dobovém TP

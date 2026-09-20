@@ -3,6 +3,81 @@ import Layout from '../../../layouts/Layout.astro';
 
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+
+// Jazyk formuláře teď určuje route (/registr/pridat-stroj/ vs.
+// /en/registr/pridat-stroj/) přes Astro.currentLocale, ne vlastní
+// langbar přepínač — ten byl jen dočasný per-form fix.
+const locale = Astro.currentLocale ?? 'cs';
+
+const CS = {
+  h1: 'Přidat stroj',
+  lead: 'Vyplňte, co víte. Neúplný záznam je lepší než žádný — doplnit se dá kdykoli.',
+  privH: 'Co se zveřejní',
+  priv1: 'Typ, rok, stav, barva, kraj — veřejně',
+  priv2: 'Výrobní čísla — jen částečně, poslední tři znaky zakryté',
+  priv3: 'Jméno, e-mail a telefon — nikdy veřejně',
+  priv4: 'Záznam zveřejníme až po ruční kontrole',
+  fsStroj: 'Stroj', lTyp: 'Typ *', lRok: 'Rok výroby',
+  lRam: 'Výrobní číslo rámu', hRam: 'Zveřejní se jako 11-102•••',
+  lMotor: 'Výrobní číslo motoru', lFaze: 'Výrobní fáze', lStav: 'Stav *',
+  lBarva: 'Barva', lSpz: 'Historická SPZ',
+  fsFoto: 'Fotografie',
+  fotoHint: 'Aspoň jedna fotka výrazně pomůže s ověřením záznamu. JPG, PNG nebo WebP, max. 8 MB na fotku, max. 6 fotek.',
+  lFoto: 'Fotky stroje',
+  fotoPocet: 'Nejvýše 6 fotek.',
+  fotoTyp: 'Povolené jsou jen soubory JPG, PNG nebo WebP.',
+  fotoVelikost: 'Každá fotka musí být do 8 MB.',
+  fotoUploadErr: 'Záznam jsme odeslali, ale některé fotky se nepodařilo nahrát. Ozveme se vám.',
+  fsKde: 'Kde stroj je', lZeme: 'Země', lRegion: 'Kraj / region',
+  hRegion: 'Přesnou adresu nezadávejte',
+  fsPribeh: 'Příběh stroje',
+  lPribeh: 'Jak jste ke stroji přišli, co víte o jeho historii',
+  lPribehEn: 'Anglicky (nepovinné)',
+  fsKontakt: 'Kontakt',
+  kontaktNote: 'Kontakt slouží k ověření záznamu. Veřejně se nikdy nezobrazí.',
+  lEmail: 'E-mail *', lTel: 'Telefon', lProdej: 'Stroj je na prodej',
+  lSouhlas: 'Souhlasím, aby mě zájemci mohli kontaktovat přes formulář (kontakt zůstává skrytý)',
+  btnSend: 'Odeslat ke schválení',
+  okMsg: 'Děkujeme. Záznam jsme odeslali ke schválení.',
+  errMsg: 'Něco se pokazilo. Zkuste to prosím znovu, nebo nám napište.',
+  reqMsg: 'Vyplňte prosím povinná pole.',
+};
+
+const EN = {
+  h1: 'Add a machine',
+  lead: 'Fill in what you know. An incomplete record is better than none — you can always add details later.',
+  privH: 'What becomes public',
+  priv1: 'Type, year, condition, colour, region — public',
+  priv2: 'Serial numbers — partially only, last three characters hidden',
+  priv3: 'Name, e-mail and phone — never public',
+  priv4: 'Records are published after manual review',
+  fsStroj: 'Machine', lTyp: 'Type *', lRok: 'Year of manufacture',
+  lRam: 'Frame number', hRam: 'Displayed as 11-102•••',
+  lMotor: 'Engine number', lFaze: 'Production phase', lStav: 'Condition *',
+  lBarva: 'Colour', lSpz: 'Historic registration',
+  fsFoto: 'Photos',
+  fotoHint: 'At least one photo helps a lot with verifying the record. JPG, PNG or WebP, max. 8 MB per photo, max. 6 photos.',
+  lFoto: 'Machine photos',
+  fotoPocet: 'Maximum 6 photos.',
+  fotoTyp: 'Only JPG, PNG or WebP files are allowed.',
+  fotoVelikost: 'Each photo must be under 8 MB.',
+  fotoUploadErr: 'The record was submitted, but some photos failed to upload. We will contact you.',
+  fsKde: 'Location', lZeme: 'Country', lRegion: 'Region',
+  hRegion: 'Do not enter a street address',
+  fsPribeh: "Machine's story",
+  lPribeh: 'How you got it and what you know about its history',
+  lPribehEn: 'In English (optional)',
+  fsKontakt: 'Contact',
+  kontaktNote: 'Contact details are used to verify the record. They are never shown publicly.',
+  lEmail: 'E-mail *', lTel: 'Phone', lProdej: 'This machine is for sale',
+  lSouhlas: 'I agree to be contacted through the form (my details stay hidden)',
+  btnSend: 'Submit for review',
+  okMsg: 'Thank you. The record has been submitted for review.',
+  errMsg: 'Something went wrong. Please try again or write to us.',
+  reqMsg: 'Please fill in the required fields.',
+};
+
+const t = locale === 'en' ? EN : CS;
 ---
 
 <Layout
@@ -13,25 +88,19 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
     <article class="art">
 
       <p class="kicker">Registr</p>
-      <h1 data-i18n="h1">Přidat stroj</h1>
+      <h1>{t.h1}</h1>
 
-      <div class="langbar">
-        <button type="button" class="lb-btn is-on" data-lang="cs">Česky</button>
-        <button type="button" class="lb-btn" data-lang="en">English</button>
-      </div>
-
-      <p class="lead" data-i18n="lead">
-        Vyplňte, co víte. Neúplný záznam je lepší než žádný — doplnit se dá
-        kdykoli.
+      <p class="lead">
+        {t.lead}
       </p>
 
       <div class="tldr">
-        <h2 data-i18n="privH">Co se zveřejní</h2>
+        <h2>{t.privH}</h2>
         <ul>
-          <li data-i18n="priv1">Typ, rok, stav, barva, kraj — veřejně</li>
-          <li data-i18n="priv2">Výrobní čísla — jen částečně, poslední tři znaky zakryté</li>
-          <li data-i18n="priv3">Jméno, e-mail a telefon — nikdy veřejně</li>
-          <li data-i18n="priv4">Záznam zveřejníme až po ruční kontrole</li>
+          <li>{t.priv1}</li>
+          <li>{t.priv2}</li>
+          <li>{t.priv3}</li>
+          <li>{t.priv4}</li>
         </ul>
       </div>
 
@@ -42,45 +111,45 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
         </div>
 
         <fieldset>
-          <legend data-i18n="fsStroj">Stroj</legend>
+          <legend>{t.fsStroj}</legend>
 
           <div class="row">
             <label>
-              <span data-i18n="lTyp">Typ *</span>
+              <span>{t.lTyp}</span>
               <select name="typ" id="sel-typ" required>
                 <option value="">—</option>
               </select>
             </label>
 
             <label>
-              <span data-i18n="lRok">Rok výroby</span>
+              <span>{t.lRok}</span>
               <input type="number" name="rok_vyroby" min="1946" max="1954" placeholder="1951">
             </label>
           </div>
 
           <div class="row">
             <label>
-              <span data-i18n="lRam">Výrobní číslo rámu</span>
+              <span>{t.lRam}</span>
               <input type="text" name="cislo_ramu" placeholder="11-102934" autocomplete="off">
-              <small data-i18n="hRam">Zveřejní se jako 11-102•••</small>
+              <small>{t.hRam}</small>
             </label>
 
             <label>
-              <span data-i18n="lMotor">Výrobní číslo motoru</span>
+              <span>{t.lMotor}</span>
               <input type="text" name="cislo_motoru" placeholder="12-5845" autocomplete="off">
             </label>
           </div>
 
           <div class="row">
             <label>
-              <span data-i18n="lFaze">Výrobní fáze</span>
+              <span>{t.lFaze}</span>
               <select name="vyrobni_faze" id="sel-faze">
                 <option value="">—</option>
               </select>
             </label>
 
             <label>
-              <span data-i18n="lStav">Stav *</span>
+              <span>{t.lStav}</span>
               <select name="stav" id="sel-stav" required>
                 <option value="">—</option>
               </select>
@@ -89,24 +158,23 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
           <div class="row">
             <label>
-              <span data-i18n="lBarva">Barva</span>
+              <span>{t.lBarva}</span>
               <input type="text" name="barva" placeholder="Červená">
             </label>
             <label>
-              <span data-i18n="lSpz">Historická SPZ</span>
+              <span>{t.lSpz}</span>
               <input type="text" name="spz_historicka" placeholder="Nepovinné">
             </label>
           </div>
         </fieldset>
 
         <fieldset>
-          <legend data-i18n="fsFoto">Fotografie</legend>
-          <p class="fs-note" data-i18n="fotoHint">
-            Aspoň jedna fotka výrazně pomůže s ověřením záznamu. JPG, PNG nebo WebP,
-            max. 8&nbsp;MB na fotku, max. 6 fotek.
+          <legend>{t.fsFoto}</legend>
+          <p class="fs-note">
+            {t.fotoHint}
           </p>
           <label class="full">
-            <span data-i18n="lFoto">Fotky stroje</span>
+            <span>{t.lFoto}</span>
             <input type="file" id="input-fotky" name="fotky" accept="image/jpeg,image/png,image/webp" multiple>
           </label>
           <div class="foto-nahled" id="foto-nahled"></div>
@@ -114,59 +182,59 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
         </fieldset>
 
         <fieldset>
-          <legend data-i18n="fsKde">Kde stroj je</legend>
+          <legend>{t.fsKde}</legend>
           <div class="row">
             <label>
-              <span data-i18n="lZeme">Země</span>
+              <span>{t.lZeme}</span>
               <input type="text" name="zeme" placeholder="Česko" value="Česko">
             </label>
             <label>
-              <span data-i18n="lRegion">Kraj / region</span>
+              <span>{t.lRegion}</span>
               <input type="text" name="region" placeholder="Olomoucký">
-              <small data-i18n="hRegion">Přesnou adresu nezadávejte</small>
+              <small>{t.hRegion}</small>
             </label>
           </div>
         </fieldset>
 
         <fieldset>
-          <legend data-i18n="fsPribeh">Příběh stroje</legend>
+          <legend>{t.fsPribeh}</legend>
           <label class="full">
-            <span data-i18n="lPribeh">Jak jste ke stroji přišli, co víte o jeho historii</span>
+            <span>{t.lPribeh}</span>
             <textarea name="pribeh" rows="5" placeholder="Nepovinné, ale je to nejzajímavější část registru."></textarea>
           </label>
           <label class="full">
-            <span data-i18n="lPribehEn">Anglicky (nepovinné)</span>
+            <span>{t.lPribehEn}</span>
             <textarea name="pribeh_en" rows="3"></textarea>
           </label>
         </fieldset>
 
         <fieldset>
-          <legend data-i18n="fsKontakt">Kontakt</legend>
-          <p class="fs-note" data-i18n="kontaktNote">
-            Kontakt slouží k ověření záznamu. Veřejně se nikdy nezobrazí.
+          <legend>{t.fsKontakt}</legend>
+          <p class="fs-note">
+            {t.kontaktNote}
           </p>
           <div class="row">
             <label>
-              <span data-i18n="lEmail">E-mail *</span>
+              <span>{t.lEmail}</span>
               <input type="email" name="kontakt_email" required>
             </label>
             <label>
-              <span data-i18n="lTel">Telefon</span>
+              <span>{t.lTel}</span>
               <input type="tel" name="kontakt_telefon">
             </label>
           </div>
           <label class="chk-row">
             <input type="checkbox" name="na_prodej">
-            <span data-i18n="lProdej">Stroj je na prodej</span>
+            <span>{t.lProdej}</span>
           </label>
           <label class="chk-row">
             <input type="checkbox" name="souhlas_kontakt">
-            <span data-i18n="lSouhlas">Souhlasím, aby mě zájemci mohli kontaktovat přes formulář (kontakt zůstává skrytý)</span>
+            <span>{t.lSouhlas}</span>
           </label>
         </fieldset>
 
         <div class="submit-row">
-          <button type="submit" class="btn" data-i18n="btnSend">Odeslat ke schválení</button>
+          <button type="submit" class="btn">{t.btnSend}</button>
           <p class="msg" id="msg" role="status"></p>
         </div>
       </form>
@@ -175,88 +243,30 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   </div>
 </Layout>
 
-<script define:vars={{ SUPABASE_URL, SUPABASE_KEY }}>
+<script define:vars={{ SUPABASE_URL, SUPABASE_KEY, locale, msgs: t }}>
   const _pageLoadedAt = Date.now();
 
-  const T = {
-    en: {
-      h1: 'Add a machine',
-      lead: 'Fill in what you know. An incomplete record is better than none — you can always add details later.',
-      privH: 'What becomes public',
-      priv1: 'Type, year, condition, colour, region — public',
-      priv2: 'Serial numbers — partially only, last three characters hidden',
-      priv3: 'Name, e-mail and phone — never public',
-      priv4: 'Records are published after manual review',
-      fsStroj: 'Machine', lTyp: 'Type *', lRok: 'Year of manufacture',
-      lRam: 'Frame number', hRam: 'Displayed as 11-102•••',
-      lMotor: 'Engine number', lFaze: 'Production phase', lStav: 'Condition *',
-      lBarva: 'Colour', lSpz: 'Historic registration',
-      fsFoto: 'Photos',
-      fotoHint: 'At least one photo helps a lot with verifying the record. JPG, PNG or WebP, max. 8\u00a0MB per photo, max. 6 photos.',
-      lFoto: 'Machine photos',
-      fotoPocet: 'Maximum 6 photos.',
-      fotoTyp: 'Only JPG, PNG or WebP files are allowed.',
-      fotoVelikost: 'Each photo must be under 8\u00a0MB.',
-      fotoUploadErr: 'The record was submitted, but some photos failed to upload. We will contact you.',
-      fsKde: 'Location', lZeme: 'Country', lRegion: 'Region',
-      hRegion: 'Do not enter a street address',
-      fsPribeh: "Machine's story",
-      lPribeh: 'How you got it and what you know about its history',
-      lPribehEn: 'In English (optional)',
-      fsKontakt: 'Contact',
-      kontaktNote: 'Contact details are used to verify the record. They are never shown publicly.',
-      lEmail: 'E-mail *', lTel: 'Phone', lProdej: 'This machine is for sale',
-      lSouhlas: 'I agree to be contacted through the form (my details stay hidden)',
-      btnSend: 'Submit for review',
-      okMsg: 'Thank you. The record has been submitted for review.',
-      errMsg: 'Something went wrong. Please try again or write to us.',
-      reqMsg: 'Please fill in the required fields.'
-    }
-  };
-  const CS = {};
-  document.querySelectorAll('[data-i18n]').forEach((el) => { CS[el.dataset.i18n] = el.innerHTML; });
-  CS.okMsg = 'Děkujeme. Záznam jsme odeslali ke schválení.';
-  CS.errMsg = 'Něco se pokazilo. Zkuste to prosím znovu, nebo nám napište.';
-  CS.reqMsg = 'Vyplňte prosím povinná pole.';
-  CS.fotoPocet = 'Nejvýše 6 fotek.';
-  CS.fotoTyp = 'Povolené jsou jen soubory JPG, PNG nebo WebP.';
-  CS.fotoVelikost = 'Každá fotka musí být do 8 MB.';
-  CS.fotoUploadErr = 'Záznam jsme odeslali, ale některé fotky se nepodařilo nahrát. Ozveme se vám.';
-
-  let lang = 'cs';
-  function prepni(l) {
-    lang = l;
-    const d = l === 'en' ? T.en : CS;
-    document.querySelectorAll('[data-i18n]').forEach((el) => {
-      if (d[el.dataset.i18n]) el.innerHTML = d[el.dataset.i18n];
-    });
-    document.querySelectorAll('.lb-btn').forEach((b) =>
-      b.classList.toggle('is-on', b.dataset.lang === l));
-    vykresliDropdowny(l);
-  }
-  document.querySelectorAll('.lb-btn').forEach((b) =>
-    b.addEventListener('click', () => prepni(b.dataset.lang)));
-
   // Popisky dropdownů se NAČÍTAJÍ z číselníkových tabulek v Supabase (CS i EN),
-  // ne z kopie natvrdo psané tady — jinak se to časem rozejde.
+  // ne z kopie natvrdo psané tady — jinak se to časem rozejde. Jazyk popisku
+  // určuje `locale` (Astro.currentLocale předaný z frontmatteru), ne toggle.
   let ciselniky = { typ: [], stav: [], faze: [] };
 
-  function vyplnSelect(selectEl, radky, jazyk) {
+  function vyplnSelect(selectEl, radky) {
     const puvodniHodnota = selectEl.value;
     selectEl.innerHTML = '<option value="">—</option>';
     for (const r of radky) {
       const opt = document.createElement('option');
       opt.value = r.hodnota;
-      opt.textContent = jazyk === 'en' ? (r.popis_en || r.popis_cs) : r.popis_cs;
+      opt.textContent = locale === 'en' ? (r.popis_en || r.popis_cs) : r.popis_cs;
       selectEl.appendChild(opt);
     }
     if (puvodniHodnota) selectEl.value = puvodniHodnota;
   }
 
-  function vykresliDropdowny(jazyk) {
-    vyplnSelect(document.getElementById('sel-typ'), ciselniky.typ, jazyk);
-    vyplnSelect(document.getElementById('sel-faze'), ciselniky.faze, jazyk);
-    vyplnSelect(document.getElementById('sel-stav'), ciselniky.stav, jazyk);
+  function vykresliDropdowny() {
+    vyplnSelect(document.getElementById('sel-typ'), ciselniky.typ);
+    vyplnSelect(document.getElementById('sel-faze'), ciselniky.faze);
+    vyplnSelect(document.getElementById('sel-stav'), ciselniky.stav);
   }
 
   async function nactiCiselniky() {
@@ -270,7 +280,7 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
       ciselniky.typ = await rTyp.json();
       ciselniky.stav = await rStav.json();
       ciselniky.faze = await rFaze.json();
-      vykresliDropdowny(lang);
+      vykresliDropdowny();
     } catch (e) {
       console.error('Číselníky se nepodařilo načíst', e);
     }
@@ -291,27 +301,26 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   const POVOLENE_TYPY = ['image/jpeg', 'image/png', 'image/webp'];
 
   inputFotky.addEventListener('change', () => {
-    const d = lang === 'en' ? T.en : CS;
     const soubory = Array.from(inputFotky.files || []);
     fotoNahled.innerHTML = '';
     fotoMsg.textContent = '';
     fotoMsg.className = 'msg';
 
     if (soubory.length > MAX_FOTEK) {
-      fotoMsg.textContent = d.fotoPocet;
+      fotoMsg.textContent = msgs.fotoPocet;
       fotoMsg.className = 'msg msg--err';
       inputFotky.value = '';
       return;
     }
     for (const s of soubory) {
       if (!POVOLENE_TYPY.includes(s.type)) {
-        fotoMsg.textContent = d.fotoTyp;
+        fotoMsg.textContent = msgs.fotoTyp;
         fotoMsg.className = 'msg msg--err';
         inputFotky.value = '';
         return;
       }
       if (s.size > MAX_VELIKOST) {
-        fotoMsg.textContent = d.fotoVelikost;
+        fotoMsg.textContent = msgs.fotoVelikost;
         fotoMsg.className = 'msg msg--err';
         inputFotky.value = '';
         return;
@@ -340,12 +349,11 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const d = lang === 'en' ? T.en : CS;
     const fd = new FormData(form);
 
     // Honeypot: skryté pole vidí a vyplní jen boti, lidský uživatel ne.
     if (fd.get('overeni_webu')) {
-      msg.textContent = d.okMsg;
+      msg.textContent = msgs.okMsg;
       msg.className = 'msg msg--ok';
       form.reset();
       return;
@@ -358,7 +366,7 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
     }
 
     if (!fd.get('typ') || !fd.get('stav') || !fd.get('kontakt_email')) {
-      msg.textContent = d.reqMsg;
+      msg.textContent = msgs.reqMsg;
       msg.className = 'msg msg--err';
       return;
     }
@@ -419,24 +427,17 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
       form.reset();
       fotoNahled.innerHTML = '';
-      msg.textContent = chybaFotek ? d.fotoUploadErr : d.okMsg;
+      msg.textContent = chybaFotek ? msgs.fotoUploadErr : msgs.okMsg;
       msg.className = chybaFotek ? 'msg msg--err' : 'msg msg--ok';
     } catch (err) {
       console.error(err);
-      msg.textContent = d.errMsg;
+      msg.textContent = msgs.errMsg;
       msg.className = 'msg msg--err';
     }
   });
 </script>
 
 <style is:global>
-  .langbar{display:flex;gap:0;margin:18px 0 6px}
-  .lb-btn{font-family:var(--disp);font-size:12px;letter-spacing:.11em;text-transform:uppercase;
-    background:var(--paper-2);border:1px solid var(--ink);color:var(--mute);
-    padding:7px 14px;cursor:pointer}
-  .lb-btn+.lb-btn{border-left:0}
-  .lb-btn.is-on{background:var(--ink);color:var(--paper)}
-
   form{margin-top:26px}
   fieldset{border:1px solid var(--rule);background:var(--paper-2);padding:18px 20px;margin:0 0 18px}
   legend{font-family:var(--disp);font-weight:500;font-size:11.5px;letter-spacing:.15em;
