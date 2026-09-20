@@ -2,6 +2,7 @@ import { defineConfig, envField } from 'astro/config';
 import vercel from '@astrojs/vercel/serverless';
 import decapCmsOauth from 'astro-decap-cms-oauth';
 import tailwind from '@astrojs/tailwind';
+import sitemap from '@astrojs/sitemap';
 
 // Sveltia CMS engine (lepší i18n cs/en) místo výchozího Decap UI.
 const SVELTIA_CMS_SRC_URL = 'https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js';
@@ -12,7 +13,10 @@ const SVELTIA_CMS_SRC_URL = 'https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js'
 // nepotřebuje SSR, jede čistě klientsky; totéž platí pro /admin a /oauth
 // routy, které mountuje astro-decap-cms-oauth).
 export default defineConfig({
-  site: 'https://jawaperak.cz',
+  // www.jawaperak.cz je skutečná produkční doména na Vercelu — apex
+  // jawaperak.cz na ni jen 308 redirectuje (ověřeno přes Vercel domény
+  // projektu), takže sitemapa a canonical URL musí ukazovat na www.
+  site: 'https://www.jawaperak.cz',
   output: 'hybrid',
   redirects: {
   '/perak/typ-10-a-typ-11': '/perak/250/',
@@ -40,6 +44,11 @@ export default defineConfig({
   integrations: [
     tailwind(),
     decapCmsOauth({ decapCMSSrcUrl: SVELTIA_CMS_SRC_URL, adminDisabled: true }),
+    // Vyloučit /admin/* ze sitemapy — jsou noindex a zakázané v robots.txt,
+    // nemá smysl je nabízet vyhledávačům k procházení.
+    sitemap({
+      filter: (page) => !new URL(page).pathname.startsWith('/admin/'),
+    }),
   ],
   // astro-decap-cms-oauth@0.4.x (poslední verze pro Astro 4.x) registruje
   // svoje astro:env schéma přes updateConfig({ env }) na top-level klíči,
