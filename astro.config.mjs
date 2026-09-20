@@ -46,8 +46,19 @@ export default defineConfig({
     decapCmsOauth({ decapCMSSrcUrl: SVELTIA_CMS_SRC_URL, adminDisabled: true }),
     // Vyloučit /admin/* ze sitemapy — jsou noindex a zakázané v robots.txt,
     // nemá smysl je nabízet vyhledávačům k procházení.
+    // i18n mapování (cs i en musí být v `locales`, i když cs nemá URL
+    // prefix — @astrojs/sitemap ho páruje přes `defaultLocale`) zajistí, že
+    // sitemapa u stránek s EN ekvivalentem obsahuje xhtml:link alternates;
+    // DB-řízené cs-only stránky bez EN protějšku zůstanou bez alternates.
     sitemap({
       filter: (page) => !new URL(page).pathname.startsWith('/admin/'),
+      i18n: {
+        defaultLocale: 'cs',
+        locales: {
+          cs: 'cs',
+          en: 'en',
+        },
+      },
     }),
   ],
   // astro-decap-cms-oauth@0.4.x (poslední verze pro Astro 4.x) registruje

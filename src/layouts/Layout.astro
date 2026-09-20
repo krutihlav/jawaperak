@@ -1,6 +1,8 @@
 ---
+import { getRelativeLocaleUrl } from 'astro:i18n';
 import { encyklopedie } from '../data/encyklopedie';
 import LanguageSwitcher from '../components/LanguageSwitcher.astro';
+import { hasNoEnEquivalent } from '../utils/i18nEquivalence';
 
 export interface BreadcrumbItem {
   name: string;
@@ -36,6 +38,15 @@ const menuEncy = encyklopedie.filter((s) => s.hotovo).slice(0, 7);
 // nejbližší dostupný soubor v public/ (dedikované logo.png web nemá).
 const SITE_URL = 'https://www.jawaperak.cz';
 const LOGO_URL = `${SITE_URL}/apple-touch-icon.png`;
+
+// hreflang alternate odkazy — jen na stránkách, které mají EN ekvivalent
+// (stejná podmínka jako u viditelnosti language switcheru, viz
+// utils/i18nEquivalence.ts): radši žádný hreflang než hreflang na 404.
+const currentLocale = Astro.currentLocale ?? 'cs';
+const showHreflang = !hasNoEnEquivalent(currentLocale, Astro.url.pathname);
+const hreflangPath = Astro.url.pathname.replace(/^\/en(\/|$)/, '/');
+const csHreflangUrl = new URL(getRelativeLocaleUrl('cs', hreflangPath), SITE_URL).href;
+const enHreflangUrl = new URL(getRelativeLocaleUrl('en', hreflangPath), SITE_URL).href;
 
 const organizationJsonLd = {
   '@context': 'https://schema.org',
@@ -89,6 +100,13 @@ const articleJsonLd = article
 <meta name="description" content={description}>
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 <link rel="canonical" href={Astro.url.href} />
+{showHreflang && (
+  <>
+    <link rel="alternate" hreflang="cs" href={csHreflangUrl} />
+    <link rel="alternate" hreflang="en" href={enHreflangUrl} />
+    <link rel="alternate" hreflang="x-default" href={csHreflangUrl} />
+  </>
+)}
 <script type="application/ld+json" set:html={JSON.stringify(organizationJsonLd)} />
 {breadcrumbJsonLd && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />}
 {articleJsonLd && <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />}

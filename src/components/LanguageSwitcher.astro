@@ -1,26 +1,17 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n';
+import { hasNoEnEquivalent } from '../utils/i18nEquivalence';
 
 export interface Props {
   class?: string;
 }
 const { class: className } = Astro.props;
 
-// Stránky, které v druhém jazyce zatím nemají ekvivalent (DB-řízené nebo
-// dosud nepřeložené) — switcher na nich místo 404 vede na EN homepage.
-const NO_EN_EQUIVALENT = [
-  /^\/perak\/motor\/?$/,
-  /^\/perak\/zmeny-v-case\/?$/,
-  /^\/navody\/katalog-dilu-jawa-250-1949\/?$/,
-  /^\/registr\/stroj\/.+/,
-];
-
 const currentLocale = Astro.currentLocale ?? 'cs';
 const targetLocale = currentLocale === 'cs' ? 'en' : 'cs';
 const path = Astro.url.pathname.replace(/^\/en(\/|$)/, '/');
-const hasNoEnEquivalent =
-  currentLocale === 'cs' && NO_EN_EQUIVALENT.some((re) => re.test(path));
-const targetUrl = hasNoEnEquivalent
+// Switcher na stránkách bez EN ekvivalentu místo 404 vede na EN homepage.
+const targetUrl = hasNoEnEquivalent(currentLocale, Astro.url.pathname)
   ? getRelativeLocaleUrl('en', '/')
   : getRelativeLocaleUrl(targetLocale, path);
 ---
