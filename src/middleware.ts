@@ -7,6 +7,9 @@ import { hasLocaleVersion } from './i18n/utils';
 export const onRequest = defineMiddleware(async (context, next) => {
   const { request, cookies, url } = context;
 
+  // TEMP DIAGNOSTIC — odstranit po ověření na produkci.
+  const debugOverride = url.searchParams.get('__debug_locale');
+
   if (request.method !== 'GET') return next();
 
   const accept = request.headers.get('accept') ?? '';
@@ -15,12 +18,15 @@ export const onRequest = defineMiddleware(async (context, next) => {
   if (url.pathname.startsWith('/admin')) return next(); // Sveltia CMS beze změny
 
   const isEnPath = url.pathname === '/en' || url.pathname.startsWith('/en/');
-  const cookieLocale = cookies.get('locale')?.value;
+  const cookieLocale = debugOverride ?? cookies.get('locale')?.value;
 
   if (!isEnPath && cookieLocale === 'en' && hasLocaleVersion(url.pathname, 'en')) {
     const target = `/en${url.pathname === '/' ? '' : url.pathname}${url.search}`;
     return context.redirect(target, 302);
   }
 
-  return next();
+  const res = await next();
+  res.headers.set('x-mw-ran', '1');
+  res.headers.set('x-mw-cookie', cookieLocale ?? '(none)');
+  return res;
 });
