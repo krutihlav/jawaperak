@@ -30,7 +30,7 @@ export default defineConfig({
     destination: '/admin',
   },
 },
-  adapter: vercel(),
+  adapter: vercel({ webAnalytics: { enabled: true } }),
   i18n: {
     defaultLocale: 'cs',
     locales: ['cs', 'en'],
