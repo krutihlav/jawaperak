@@ -1,12 +1,83 @@
 ---
 import { encyklopedie } from '../data/encyklopedie';
+
+export interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+
+export interface ArticleSchemaProps {
+  type?: 'Article' | 'TechArticle';
+  headline?: string;
+  description?: string;
+  datePublished?: string;
+  dateModified?: string;
+}
+
 export interface Props {
   title: string;
   description?: string;
   noindex?: boolean;
+  breadcrumbs?: BreadcrumbItem[];
+  article?: ArticleSchemaProps;
 }
-const { title, description = 'Jawa Pérák — typová řada, výrobní čísla, technika a registr dochovaných strojů.', noindex = false } = Astro.props;
+const {
+  title,
+  description = 'Jawa Pérák — typová řada, výrobní čísla, technika a registr dochovaných strojů.',
+  noindex = false,
+  breadcrumbs,
+  article,
+} = Astro.props;
 const menuEncy = encyklopedie.filter((s) => s.hotovo).slice(0, 7);
+
+// Jeden zdroj pravdy pro Organization schema (SEO#2) — jméno a doména podle
+// skutečného brandingu webu (viz og:site_name a hlavička níže), logo je
+// nejbližší dostupný soubor v public/ (dedikované logo.png web nemá).
+const SITE_URL = 'https://www.jawaperak.cz';
+const LOGO_URL = `${SITE_URL}/apple-touch-icon.png`;
+
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Jawa Pérák',
+  url: SITE_URL,
+  logo: LOGO_URL,
+};
+
+// Breadcrumbs a Article/TechArticle jsou volitelné — stránky je generují ze
+// stejných dat, která už zobrazují ve viditelném "kickeru" nad nadpisem,
+// takže nevzniká druhý zdroj pravdy.
+const breadcrumbJsonLd = breadcrumbs?.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: breadcrumbs.map((item, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: item.name,
+        item: new URL(item.url, SITE_URL).href,
+      })),
+    }
+  : null;
+
+const articleJsonLd = article
+  ? {
+      '@context': 'https://schema.org',
+      '@type': article.type ?? 'TechArticle',
+      headline: article.headline ?? title,
+      description: article.description ?? description,
+      ...(article.datePublished ? { datePublished: article.datePublished } : {}),
+      ...(article.dateModified ? { dateModified: article.dateModified } : {}),
+      author: { '@type': 'Organization', name: 'Jawa Pérák', url: SITE_URL },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Jawa Pérák',
+        url: SITE_URL,
+        logo: { '@type': 'ImageObject', url: LOGO_URL },
+      },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': Astro.url.href },
+    }
+  : null;
 ---
 <!DOCTYPE html>
 <html lang="cs">
@@ -17,6 +88,9 @@ const menuEncy = encyklopedie.filter((s) => s.hotovo).slice(0, 7);
 <meta name="description" content={description}>
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 <link rel="canonical" href={Astro.url.href} />
+<script type="application/ld+json" set:html={JSON.stringify(organizationJsonLd)} />
+{breadcrumbJsonLd && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />}
+{articleJsonLd && <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />}
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">

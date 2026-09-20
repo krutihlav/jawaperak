@@ -3,7 +3,19 @@ import Layout from '../../layouts/Layout.astro';
 import data from '../../data/dilna.json';
 ---
 
-<Layout title={data.seoTitle} description={data.seoDescription}>
+<Layout
+  title={data.seoTitle}
+  description={data.seoDescription}
+  breadcrumbs={[
+    { name: 'Domů', url: '/' },
+    { name: data.title, url: '/dilna/' },
+  ]}
+  article={{
+    type: 'Article',
+    headline: data.title,
+    description: data.seoDescription,
+  }}
+>
   <div class="wrap">
     <article class="art">
 

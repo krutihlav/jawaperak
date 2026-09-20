@@ -3,7 +3,14 @@ import Layout from '../../layouts/Layout.astro';
 import data from '../../data/navody.json';
 ---
 
-<Layout title={data.seoTitle} description={data.seoDescription}>
+<Layout
+  title={data.seoTitle}
+  description={data.seoDescription}
+  breadcrumbs={[
+    { name: 'Domů', url: '/' },
+    { name: data.title, url: '/navody/' },
+  ]}
+>
   <div class="wrap">
     <div class="page">
 

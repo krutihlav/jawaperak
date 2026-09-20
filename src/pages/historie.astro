@@ -12,7 +12,20 @@ const stampLabel: Record<string, string> = {
 };
 ---
 
-<Layout title={data.seoTitle} description={data.seoDescription}>
+<Layout
+  title={data.seoTitle}
+  description={data.seoDescription}
+  breadcrumbs={[
+    { name: 'Domů', url: '/' },
+    { name: data.kicker, url: data.kickerHref },
+    { name: data.title, url: '/historie/' },
+  ]}
+  article={{
+    type: 'Article',
+    headline: data.title,
+    description: data.seoDescription,
+  }}
+>
 
 <MuseumHero
   eyebrow={`${data.kicker} — ${data.kickerLabel}`}

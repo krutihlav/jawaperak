@@ -27,6 +27,16 @@ const pocetDilu = new Set(zmeny.map((z) => z.dil)).size;
 <Layout
   title="Co má mít můj stroj — vyhodnocení podle výrobního čísla | jawaperak.cz"
   description="Zadejte výrobní číslo Péráka a nástroj z databáze doložených změn složí seznam dílů, které k němu podle pramenů patří. Včetně toho, jak jisté které zařazení je."
+  breadcrumbs={[
+    { name: 'Domů', url: '/' },
+    { name: 'Encyklopedie', url: '/perak/' },
+    { name: 'Co má mít můj stroj', url: '/perak/zmeny-v-case/' },
+  ]}
+  article={{
+    type: 'TechArticle',
+    headline: 'Co má mít můj stroj — vyhodnocení podle výrobního čísla',
+    dateModified: '2026-08-08',
+  }}
 >
   <div class="wrap wrap--art">
     <div class="page">

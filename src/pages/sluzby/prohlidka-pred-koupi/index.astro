@@ -3,7 +3,15 @@ import Layout from '../../../layouts/Layout.astro';
 import data from '../../../data/prohlidka-pred-koupi.json';
 ---
 
-<Layout title={data.seoTitle} description={data.seoDescription}>
+<Layout
+  title={data.seoTitle}
+  description={data.seoDescription}
+  breadcrumbs={[
+    { name: 'Domů', url: '/' },
+    { name: data.kicker, url: data.kickerHref },
+    { name: data.title, url: '/sluzby/prohlidka-pred-koupi/' },
+  ]}
+>
   <div class="wrap">
     <div class="page">
       <article class="art">

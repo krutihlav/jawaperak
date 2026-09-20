@@ -5,7 +5,14 @@ import data from '../data/sluzby.json';
 const kc = (n: number) => n.toLocaleString('cs-CZ').replace(/\s/g, ' ') + ' Kč';
 ---
 
-<Layout title={data.seoTitle} description={data.seoDescription}>
+<Layout
+  title={data.seoTitle}
+  description={data.seoDescription}
+  breadcrumbs={[
+    { name: 'Domů', url: '/' },
+    { name: data.title, url: '/sluzby/' },
+  ]}
+>
   <div class="wrap">
     <article class="art">
 
