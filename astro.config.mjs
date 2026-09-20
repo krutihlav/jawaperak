@@ -1,4 +1,4 @@
-import { defineConfig, envField, passthroughImageService } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 import vercel from '@astrojs/vercel/serverless';
 import decapCmsOauth from 'astro-decap-cms-oauth';
 import tailwind from '@astrojs/tailwind';
@@ -30,17 +30,7 @@ export default defineConfig({
     destination: '/admin',
   },
 },
-  // edgeMiddleware: true — bez toho by src/middleware.ts běžel jen pro
-  // on-demand (SSR) routy, ne pro staticky předgenerované stránky, které
-  // tvoří většinu webu; cookie redirect na EN verzi je ale potřeba
-  // vyhodnocovat na každém requestu, statické stránky nevyjímaje.
-  adapter: vercel({ webAnalytics: { enabled: true }, edgeMiddleware: true }),
-  // Web nikde nepoužívá <Image>/astro:assets (jen syrové <img> na
-  // veřejné/nahrané soubory) — výchozí sharp image service by se ale i tak
-  // natáhla do bundlu pro edge middleware výše a esbuild na ní pro edge
-  // runtime spadne (sharp importuje node: moduly, které edge nemá).
-  // passthroughImageService se tomu vyhne.
-  image: { service: passthroughImageService() },
+  adapter: vercel({ webAnalytics: { enabled: true } }),
   i18n: {
     defaultLocale: 'cs',
     locales: ['cs', 'en'],

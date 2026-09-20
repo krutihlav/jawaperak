@@ -1,8 +1,9 @@
 // Jeden zdroj pravdy pro "má stránka EN verzi?" — používá ho language
-// switcher, hreflang generování v Layoutu i middleware pro cookie redirect.
+// switcher, hreflang generování a klientský cookie-redirect skript v
+// Layoutu (PATHS_WITHOUT_EN se tam serializuje pro použití v prohlížeči).
 // DB-řízené stránky (registr strojů, katalog dílů, …) EN verzi zatím nemají
 // — radši žádný hreflang/switcher/redirect na ně než hreflang/redirect na 404.
-const PATHS_WITHOUT_EN: RegExp[] = [
+export const PATHS_WITHOUT_EN: RegExp[] = [
   /^\/perak\/motor\/?$/,
   /^\/perak\/zmeny-v-case\/?$/,
   /^\/navody\/katalog-dilu-jawa-250-1949\/?$/,

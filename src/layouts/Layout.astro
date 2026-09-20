@@ -2,7 +2,7 @@
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import { encyklopedie } from '../data/encyklopedie';
 import LanguageSwitcher from '../components/LanguageSwitcher.astro';
-import { hasNoEnEquivalent } from '../i18n/utils';
+import { hasNoEnEquivalent, PATHS_WITHOUT_EN } from '../i18n/utils';
 import CookieConsent from '../components/CookieConsent.astro';
 
 export interface BreadcrumbItem {
@@ -48,6 +48,11 @@ const showHreflang = !hasNoEnEquivalent(currentLocale, Astro.url.pathname);
 const hreflangPath = Astro.url.pathname.replace(/^\/en(\/|$)/, '/');
 const csHreflangUrl = new URL(getRelativeLocaleUrl('cs', hreflangPath), SITE_URL).href;
 const enHreflangUrl = new URL(getRelativeLocaleUrl('en', hreflangPath), SITE_URL).href;
+
+// Zdrojové řetězce regexů pro klientský redirect-podle-cookie skript níže
+// (src/i18n/utils.ts zůstává jediný zdroj pravdy pro seznam — sem se jen
+// serializuje pro použití v prohlížeči).
+const noEnPatterns = PATHS_WITHOUT_EN.map((re) => re.source);
 
 const organizationJsonLd = {
   '@context': 'https://schema.org',
@@ -97,6 +102,27 @@ const articleJsonLd = article
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script is:inline define:vars={{ noEnPatterns }}>
+/* Trvalá jazyková preference: blokující skript (běží před vykreslením
+   stránky, aby nebliklo CS), přesměruje na EN protějšek podle cookie
+   `locale` nastavené kliknutím na language switcher. Middleware na
+   Vercelu tohle spolehlivě nezvládá pro staticky předgenerované stránky
+   (běží jen pro on-demand routy), proto řešeno klientsky. */
+(function () {
+  var path = location.pathname;
+  if (path === '/en' || path.indexOf('/en/') === 0) return;
+  var m = document.cookie.match(/(?:^|; )locale=([^;]*)/);
+  var locale = m ? decodeURIComponent(m[1]) : undefined;
+  if (locale !== 'en') return;
+  var normalized = path.replace(/^\/en(\/|$)/, '/');
+  var noEn = noEnPatterns.some(function (src) {
+    return new RegExp(src).test(normalized);
+  });
+  if (!noEn) {
+    location.replace('/en' + (path === '/' ? '' : path) + location.search);
+  }
+})();
+</script>
 <title>{title}</title>
 <meta name="description" content={description}>
 {noindex && <meta name="robots" content="noindex, nofollow" />}
