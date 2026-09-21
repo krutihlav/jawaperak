@@ -18,4 +18,4 @@ const targetUrl = hasNoEnEquivalent(currentLocale, Astro.url.pathname)
 // pokud uživatel dřív odsouhlasil cookie lištu (CookieConsent.astro).
 const setCookieJs = `if (localStorage.getItem('cookie_consent') === 'accepted') { document.cookie = 'locale=${targetLocale}; path=/; max-age=31536000; SameSite=Lax'; }`;
 ---
-<a class={className} href={targetUrl} onclick={setCookieJs}>{currentLocale === 'cs' ? 'English' : 'Česky'}</a>
+<a class={className} href={targetUrl} onclick={setCookieJs}>{currentLocale === 'cs' ? 'English' : 'Czech'}</a>

@@ -4,92 +4,170 @@ import Layout from '../../layouts/Layout.astro';
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 const locale = Astro.currentLocale ?? 'cs';
+
+const CS = {
+  metaTitle: 'Registr dochovaných Péráků | jawaperak.cz',
+  metaDesc: 'Veřejná databáze dochovaných motocyklů Jawa 250 a 350 Pérák. Přidejte svůj stroj a pomozte zmapovat, kolik jich přežilo.',
+  kicker: 'Registr',
+  h1: 'Kolik Péráků přežilo?',
+  lead: 'Nikdo to neví. Vyráběly se desítky tisíc kusů, dochovala se neznámá část — roztroušená po garážích, stodolách a sbírkách. Tenhle registr to zkouší zmapovat.',
+  statStroju: 'strojů',
+  statZemi: 'zemí',
+  ctaHave: 'Máte Péráka?',
+  ctaText: 'I nekompletní nebo rozebraný stroj do registru patří.',
+  addMachine: 'Přidat stroj',
+  vypisH2: 'Dochované stroje',
+  filtryLabel: 'Filtry',
+  typLabel: 'Typ',
+  vsechnyTypy: 'Všechny typy',
+  stavLabel: 'Stav',
+  vsechnyStavy: 'Všechny stavy',
+  fazeLabel: 'Výrobní fáze',
+  vsechnyFaze: 'Všechny fáze',
+  jenProdej: 'Jen na prodej',
+  nacitam: 'Načítám registr…',
+  jakH2: 'Jak registr funguje',
+  tabCaption: 'Co je veřejné a co ne',
+  thUdaj: 'Údaj',
+  thViditelnost: 'Viditelnost',
+  row1Label: 'Typ, rok, stav, barva', row1Val: 'Veřejné',
+  row2Label: 'Výrobní čísla', row2Val: 'Veřejně jen částečně — poslední tři znaky zakryté',
+  row3Label: 'Kraj / země', row3Val: 'Veřejné (ne přesná adresa)',
+  row4Label: 'Jméno a kontakt majitele', row4Val: 'Nikdy veřejné, jen přes formulář a se souhlasem',
+  row5Label: 'Fotky a příběh stroje', row5Val: 'Veřejné',
+  boxLabel: 'Proč zakrýváme část čísel',
+  boxText: 'Kompletní výrobní číslo se dá zneužít ke klonování identity — přeražením na jiný, třeba kradený stroj. Zakrytá část zůstává v databázi a používá se při ověřování, jen není veřejně čitelná.',
+  closingText: 'Každý záznam před zveřejněním ručně zkontrolujeme — ne kvůli přísnosti, ale kvůli kvalitě dat. Neúplný záznam ale vítáme, doplnit se dá kdykoli.',
+  naProdej: 'Na prodej',
+  bezFotky: 'Bez<br>fotky',
+  typPrefix: 'Typ',
+  prazdnoNadpis: 'Zatím tu nic není.',
+  prazdnoText: 'Registr se teprve plní. Když přidáte svůj stroj, budete mezi prvními.',
+  chybaNacteni: 'Registr se nepodařilo načíst. Zkuste to prosím později.',
+};
+
+const EN = {
+  metaTitle: 'Registry of Surviving Péráks | jawaperak.cz',
+  metaDesc: 'A public database of surviving Jawa 250 and 350 Pérák motorcycles. Add your machine and help map how many have survived.',
+  kicker: 'Registry',
+  h1: 'How many Péráks survived?',
+  lead: 'Nobody knows. Tens of thousands were produced, and an unknown share has survived — scattered across garages, barns, and collections. This registry is an attempt to map that.',
+  statStroju: 'machines',
+  statZemi: 'countries',
+  ctaHave: 'Have a Pérák?',
+  ctaText: 'Even an incomplete or disassembled machine belongs in the registry.',
+  addMachine: 'Add a machine',
+  vypisH2: 'Surviving machines',
+  filtryLabel: 'Filters',
+  typLabel: 'Type',
+  vsechnyTypy: 'All types',
+  stavLabel: 'Condition',
+  vsechnyStavy: 'All conditions',
+  fazeLabel: 'Production phase',
+  vsechnyFaze: 'All phases',
+  jenProdej: 'For sale only',
+  nacitam: 'Loading registry…',
+  jakH2: 'How the registry works',
+  tabCaption: "What's public and what isn't",
+  thUdaj: 'Field',
+  thViditelnost: 'Visibility',
+  row1Label: 'Type, year, condition, color', row1Val: 'Public',
+  row2Label: 'Serial numbers', row2Val: 'Partially public only — last three characters masked',
+  row3Label: 'Region / country', row3Val: 'Public (not the exact address)',
+  row4Label: "Owner's name and contact", row4Val: 'Never public — only via the form, with consent',
+  row5Label: "Photos and the machine's story", row5Val: 'Public',
+  boxLabel: 'Why we mask part of the numbers',
+  boxText: "A complete serial number can be misused to clone an identity — by restamping it onto another machine, potentially a stolen one. The masked part stays in the database and is used for verification; it's just not publicly visible.",
+  closingText: "We manually review every entry before it's published — not to be strict, but for data quality. An incomplete entry is still welcome; it can always be filled in later.",
+  naProdej: 'For sale',
+  bezFotky: 'No<br>photo',
+  typPrefix: 'Type',
+  prazdnoNadpis: 'Nothing here yet.',
+  prazdnoText: 'The registry is just getting started. Add your machine and be among the first.',
+  chybaNacteni: "Couldn't load the registry. Please try again later.",
+};
+
+const t = locale === 'en' ? EN : CS;
 ---
 
 <Layout
-  title="Registr dochovaných Péráků | jawaperak.cz"
-  description="Veřejná databáze dochovaných motocyklů Jawa 250 a 350 Pérák. Přidejte svůj stroj a pomozte zmapovat, kolik jich přežilo."
+  title={t.metaTitle}
+  description={t.metaDesc}
 >
   <div class="wrap wrap--wide">
     <div class="page" style="max-width:none">
     <article class="art">
 
       <div class="art--text">
-        <p class="kicker">Registr</p>
-        <h1>Kolik Péráků přežilo?</h1>
+        <p class="kicker">{t.kicker}</p>
+        <h1>{t.h1}</h1>
         <p class="lead">
-          Nikdo to neví. Vyráběly se desítky tisíc kusů, dochovala se
-          neznámá část — roztroušená po garážích, stodolách a sbírkách.
-          Tenhle registr to zkouší zmapovat.
+          {t.lead}
         </p>
 
         <div class="stats" id="stats" aria-live="polite">
-          <div class="stat"><span class="stat__n" data-stat="celkem">–</span><span class="stat__l">strojů</span></div>
+          <div class="stat"><span class="stat__n" data-stat="celkem">–</span><span class="stat__l">{t.statStroju}</span></div>
           <div class="stat"><span class="stat__n" data-stat="pocet_250">–</span><span class="stat__l">250 ccm</span></div>
           <div class="stat"><span class="stat__n" data-stat="pocet_350">–</span><span class="stat__l">350 ccm</span></div>
-          <div class="stat"><span class="stat__n" data-stat="pocet_zemi">–</span><span class="stat__l">zemí</span></div>
+          <div class="stat"><span class="stat__n" data-stat="pocet_zemi">–</span><span class="stat__l">{t.statZemi}</span></div>
         </div>
 
         <div class="cta-add">
           <div>
-            <b>Máte Péráka?</b>
-            <span>I nekompletní nebo rozebraný stroj do registru patří.</span>
+            <b>{t.ctaHave}</b>
+            <span>{t.ctaText}</span>
           </div>
-          <a class="btn" href="/registr/pridat-stroj/">Přidat stroj</a>
+          <a class="btn" href="/registr/pridat-stroj/">{t.addMachine}</a>
         </div>
       </div>
 
       <section id="vypis">
-        <h2>Dochované stroje</h2>
+        <h2>{t.vypisH2}</h2>
 
-        <div class="filters" role="group" aria-label="Filtry">
-          <select id="f-typ" aria-label="Typ">
-            <option value="">Všechny typy</option>
+        <div class="filters" role="group" aria-label={t.filtryLabel}>
+          <select id="f-typ" aria-label={t.typLabel}>
+            <option value="">{t.vsechnyTypy}</option>
           </select>
-          <select id="f-stav" aria-label="Stav">
-            <option value="">Všechny stavy</option>
+          <select id="f-stav" aria-label={t.stavLabel}>
+            <option value="">{t.vsechnyStavy}</option>
           </select>
-          <select id="f-faze" aria-label="Výrobní fáze">
-            <option value="">Všechny fáze</option>
+          <select id="f-faze" aria-label={t.fazeLabel}>
+            <option value="">{t.vsechnyFaze}</option>
           </select>
-          <label class="chk"><input type="checkbox" id="f-prodej"> Jen na prodej</label>
+          <label class="chk"><input type="checkbox" id="f-prodej"> {t.jenProdej}</label>
         </div>
 
         <div id="vysledky" class="seznam-stroju" aria-live="polite">
-          <p class="loading">Načítám registr…</p>
+          <p class="loading">{t.nacitam}</p>
         </div>
       </section>
 
       <section id="jak" class="art--text">
-        <h2>Jak registr funguje</h2>
+        <h2>{t.jakH2}</h2>
 
         <table class="spec">
-          <caption>Co je veřejné a co ne</caption>
+          <caption>{t.tabCaption}</caption>
           <thead>
-            <tr><th>Údaj</th><th>Viditelnost</th></tr>
+            <tr><th>{t.thUdaj}</th><th>{t.thViditelnost}</th></tr>
           </thead>
           <tbody>
-            <tr><td class="rl">Typ, rok, stav, barva</td><td>Veřejné</td></tr>
-            <tr><td class="rl">Výrobní čísla</td><td>Veřejně jen částečně — poslední tři znaky zakryté</td></tr>
-            <tr><td class="rl">Kraj / země</td><td>Veřejné (ne přesná adresa)</td></tr>
-            <tr><td class="rl">Jméno a kontakt majitele</td><td>Nikdy veřejné, jen přes formulář a se souhlasem</td></tr>
-            <tr><td class="rl">Fotky a příběh stroje</td><td>Veřejné</td></tr>
+            <tr><td class="rl">{t.row1Label}</td><td>{t.row1Val}</td></tr>
+            <tr><td class="rl">{t.row2Label}</td><td>{t.row2Val}</td></tr>
+            <tr><td class="rl">{t.row3Label}</td><td>{t.row3Val}</td></tr>
+            <tr><td class="rl">{t.row4Label}</td><td>{t.row4Val}</td></tr>
+            <tr><td class="rl">{t.row5Label}</td><td>{t.row5Val}</td></tr>
           </tbody>
         </table>
 
         <div class="box box--warn">
-          <span class="lb">Proč zakrýváme část čísel</span>
+          <span class="lb">{t.boxLabel}</span>
           <p>
-            Kompletní výrobní číslo se dá zneužít ke klonování identity —
-            přeražením na jiný, třeba kradený stroj. Zakrytá část zůstává
-            v databázi a používá se při ověřování, jen není veřejně čitelná.
+            {t.boxText}
           </p>
         </div>
 
         <p>
-          Každý záznam před zveřejněním ručně zkontrolujeme — ne kvůli
-          přísnosti, ale kvůli kvalitě dat. Neúplný záznam ale vítáme,
-          doplnit se dá kdykoli.
+          {t.closingText}
         </p>
       </section>
 
@@ -98,7 +176,7 @@ const locale = Astro.currentLocale ?? 'cs';
   </div>
 </Layout>
 
-<script define:vars={{ SUPABASE_URL, SUPABASE_KEY, locale }}>
+<script define:vars={{ SUPABASE_URL, SUPABASE_KEY, locale, msgs: t }}>
   const H = { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY };
   const box = document.getElementById('vysledky');
 
@@ -211,16 +289,16 @@ function karta(s, nahledUrl) {
   const cislo = s.cislo_ramu_maskovane ? `<span class="k__cislo">${esc(s.cislo_ramu_maskovane)}</span>` : '';
   const misto = [s.region, s.zeme].filter(Boolean).map(esc).join(', ');
   const faze = s.vyrobni_faze && FAZE[s.vyrobni_faze] ? `<span class="tagx">${FAZE[s.vyrobni_faze]}</span>` : '';
-  const prodej = s.na_prodej ? '<span class="tagx tagx--red">Na prodej</span>' : '';
+  const prodej = s.na_prodej ? `<span class="tagx tagx--red">${msgs.naProdej}</span>` : '';
   const foto = nahledUrl
     ? `<div class="k__ph"><img src="${nahledUrl}" alt="" loading="lazy"></div>`
-    : `<div class="k__ph k__ph--prazdno"><span class="k__ph-text">Bez<br>fotky</span></div>`;
+    : `<div class="k__ph k__ph--prazdno"><span class="k__ph-text">${msgs.bezFotky}</span></div>`;
   return `
     <a class="k" href="/registr/stroj/${esc(s.slug)}/">
       ${foto}
       <div class="k__mid">
         <div class="k__top">
-          <h3>${esc(TYP[s.typ] || ('Typ ' + s.typ))}${s.rok_vyroby ? ' · ' + esc(s.rok_vyroby) : ''}</h3>
+          <h3>${esc(TYP[s.typ] || (msgs.typPrefix + ' ' + s.typ))}${s.rok_vyroby ? ' · ' + esc(s.rok_vyroby) : ''}</h3>
           ${cislo}
         </div>
         <p class="k__meta">
@@ -263,16 +341,16 @@ function skeletony(pocet) {
       const data = await r.json();
       if (!Array.isArray(data) || data.length === 0) {
         box.innerHTML = `<div class="prazdno">
-          <p><b>Zatím tu nic není.</b></p>
-          <p>Registr se teprve plní. Když přidáte svůj stroj, budete mezi prvními.</p>
-          <a class="btn" href="/registr/pridat-stroj/">Přidat stroj</a>
+          <p><b>${msgs.prazdnoNadpis}</b></p>
+          <p>${msgs.prazdnoText}</p>
+          <a class="btn" href="/registr/pridat-stroj/">${msgs.addMachine}</a>
         </div>`;
         return;
       }
       const nahledy = await nactiNahledy(data.map((s) => s.id));
       box.innerHTML = data.map((s) => karta(s, nahledy[s.id] || null)).join('');
     } catch (e) {
-      box.innerHTML = '<p class="loading">Registr se nepodařilo načíst. Zkuste to prosím později.</p>';
+      box.innerHTML = `<p class="loading">${msgs.chybaNacteni}</p>`;
       console.error(e);
     }
   }

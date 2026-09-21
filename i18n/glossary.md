@@ -75,4 +75,12 @@
 
 ## Rozhodnutá terminologie z konverzací (potvrzeno Adamem)
 
-*(zatím prázdné — sem se zapisují opravy z review)*
+| CS | EN | Kontext |
+|---|---|---|
+| stav (stroje) | condition | odlišit od `stav_moderace` = "status" (pending/approved/rejected) |
+| výrobní fáze | production phase | |
+| dochovaný (stroj) | surviving | "registr dochovaných Péráků" → "registry of surviving Péráks" |
+| kraj / region | region | |
+| historická SPZ | historical license plate | US varianta zvolena záměrně (ne "number plate") |
+| příběh stroje | the machine's story | |
+| odeslat ke schválení | submit for review | akce (tlačítko) — odlišit od "pending approval" (stav záznamu) |

@@ -10,6 +10,9 @@ const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 const locale = Astro.currentLocale ?? 'cs';
 
 const CS = {
+  metaTitle: 'Přidat stroj do registru | jawaperak.cz',
+  metaDesc: 'Přidejte svůj motocykl Jawa Pérák do veřejného registru dochovaných strojů. Kontaktní údaje zůstávají skryté, výrobní čísla se zveřejňují jen částečně.',
+  kicker: 'Registr',
   h1: 'Přidat stroj',
   lead: 'Vyplňte, co víte. Neúplný záznam je lepší než žádný — doplnit se dá kdykoli.',
   privH: 'Co se zveřejní',
@@ -41,53 +44,58 @@ const CS = {
   okMsg: 'Děkujeme. Záznam jsme odeslali ke schválení.',
   errMsg: 'Něco se pokazilo. Zkuste to prosím znovu, nebo nám napište.',
   reqMsg: 'Vyplňte prosím povinná pole.',
+  antiSpamMsg: 'Formulář byl odeslán příliš rychle. Zkuste to prosím znovu.',
 };
 
 const EN = {
+  metaTitle: 'Add a Machine to the Registry | jawaperak.cz',
+  metaDesc: 'Add your Jawa Pérák motorcycle to the public registry of surviving machines. Contact details stay hidden; serial numbers are published only partially.',
+  kicker: 'Registry',
   h1: 'Add a machine',
-  lead: 'Fill in what you know. An incomplete record is better than none — you can always add details later.',
-  privH: 'What becomes public',
-  priv1: 'Type, year, condition, colour, region — public',
-  priv2: 'Serial numbers — partially only, last three characters hidden',
-  priv3: 'Name, e-mail and phone — never public',
-  priv4: 'Records are published after manual review',
+  lead: 'Fill in what you know. An incomplete entry is better than none — you can always add more later.',
+  privH: 'What gets published',
+  priv1: 'Type, year, condition, color, region — public',
+  priv2: 'Serial numbers — only partially, last three characters masked',
+  priv3: 'Name, email, and phone — never public',
+  priv4: 'We publish the entry only after manual review',
   fsStroj: 'Machine', lTyp: 'Type *', lRok: 'Year of manufacture',
-  lRam: 'Frame number', hRam: 'Displayed as 11-102•••',
-  lMotor: 'Engine number', lFaze: 'Production phase', lStav: 'Condition *',
-  lBarva: 'Colour', lSpz: 'Historic registration',
+  lRam: 'Frame serial number', hRam: 'Will be published as 11-102•••',
+  lMotor: 'Engine serial number', lFaze: 'Production phase', lStav: 'Condition *',
+  lBarva: 'Color', lSpz: 'Historical license plate',
   fsFoto: 'Photos',
-  fotoHint: 'At least one photo helps a lot with verifying the record. JPG, PNG or WebP, max. 8 MB per photo, max. 6 photos.',
-  lFoto: 'Machine photos',
-  fotoPocet: 'Maximum 6 photos.',
-  fotoTyp: 'Only JPG, PNG or WebP files are allowed.',
+  fotoHint: 'At least one photo will significantly help with verifying the entry. JPG, PNG, or WebP, max 8 MB per photo, max 6 photos.',
+  lFoto: 'Photos of the machine',
+  fotoPocet: '6 photos maximum.',
+  fotoTyp: 'Only JPG, PNG, or WebP files are allowed.',
   fotoVelikost: 'Each photo must be under 8 MB.',
-  fotoUploadErr: 'The record was submitted, but some photos failed to upload. We will contact you.',
-  fsKde: 'Location', lZeme: 'Country', lRegion: 'Region',
-  hRegion: 'Do not enter a street address',
-  fsPribeh: "Machine's story",
-  lPribeh: 'How you got it and what you know about its history',
+  fotoUploadErr: "We've submitted the entry, but some photos failed to upload. We'll be in touch.",
+  fsKde: 'Where the machine is', lZeme: 'Country', lRegion: 'Region',
+  hRegion: 'Do not enter the exact address',
+  fsPribeh: "The machine's story",
+  lPribeh: 'How you came to own the machine, what you know about its history',
   lPribehEn: 'In English (optional)',
   fsKontakt: 'Contact',
-  kontaktNote: 'Contact details are used to verify the record. They are never shown publicly.',
-  lEmail: 'E-mail *', lTel: 'Phone', lProdej: 'This machine is for sale',
-  lSouhlas: 'I agree to be contacted through the form (my details stay hidden)',
+  kontaktNote: 'Contact details are used to verify the entry. Never shown publicly.',
+  lEmail: 'Email *', lTel: 'Phone', lProdej: 'The machine is for sale',
+  lSouhlas: 'I agree that interested parties may contact me through the form (my contact stays hidden)',
   btnSend: 'Submit for review',
-  okMsg: 'Thank you. The record has been submitted for review.',
-  errMsg: 'Something went wrong. Please try again or write to us.',
+  okMsg: "Thank you. We've submitted the entry for review.",
+  errMsg: 'Something went wrong. Please try again, or write to us.',
   reqMsg: 'Please fill in the required fields.',
+  antiSpamMsg: 'The form was submitted too quickly. Please try again.',
 };
 
 const t = locale === 'en' ? EN : CS;
 ---
 
 <Layout
-  title="Přidat stroj do registru | jawaperak.cz"
-  description="Přidejte svůj motocykl Jawa Pérák do veřejného registru dochovaných strojů. Kontaktní údaje zůstávají skryté, výrobní čísla se zveřejňují jen částečně."
+  title={t.metaTitle}
+  description={t.metaDesc}
 >
   <div class="wrap">
     <article class="art">
 
-      <p class="kicker">Registr</p>
+      <p class="kicker">{t.kicker}</p>
       <h1>{t.h1}</h1>
 
       <p class="lead">
@@ -360,7 +368,7 @@ const t = locale === 'en' ? EN : CS;
     }
 
     if (Date.now() - _pageLoadedAt < 3000) {
-      msg.textContent = 'Formulář byl odeslán příliš rychle. Zkuste to prosím znovu.';
+      msg.textContent = msgs.antiSpamMsg;
       msg.className = 'msg msg--err';
       return;
     }

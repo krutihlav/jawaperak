@@ -44,6 +44,59 @@ const LOGO_URL = `${SITE_URL}/apple-touch-icon.png`;
 // (stejná podmínka jako u viditelnosti language switcheru, viz
 // utils/i18nEquivalence.ts): radši žádný hreflang než hreflang na 404.
 const currentLocale = Astro.currentLocale ?? 'cs';
+
+const CS = {
+  ogImageAlt: 'Jawa 250 Pérák (1951) v NTM Praha',
+  logoAria: 'Jawapérák — domů',
+  openMenu: 'Otevřít menu',
+  navAria: 'Hlavní',
+  navEncy: 'Encyklopedie',
+  navEncyAll: 'Celý přehled',
+  navRegistr: 'Registr',
+  navNavody: 'Návody',
+  navDilna: 'Dílna',
+  footWho1: 'Nezávislý web o motocyklu Jawa 250/350 Pérák. Píše ',
+  footWho2: ', dílna PureBikes, Drahanovice u Olomouce.',
+  footVyrobniCisla: 'Výrobní čísla',
+  footTechUdaje: 'Technické údaje',
+  footDochStroje: 'Dochované stroje',
+  footPridatStroj: 'Přidat stroj',
+  footStatistiky: 'Statistiky',
+  footDilnaT: 'Dílna PureBikes',
+  footProhlidka: 'Prohlídka před koupí',
+  footVyrobaDilu: 'Výroba dílů',
+  footRenovace: 'Renovace a patina',
+  footKontakt: 'Kontakt',
+  colo: 'jawaperak.cz — není spojeno se značkou Jawa Moto ani Classic Legends',
+};
+
+const EN = {
+  ogImageAlt: 'Jawa 250 Pérák (1951) at the NTM Prague',
+  logoAria: 'Jawapérák — home',
+  openMenu: 'Open menu',
+  navAria: 'Main',
+  navEncy: 'Encyclopedia',
+  navEncyAll: 'Full overview',
+  navRegistr: 'Registry',
+  navNavody: 'Guides',
+  navDilna: 'Workshop',
+  footWho1: 'An independent website about the Jawa 250/350 Pérák motorcycle. Written by ',
+  footWho2: ', PureBikes workshop, Drahanovice near Olomouc.',
+  footVyrobniCisla: 'Serial numbers',
+  footTechUdaje: 'Technical specifications',
+  footDochStroje: 'Surviving machines',
+  footPridatStroj: 'Add a machine',
+  footStatistiky: 'Statistics',
+  footDilnaT: 'PureBikes Workshop',
+  footProhlidka: 'Pre-purchase inspection',
+  footVyrobaDilu: 'Parts manufacturing',
+  footRenovace: 'Restoration and patina',
+  footKontakt: 'Contact',
+  colo: 'jawaperak.cz is not affiliated with Jawa Moto or Classic Legends',
+};
+
+const t = currentLocale === 'en' ? EN : CS;
+
 const showHreflang = !hasNoEnEquivalent(currentLocale, Astro.url.pathname);
 const hreflangPath = Astro.url.pathname.replace(/^\/en(\/|$)/, '/');
 const csHreflangUrl = new URL(getRelativeLocaleUrl('cs', hreflangPath), SITE_URL).href;
@@ -147,7 +200,7 @@ const articleJsonLd = article
 <meta property="og:type" content="website" />
 <meta property="og:url" content={Astro.url.href} />
 <meta property="og:image" content="https://jawaperak.cz/uploads/homepage/jawa_250_pérák_-1951-_in_ntm_prague.webp" />
-<meta property="og:image:alt" content="Jawa 250 Pérák (1951) v NTM Praha" />
+<meta property="og:image:alt" content={t.ogImageAlt} />
 <meta property="og:locale" content="cs_CZ" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
@@ -851,25 +904,25 @@ body{line-height:1.6}
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="/" aria-label="Jawapérák — domů">Jawa<em>pérák</em></a>
+    <a class="brand" href="/" aria-label={t.logoAria}>Jawa<em>pérák</em></a>
 
     <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-hidden="true">
-    <label for="nav-toggle" class="burger" aria-label="Otevřít menu">
+    <label for="nav-toggle" class="burger" aria-label={t.openMenu}>
       <span></span><span></span><span></span>
     </label>
     <label for="nav-toggle" class="scrim" aria-hidden="true"></label>
 
-    <nav class="nav" aria-label="Hlavní">
+    <nav class="nav" aria-label={t.navAria}>
       <div class="nav-item">
-        <a href="/perak/">Encyklopedie</a>
+        <a href="/perak/">{t.navEncy}</a>
         <ul class="sub">
           {menuEncy.map((s) => <li><a href={s.href}>{s.titul}</a></li>)}
-          <li class="all"><a href="/perak/">Celý přehled</a></li>
+          <li class="all"><a href="/perak/">{t.navEncyAll}</a></li>
         </ul>
       </div>
-      <a href="/registr/">Registr</a>
-      <a href="/navody/">Návody</a>
-      <a href="/dilna/">Dílna</a>
+      <a href="/registr/">{t.navRegistr}</a>
+      <a href="/navody/">{t.navNavody}</a>
+      <a href="/dilna/">{t.navDilna}</a>
       <LanguageSwitcher class="lang-in" />
     </nav>
 
@@ -883,32 +936,32 @@ body{line-height:1.6}
   <div class="wrap">
     <div class="foot__grid">
       <div class="foot__about">
-        <a class="mark" href="/" aria-label="Jawapérák — domů">Jawa<em>pérák</em></a>
-        <p class="who">Nezávislý web o motocyklu Jawa 250/350 Pérák. Píše <b>Adam Kment</b>, dílna PureBikes, Drahanovice u Olomouce.</p>
+        <a class="mark" href="/" aria-label={t.logoAria}>Jawa<em>pérák</em></a>
+        <p class="who">{t.footWho1}<b>Adam Kment</b>{t.footWho2}</p>
       </div>
       <div class="foot__col">
-        <p class="foot__t">Encyklopedie</p>
+        <p class="foot__t">{t.navEncy}</p>
         <a href="/perak/250/">Pérák 250</a>
         <a href="/perak/350/">Pérák 350</a>
-        <a href="/perak/identifikace/">Výrobní čísla</a>
-        <a href="/perak/technicke-udaje/">Technické údaje</a>
+        <a href="/perak/identifikace/">{t.footVyrobniCisla}</a>
+        <a href="/perak/technicke-udaje/">{t.footTechUdaje}</a>
       </div>
       <div class="foot__col">
-        <p class="foot__t">Registr</p>
-        <a href="/registr/">Dochované stroje</a>
-        <a href="/registr/pridat-stroj/">Přidat stroj</a>
-        <a href="/registr/#stats">Statistiky</a>
+        <p class="foot__t">{t.navRegistr}</p>
+        <a href="/registr/">{t.footDochStroje}</a>
+        <a href="/registr/pridat-stroj/">{t.footPridatStroj}</a>
+        <a href="/registr/#stats">{t.footStatistiky}</a>
       </div>
       <div class="foot__col">
-        <p class="foot__t">Dílna PureBikes</p>
-        <a href="/sluzby/prohlidka-pred-koupi/">Prohlídka před koupí</a>
-        <a href="/dilna/#vyroba-dilu">Výroba dílů</a>
-        <a href="/dilna/">Renovace a patina</a>
-        <a href="/kontakt/">Kontakt</a>
+        <p class="foot__t">{t.footDilnaT}</p>
+        <a href="/sluzby/prohlidka-pred-koupi/">{t.footProhlidka}</a>
+        <a href="/dilna/#vyroba-dilu">{t.footVyrobaDilu}</a>
+        <a href="/dilna/">{t.footRenovace}</a>
+        <a href="/kontakt/">{t.footKontakt}</a>
       </div>
     </div>
     <div class="colo">
-      <span>jawaperak.cz — není spojeno se značkou Jawa Moto ani Classic Legends</span>
+      <span>{t.colo}</span>
       <LanguageSwitcher />
     </div>
   </div>
