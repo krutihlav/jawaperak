@@ -1,7 +1,7 @@
 ---
 // src/pages/index.astro
-// Koncept A (Archival Craft) — homepage sestavená ze špičkových modulů,
-// bez klientských skeletonů.
+// Koncept A (Archival Craft) — homepage sestavená ze špičkových modulů;
+// karty registru se načítají klientsky.
 import Layout from '../layouts/Layout.astro';
 import ModelComparator from '../components/ModelComparator.astro';
 import SerialDecoder from '../components/SerialDecoder.astro';
@@ -12,41 +12,8 @@ import { KATALOG_URL } from '../data/katalogSkupiny';
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
-// Build-safe načtení registru. Stránka je staticky prerenderovaná, takže tu
-// záměrně nepoužíváme sdílený `supabase-js` klient z lib/supabase.ts — ten
-// volá createClient() při importu a bez proměnných prostředí by shodil celý
-// build. Místo toho jde o obyčejný fetch hlídaný přítomností klíčů.
-// Data i popisky typu/stavu (číselníky) jsou stejné jako na /registr/.
-const H = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
-const sb = async (cesta: string) => {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 6000);
-  try {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/${cesta}`, { headers: H, signal: ctrl.signal });
-    const data = r.ok ? await r.json() : [];
-    return Array.isArray(data) ? data : [];
-  } finally {
-    clearTimeout(t);
-  }
-};
-
-let registryItems: any[] = [];
-let TYP: Record<string, string> = {};
-let STAV: Record<string, string> = {};
-if (SUPABASE_URL && SUPABASE_KEY) {
-  try {
-    const [stroje, typy, stavy] = await Promise.all([
-      sb('stroje_verejne?select=slug,typ,rok_vyroby,stav,region,zeme,cislo_ramu_maskovane&order=schvaleno_at.desc&limit=4'),
-      sb('ciselnik_typ?select=hodnota,popis_cs'),
-      sb('ciselnik_stav?select=hodnota,popis_cs'),
-    ]);
-    registryItems = stroje;
-    TYP = Object.fromEntries(typy.map((r: any) => [r.hodnota, r.popis_cs]));
-    STAV = Object.fromEntries(stavy.map((r: any) => [r.hodnota, r.popis_cs]));
-  } catch (e) {
-    // Bez dat ukážeme jen odkaz na celý registr.
-  }
-}
+// Karty registru se načítají v prohlížeči (skript na konci souboru), aby se nový
+// schválený stroj objevil bez dalšího deploye.
 ---
 
 <Layout
@@ -131,24 +98,13 @@ if (SUPABASE_URL && SUPABASE_KEY) {
         </a>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {registryItems.map((s: any) => (
-          <a
-            href={`/registr/stroj/${s.slug}/`}
-            class="block p-5 rounded-2xl border border-[var(--rule)] bg-[var(--card)] space-y-2 hover:border-[var(--red)] transition-colors shadow-sm no-underline"
-          >
-            <h3 class="font-bold text-base text-[var(--ink)]">
-              {TYP[s.typ] || `Typ ${s.typ}`}{s.rok_vyroby ? ` · ${s.rok_vyroby}` : ''}
-            </h3>
-            {s.cislo_ramu_maskovane && (
-              <code class="text-xs font-bold font-mono px-2 py-0.5 rounded bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)]">
-                {s.cislo_ramu_maskovane}
-              </code>
-            )}
-            <p class="text-xs text-[var(--mute)]">
-              {[s.stav ? (STAV[s.stav] || s.stav) : null, s.region, s.zeme].filter(Boolean).join(' • ')}
-            </p>
-          </a>
+      <div id="registr-karty" class="grid grid-cols-1 sm:grid-cols-2 gap-4" aria-live="polite">
+        {[0, 1, 2, 3].map(() => (
+          <div class="p-5 rounded-2xl border border-[var(--rule)] bg-[var(--card)] space-y-3 animate-pulse" aria-hidden="true">
+            <div class="h-4 w-2/3 rounded bg-[var(--paper-2)]" />
+            <div class="h-4 w-1/3 rounded bg-[var(--paper-2)]" />
+            <div class="h-3 w-1/2 rounded bg-[var(--paper-2)]" />
+          </div>
         ))}
       </div>
 
@@ -166,3 +122,36 @@ if (SUPABASE_URL && SUPABASE_KEY) {
 
   </div>
 </Layout>
+
+<script define:vars={{ SUPABASE_URL, SUPABASE_KEY }}>
+  (async () => {
+    const box = document.getElementById('registr-karty');
+    if (!box) return;
+    const H = { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY };
+    const esc = (v) => String(v ?? '').replace(/[<>&"]/g, (c) =>
+      ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+    const get = async (cesta) => {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${cesta}`, { headers: H });
+      if (!r.ok) throw new Error(cesta + ' ' + r.status);
+      return r.json();
+    };
+    try {
+      const [stroje, typy, stavy] = await Promise.all([
+        get('stroje_verejne?select=slug,typ,rok_vyroby,stav,region,zeme,cislo_ramu_maskovane&order=schvaleno_at.desc&limit=4'),
+        get('ciselnik_typ?select=hodnota,popis_cs'),
+        get('ciselnik_stav?select=hodnota,popis_cs'),
+      ]);
+      const TYP = Object.fromEntries(typy.map((r) => [r.hodnota, r.popis_cs]));
+      const STAV = Object.fromEntries(stavy.map((r) => [r.hodnota, r.popis_cs]));
+      box.innerHTML = stroje.map((s) => `
+        <a href="/registr/stroj/${esc(s.slug)}/" class="block p-5 rounded-2xl border border-[var(--rule)] bg-[var(--card)] space-y-2 hover:border-[var(--red)] transition-colors shadow-sm no-underline">
+          <h3 class="font-bold text-base text-[var(--ink)]">${esc(TYP[s.typ] || 'Typ ' + s.typ)}${s.rok_vyroby ? ' · ' + esc(s.rok_vyroby) : ''}</h3>
+          ${s.cislo_ramu_maskovane ? `<code class="text-xs font-bold font-mono px-2 py-0.5 rounded bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)]">${esc(s.cislo_ramu_maskovane)}</code>` : ''}
+          <p class="text-xs text-[var(--mute)]">${[s.stav ? (STAV[s.stav] || s.stav) : null, s.region, s.zeme].filter(Boolean).map(esc).join(' • ')}</p>
+        </a>`).join('');
+    } catch (e) {
+      console.error('Registr se nepodařilo načíst', e);
+      box.remove();
+    }
+  })();
+</script>
