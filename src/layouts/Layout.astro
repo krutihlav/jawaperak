@@ -179,7 +179,7 @@ const articleJsonLd = article
 <title>{title}</title>
 <meta name="description" content={description}>
 {noindex && <meta name="robots" content="noindex, nofollow" />}
-<link rel="canonical" href={Astro.url.href} />
+<link rel="canonical" href={SITE_URL + Astro.url.pathname} />
 {showHreflang && (
   <>
     <link rel="alternate" hreflang="cs" href={csHreflangUrl} />

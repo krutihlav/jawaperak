@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/katalog/1949/",
+      "destination": "/navody/katalog-dilu-jawa-250-1949/",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

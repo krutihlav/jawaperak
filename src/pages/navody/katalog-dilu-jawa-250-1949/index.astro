@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import SpreadViewer from '../../../components/SpreadViewer.astro';
+import { KATALOG_SKUPINY } from '../../../data/katalogSkupiny';
 
 const BASE = '/navody/katalog-dilu-jawa-250-1949';
 
@@ -22,23 +23,9 @@ const items = spreads.map((s) => ({
   label: s.label,
 }));
 
-// Šest hlavních konstrukčních skupin katalogu — rychlý rozcestník, aby uživatel
-// nemusel listovat 140 stranami po jedné. Rozsahy stran jsou odhadem podle
-// obvyklého členění dobových katalogů ND (motor → karburace → převodovka →
-// rám → kola/brzdy → elektrika PAL); až bude k ruce reálný rejstřík z knihy,
-// je třeba čísla stran ověřit a upravit.
-const skupinyLeftPage = [
-  { label: 'Motor', left: 2 },
-  { label: 'Karburace a filtr', left: 26 },
-  { label: 'Převodovka a spojka', left: 50 },
-  { label: 'Rám a pérování', left: 74 },
-  { label: 'Kola a brzdy', left: 98 },
-  { label: 'Elektrická výzbroj PAL', left: 122 },
-];
-const groups = skupinyLeftPage.map((g) => ({
-  label: g.label,
-  index: 2 + (g.left - 2) / 2,
-}));
+// Šest hlavních konstrukčních skupin (sdílený seznam s homepage) — rychlý
+// rozcestník; začátky skupin jsou orientační, viz data/katalogSkupiny.ts.
+const groups = KATALOG_SKUPINY.map((g) => ({ label: g.name, index: g.index }));
 ---
 
 <Layout

@@ -280,7 +280,7 @@ const jePribehEn = !!stroj?.pribeh_en;
           {stroj.lze_kontaktovat && (
             <div class="kontakt-cta">
               <p data-i18n="ctaText">Máte zájem o tento stroj nebo znáte jeho historii? Napište nám a spojíme vás s majitelem.</p>
-              <a class="btn" href={`/kontakt/?stroj=${stroj.slug}`} data-i18n="ctaBtn">Kontaktovat přes formulář</a>
+              <a class="btn" href={`mailto:info@purebikes.cz?subject=${encodeURIComponent('Registr: ' + stroj.slug)}`} data-i18n="ctaBtn">Napsat e-mail</a>
             </div>
           )}
 
@@ -310,7 +310,7 @@ const jePribehEn = !!stroj?.pribeh_en;
       lBydliste: 'Address', lDatum: 'Date', lZapis: 'Entry', tPribeh: "Machine's story",
       poznZdroj: 'Weight and capacity are model figures from public sources, not measurements of this machine. Serial numbers are deliberately shortened.',
       ctaText: 'Interested in this machine, or do you know its history? Write to us and we will put you in touch with the owner.',
-      ctaBtn: 'Contact via form', zpet: '← Back to the registry'
+      ctaBtn: 'Send an e-mail', zpet: '← Back to the registry'
     }
   };
   const CS = {};

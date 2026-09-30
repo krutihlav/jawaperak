@@ -7,32 +7,44 @@ import ModelComparator from '../components/ModelComparator.astro';
 import SerialDecoder from '../components/SerialDecoder.astro';
 import CatalogGroups from '../components/CatalogGroups.astro';
 import WorkshopBanner from '../components/WorkshopBanner.astro';
-import { SAMPLE_REGISTRY } from '../data/perakTechnicalData';
+import { KATALOG_URL } from '../data/katalogSkupiny';
 
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
-// Build-safe načtení registru s fallbackem na SAMPLE_REGISTRY.
-// Stránka je staticky prerenderovaná, takže tu záměrně nepoužíváme sdílený
-// `supabase-js` klient z lib/supabase.ts — ten volá createClient() při
-// importu a bez proměnných prostředí by shodil celý build. Místo toho jde
-// o obyčejný fetch hlídaný přítomností klíčů.
-let registryItems: any[] = SAMPLE_REGISTRY;
+// Build-safe načtení registru. Stránka je staticky prerenderovaná, takže tu
+// záměrně nepoužíváme sdílený `supabase-js` klient z lib/supabase.ts — ten
+// volá createClient() při importu a bez proměnných prostředí by shodil celý
+// build. Místo toho jde o obyčejný fetch hlídaný přítomností klíčů.
+// Data i popisky typu/stavu (číselníky) jsou stejné jako na /registr/.
+const H = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
+const sb = async (cesta: string) => {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 6000);
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${cesta}`, { headers: H, signal: ctrl.signal });
+    const data = r.ok ? await r.json() : [];
+    return Array.isArray(data) ? data : [];
+  } finally {
+    clearTimeout(t);
+  }
+};
+
+let registryItems: any[] = [];
+let TYP: Record<string, string> = {};
+let STAV: Record<string, string> = {};
 if (SUPABASE_URL && SUPABASE_KEY) {
   try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 6000);
-    const r = await fetch(
-      `${SUPABASE_URL}/rest/v1/stroje_verejne?select=*&order=schvaleno_at.desc&limit=4`,
-      { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }, signal: ctrl.signal }
-    );
-    clearTimeout(t);
-    const data = r.ok ? await r.json() : [];
-    if (Array.isArray(data) && data.length > 0) {
-      registryItems = data;
-    }
+    const [stroje, typy, stavy] = await Promise.all([
+      sb('stroje_verejne?select=slug,typ,rok_vyroby,stav,region,zeme,cislo_ramu_maskovane&order=schvaleno_at.desc&limit=4'),
+      sb('ciselnik_typ?select=hodnota,popis_cs'),
+      sb('ciselnik_stav?select=hodnota,popis_cs'),
+    ]);
+    registryItems = stroje;
+    TYP = Object.fromEntries(typy.map((r: any) => [r.hodnota, r.popis_cs]));
+    STAV = Object.fromEntries(stavy.map((r: any) => [r.hodnota, r.popis_cs]));
   } catch (e) {
-    // Graceful fallback to verified sample records
+    // Bez dat ukážeme jen odkaz na celý registr.
   }
 }
 ---
@@ -74,7 +86,7 @@ if (SUPABASE_URL && SUPABASE_KEY) {
         <a href="#dekoder" class="px-6 py-3 rounded-xl bg-[var(--card)] hover:bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)] text-xs font-bold uppercase tracking-wider transition-colors">
           Ověřit výrobní číslo
         </a>
-        <a href="/katalog/1949/" class="px-6 py-3 rounded-xl bg-[var(--card)] hover:bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)] text-xs font-bold uppercase tracking-wider transition-colors">
+        <a href={KATALOG_URL} class="px-6 py-3 rounded-xl bg-[var(--card)] hover:bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)] text-xs font-bold uppercase tracking-wider transition-colors">
           Katalog dílů 1949 &rarr;
         </a>
       </div>
@@ -120,28 +132,31 @@ if (SUPABASE_URL && SUPABASE_KEY) {
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {registryItems.map((bike: any) => (
-          <div class="p-5 rounded-2xl border border-[var(--rule)] bg-[var(--card)] space-y-2 hover:border-[var(--red)] transition-colors shadow-sm">
-            <div class="flex items-center justify-between">
+        {registryItems.map((s: any) => (
+          <a
+            href={`/registr/stroj/${s.slug}/`}
+            class="block p-5 rounded-2xl border border-[var(--rule)] bg-[var(--card)] space-y-2 hover:border-[var(--red)] transition-colors shadow-sm no-underline"
+          >
+            <h3 class="font-bold text-base text-[var(--ink)]">
+              {TYP[s.typ] || `Typ ${s.typ}`}{s.rok_vyroby ? ` · ${s.rok_vyroby}` : ''}
+            </h3>
+            {s.cislo_ramu_maskovane && (
               <code class="text-xs font-bold font-mono px-2 py-0.5 rounded bg-[var(--paper-2)] border border-[var(--rule)] text-[var(--ink)]">
-                {bike.serialMasked || bike.cislo_maskovane || '11-×××××'}
+                {s.cislo_ramu_maskovane}
               </code>
-              <span class="text-xs font-mono text-[var(--mute)]">
-                rok ~{bike.yearEstimated || bike.rok_odhad || '1950'}
-              </span>
-            </div>
-            <h4 class="font-bold text-base text-[var(--ink)]">{bike.type || bike.typ}</h4>
-            <p class="text-xs text-[var(--mute)]">
-              {bike.condition || bike.stav} • {bike.region}
-            </p>
-            {bike.notes && (
-              <p class="text-xs text-[var(--mute-2)] pt-1 border-t border-[var(--rule)]">
-                {bike.notes}
-              </p>
             )}
-          </div>
+            <p class="text-xs text-[var(--mute)]">
+              {[s.stav ? (STAV[s.stav] || s.stav) : null, s.region, s.zeme].filter(Boolean).join(' • ')}
+            </p>
+          </a>
         ))}
       </div>
+
+      <p>
+        <a href="/registr/" class="text-sm font-bold font-sans text-[var(--red)] hover:underline">
+          Zobrazit celý registr &rarr;
+        </a>
+      </p>
     </section>
 
     <!-- 6. WORKSHOP PUREBIKES DRAHANOVICE -->
