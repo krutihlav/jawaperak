@@ -95,7 +95,7 @@ const t = locale === 'en' ? EN : CS;
   description={t.metaDesc}
 >
   <div class="wrap">
-    <div class="page" style="max-width:none">
+    <div class="page page--registr">
     <article class="art">
 
       <div class="art--text">
@@ -366,6 +366,7 @@ function skeletony(pocet) {
 </script>
 
 <style is:global>
+  .page--registr{max-width:760px}
   .art--text{max-width:740px}
 
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);
